@@ -1,15 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
-using dershane.Filters;
+using dershane.Data;
+using System.Linq;
 
 namespace dershane.Controllers
 {
-    [SessionAuthorizer]
-    [RoleAuthorize("teacher")]
     public class TeacherController : Controller
     {
+        private readonly AppDbContext _context;
+
+        public TeacherController(AppDbContext context)
+        {
+            _context = context;
+        }
+
         public IActionResult Index()
         {
-            return View();
+            var students = _context.users
+                                   .Where(u => u.role == "student")
+                                   .ToList();
+
+            return View(students);
         }
     }
 }
