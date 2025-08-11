@@ -217,3 +217,4 @@ C:\dershane\obj\Debug\net9.0\dershane.csproj.AssemblyReference.cache
 C:\dershane\obj\Debug\net9.0\dershane.csproj.Up2Date
 C:\dershane\obj\Debug\net9.0\compressed\ybyjeap6ke-95csk4stnh.gz
 C:\dershane\obj\Debug\net9.0\compressed\paz1o4o4js-95csk4stnh.gz
+C:\dershane\obj\Debug\net9.0\dershane.sourcelink.json

@@ -7,7 +7,7 @@ namespace dershane.Filters
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            var username = context.HttpContext.Session.GetString("username");
+            var username = context.HttpContext.Session.GetString("schoolnumber");
 
             if (string.IsNullOrEmpty(username))
             {

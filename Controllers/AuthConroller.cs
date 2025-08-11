@@ -15,7 +15,7 @@ namespace dershane.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("username")))
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("schoolnumber")))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -24,17 +24,18 @@ namespace dershane.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(string username, string password, string role)
+        public IActionResult Login(string schoolnumber, string password)
         {
-            var user = _context.users.FirstOrDefault(u => u.username == username && u.password == password && u.role == role);
-            Console.WriteLine("Seçilen rol: " + role);
+            var user = _context.users.FirstOrDefault(u => u.dershaneid == schoolnumber && u.password == password);
 
             if (user != null)
             {
-                HttpContext.Session.SetString("username", user.username);
+                HttpContext.Session.SetString("schoolnumber", user.dershaneid);
+                HttpContext.Session.SetString("fullname", user.firstname + " " + user.lastname);
                 HttpContext.Session.SetString("role", user.role);
 
-                if (user.role == "admin")
+                Console.WriteLine(user.firstname + "asdasd");
+                if (user.role == "teacher")
                 {
                     return RedirectToAction("Index", "Teacher");
                 }
