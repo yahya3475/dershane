@@ -8,5 +8,7 @@ namespace dershane.Models
         public string password { get; set; } = string.Empty;
         public string firstname { get; set; } = string.Empty;
         public string lastname { get; set; } = string.Empty;
+        public bool firstlogin { get; set; } = true;
+
     }
 }

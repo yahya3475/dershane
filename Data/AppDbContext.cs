@@ -10,7 +10,6 @@ namespace dershane.Data
             
         }
 
-        // Tablo gibi çalışacak model
         public DbSet<User> users { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using dershane.Data;
 using System.Linq;
-using Microsoft.AspNetCore.Http; 
+using Microsoft.AspNetCore.Http;
 
 namespace dershane.Controllers
 {
@@ -34,7 +34,11 @@ namespace dershane.Controllers
                 HttpContext.Session.SetString("fullname", user.firstname + " " + user.lastname);
                 HttpContext.Session.SetString("role", user.role);
 
-                Console.WriteLine(user.firstname + "asdasd");
+                if (user.firstlogin)
+                {
+                    return RedirectToAction("FirstLogin");
+                }
+
                 if (user.role == "teacher")
                 {
                     return RedirectToAction("Index", "Teacher");
@@ -46,9 +50,43 @@ namespace dershane.Controllers
             }
             else
             {
-                ViewBag.Hata = "Wrong username or password!";
+                ViewBag.Hata = "Wrong school number or password!";
                 return View();
             }
+        }
+        [HttpGet]
+        public IActionResult FirstLogin()
+        {
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("schoolnumber")))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            return View();
+        }
+        [HttpPost]
+        public IActionResult FirstLogin(string password)
+        {
+            var schoolnumber = HttpContext.Session.GetString("schoolnumber");
+            var user = _context.users.FirstOrDefault(u => u.dershaneid == schoolnumber);
+
+            if (user != null)
+            {
+                user.password = password;
+                user.firstlogin = false;
+                _context.SaveChanges();
+
+                if (user.role == "teacher")
+                {
+                    return RedirectToAction("Index", "Teacher");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+
+            ViewBag.Hata = "User not found!";
+            return View();
         }
         public IActionResult Logout()
         {
