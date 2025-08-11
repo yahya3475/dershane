@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@{
+    var role = ViewBag.role?.ToString().ToUpper();
+    var badgeClass = role == "TEACHER" ? "bg-primary" : "bg-success";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body text-center p-5">
+            <h1 class="display-4 fw-bold text-primary mb-3">
+                👋 Welcome, @ViewBag.username!
+            </h1>
+            <h5 class="text-secondary mb-4">
+                Logged Role: <span class="badge @badgeClass">@role</span>
+            </h5>
+
+            <p class="lead text-muted">
+                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Libero, voluptatem. Maxime numquam maiores neque cum hic explicabo non tempore, voluptatibus alias fugiat eius similique consequuntur eveniet ad corrupti veniam cumque!
+            </p>
+
+            <a href="https://learn.microsoft.com/aspnet/core" 
+               class="btn btn-lg btn-success rounded-pill px-4 mt-3 shadow-sm">
+                📚 Documentation
+            </a>
+            
+            @if (role == "TEACHER")
+            {
+                <a href="@Url.Action("Index", "Teacher")"
+                   class="btn btn-lg btn-primary rounded-pill px-4 mt-3 shadow-sm">
+                    ⚠️ Teacher Panel
+                </a>
+            }
+
+            <a href="@Url.Action("Logout", "Auth")" 
+               class="btn btn-lg btn-outline-danger rounded-pill px-4 mt-3 ms-2">
+                🚪 Logout
+            </a>
+        </div>
+    </div>
+</div>

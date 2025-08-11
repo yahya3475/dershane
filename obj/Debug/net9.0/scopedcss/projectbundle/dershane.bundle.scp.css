@@ -1,0 +1,84 @@
+/* _content/dershane/Views/Shared/_Layout.cshtml.rz.scp.css */
+/* Navbar brand link */
+a.navbar-brand[b-9zwbhy5n1y] {
+    white-space: normal;
+    text-align: center;
+    word-break: break-word;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    color: #0d6efd !important;
+    transition: color 0.3s ease;
+}
+
+a.navbar-brand:hover[b-9zwbhy5n1y] {
+    color: #084298 !important;
+}
+
+/* Genel linkler */
+a[b-9zwbhy5n1y] {
+    color: #0d6efd;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover[b-9zwbhy5n1y] {
+    color: #084298;
+}
+
+/* Primary buton */
+.btn-primary[b-9zwbhy5n1y] {
+    color: #fff;
+    background: linear-gradient(45deg, #1b6ec2, #0d6efd);
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover[b-9zwbhy5n1y] {
+    background: linear-gradient(45deg, #0d6efd, #1b6ec2);
+    transform: translateY(-2px);
+}
+
+/* Nav pills aktif */
+.nav-pills .nav-link.active[b-9zwbhy5n1y],
+.nav-pills .show > .nav-link[b-9zwbhy5n1y] {
+    color: #fff;
+    background-color: #0d6efd;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(13, 110, 253, 0.3);
+}
+
+/* Kenarlıklar */
+.border-top[b-9zwbhy5n1y] {
+    border-top: 1px solid #dee2e6;
+}
+
+.border-bottom[b-9zwbhy5n1y] {
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Hafif gölge */
+.box-shadow[b-9zwbhy5n1y] {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, 0.1);
+}
+
+/* Accept policy butonu */
+button.accept-policy[b-9zwbhy5n1y] {
+    font-size: 1rem;
+    line-height: inherit;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+}
+
+/* Footer */
+.footer[b-9zwbhy5n1y] {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid #dee2e6;
+    text-align: center;
+    color: #6c757d;
+    line-height: 60px;
+    font-size: 0.9rem;
+}
+
