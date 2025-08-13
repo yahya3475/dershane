@@ -3,6 +3,7 @@ using dershane.Data;
 using dershane.Models;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace dershane.Controllers
 {
@@ -15,34 +16,88 @@ namespace dershane.Controllers
             _context = context;
         }
 
-        public IActionResult Index(string? uclass)
+        [HttpGet]
+        public IActionResult AddExam()
         {
-            var schoolNumber = HttpContext.Session.GetString("schoolnumber");
+            if (HttpContext.Session.GetString("role") != "teacher")
+                return Unauthorized();
 
-            var classList = _context.Classes
-                                    .Where(u => u.Student == schoolNumber && u.IsTeacher)
-                                    .Select(c => c.UClass)
-                                    .Distinct()
-                                    .ToList();
+            var students = _context.users
+                                   .Where(u => u.role == "student")
+                                   .Select(u => new SelectListItem
+                                   {
+                                       Value = u.dershaneid,
+                                       Text = $"{u.firstname} {u.lastname} ({u.dershaneid})"
+                                   }).ToList();
 
-            ViewBag.Classes = classList;
-            ViewBag.SelectedClass = uclass;
-
-            List<StudentWithClass> students = new();
-
-            if (!string.IsNullOrEmpty(uclass))
+            var vm = new AddExamVM
             {
-                students = (from cls in _context.Classes
-                            join usr in _context.users on cls.Student equals usr.dershaneid
-                            where cls.UClass == uclass && !cls.IsTeacher
-                            select new StudentWithClass
-                            {
-                                Id = usr.userid,
-                                FullName = usr.firstname + " " + usr.lastname,
-                                SchoolNumber = usr.dershaneid,
-                                ClassName = cls.UClass
-                            }).ToList();
+                Students = students
+            };
+
+            return View(vm);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddExam(AddExamVM vm)
+        {
+            if (HttpContext.Session.GetString("role") != "teacher")
+                return Unauthorized();
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                              .Select(e => e.ErrorMessage)
+                                              .ToList();
+                foreach (var err in errors)
+                    Console.WriteLine(err); // Hangi alan hatalı bakmak için
+
+                vm.Students = _context.users
+                    .Where(u => u.role == "student")
+                    .Select(u => new SelectListItem
+                    {
+                        Value = u.dershaneid,
+                        Text = $"{u.firstname} {u.lastname} ({u.dershaneid})"
+                    }).ToList();
+
+                return View(vm);
             }
+
+            var exam = new Exams
+            {
+                schoolnumber = vm.SchoolNumber,
+                lesson = vm.Lesson,
+                points = vm.Points
+            };
+
+            _context.notes.Add(exam);
+            _context.SaveChanges();
+
+            TempData["Success"] = "Exam added successfully!";
+            return RedirectToAction("AddExam");
+        }
+
+
+        public IActionResult Index()
+        {
+            if (HttpContext.Session.GetString("role") != "teacher")
+                return Unauthorized();
+
+            // Oturumdan öğretmenin sınıfını al
+            string teacherClass = HttpContext.Session.GetString("uclass");
+            if (string.IsNullOrEmpty(teacherClass))
+                return Content("Öğretmenin sınıf bilgisi bulunamadı.");
+
+            var students = _context.users
+                                   .Where(u => u.role == "student" && u.uclass == teacherClass)
+                                   .Select(u => new StudentVM
+                                   {
+                                       DershaneId = u.dershaneid,
+                                       FirstName = u.firstname,
+                                       LastName = u.lastname,
+                                       UClass = u.uclass
+                                   })
+                                   .ToList();
 
             return View(students);
         }

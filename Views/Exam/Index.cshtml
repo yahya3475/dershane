@@ -1,0 +1,26 @@
+@model List<dershane.Models.Exams>
+
+@{
+    ViewData["Title"] = "My Exam Results";
+}
+
+<div class="container mt-4">
+    <h2>My Exam Results</h2>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Lesson</th>
+                <th>Points</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var note in Model)
+        {
+            <tr>
+                <td>@note.lesson</td>
+                <td>@note.points</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

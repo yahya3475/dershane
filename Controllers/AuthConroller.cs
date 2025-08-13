@@ -26,11 +26,12 @@ namespace dershane.Controllers
         [HttpPost]
         public IActionResult Login(string schoolnumber, string password)
         {
-            var user = _context.users.FirstOrDefault(u => u.dershaneid == schoolnumber && u.password == password);
+            var user = _context.users.FirstOrDefault(u => u.dershaneid == schoolnumber);
 
-            if (user != null)
+            if (user != null && BCrypt.Net.BCrypt.Verify(password, user.password))
             {
                 HttpContext.Session.SetString("schoolnumber", user.dershaneid);
+                HttpContext.Session.SetString("uclass", user.uclass);
                 HttpContext.Session.SetString("fullname", user.firstname + " " + user.lastname);
                 HttpContext.Session.SetString("role", user.role);
 
@@ -60,6 +61,7 @@ namespace dershane.Controllers
                 return View();
             }
         }
+
         [HttpGet]
         public IActionResult FirstLogin()
         {
@@ -77,7 +79,7 @@ namespace dershane.Controllers
 
             if (user != null)
             {
-                user.password = password;
+                user.password = BCrypt.Net.BCrypt.HashPassword(password);
                 user.firstlogin = false;
                 _context.SaveChanges();
 
@@ -98,6 +100,7 @@ namespace dershane.Controllers
             ViewBag.Hata = "User not found!";
             return View();
         }
+
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

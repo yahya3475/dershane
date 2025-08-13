@@ -5,6 +5,10 @@
 @{
     var role = ViewBag.role?.ToString().ToUpper();
     var badgeClass = role == "TEACHER" ? "bg-primary" : "bg-success";
+    if (role == "PRİNCİPAL")
+    {
+        badgeClass = "bg-warning";
+    }
 }
 
 <div class="container mt-5">
@@ -23,7 +27,7 @@
                 corrupti veniam cumque!
             </p>
 
-            <a href="@Url.Action("Index", "Student")" class="btn btn-lg btn-primary rounded-pill px-4 mt-3 shadow-sm">
+            <a href="@Url.Action("Index", "Exam")" class="btn btn-lg btn-primary rounded-pill px-4 mt-3 shadow-sm">
                 📚 Exam Results
             </a>
 
