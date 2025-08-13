@@ -17,7 +17,6 @@ namespace dershane.Controllers
             _context = context;
         }
 
-        // === Ana Sayfa ===
         [HttpGet]
         public IActionResult Index()
         {
@@ -32,7 +31,6 @@ namespace dershane.Controllers
             return View();
         }
 
-        // === Kullanıcı Ekle - GET ===
         [HttpGet]
         public IActionResult AddUser()
         {
@@ -48,7 +46,6 @@ namespace dershane.Controllers
             return View();
         }
 
-        // === Kullanıcı Ekle - POST ===
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddUser(User user)
@@ -56,28 +53,24 @@ namespace dershane.Controllers
             if (HttpContext.Session.GetString("role") != "principal")
                 return Unauthorized();
 
-            // Formdan uclass ve newClass değerlerini direkt alıyoruz
             string uclass = Request.Form["uclass"];
             string newClass = Request.Form["newClass"];
 
-            // ModelState'deki uclass validasyonunu kaldırıyoruz, çünkü dışarıdan alıyoruz
             ModelState.Remove("uclass");
 
             if (!ModelState.IsValid)
             {
-                // Listeyi tekrar yükle
                 ViewBag.Classes = _context.Classes.Select(c => c.UClass).Distinct().ToList();
                 return View(user);
             }
 
-            // Okul numarası üret
             Random rnd = new Random();
             string schoolNumber;
             int attempts = 0;
             do
             {
                 if (++attempts > 10)
-                    return BadRequest("Unique okul numarası üretilemedi.");
+                    return BadRequest("Unique school number generate error.");
                 schoolNumber = rnd.Next(1000, 9999).ToString();
             }
             while (_context.users.Any(u => u.dershaneid == schoolNumber));
@@ -90,7 +83,6 @@ namespace dershane.Controllers
             _context.users.Add(user);
             _context.SaveChanges();
 
-            // Hangi sınıf seçilmiş veya girilmiş ona karar ver
             string finalClass = !string.IsNullOrWhiteSpace(uclass) ? uclass.Trim() : newClass?.Trim();
 
             if (!string.IsNullOrEmpty(finalClass))
@@ -104,7 +96,7 @@ namespace dershane.Controllers
                 _context.SaveChanges();
             }
 
-            TempData["Success"] = $"Kullanıcı başarıyla eklendi. Okul No: {schoolNumber}";
+            TempData["Success"] = $"User added successfully. School Number: {schoolNumber}";
             return RedirectToAction("Index");
         }
         [HttpGet]
@@ -113,20 +105,47 @@ namespace dershane.Controllers
             if (HttpContext.Session.GetString("role") != "principal")
                 return Unauthorized();
 
-            // Başlangıçta tüm kullanıcılar
             var users = _context.users.AsQueryable();
 
-            // role parametresi varsa filtre uygula
             if (!string.IsNullOrWhiteSpace(role))
             {
                 role = role.Trim().ToLower();
                 users = users.Where(u => u.role.ToLower() == role);
             }
 
-            // View'a liste gönder
             return View(users.ToList());
         }
+        [HttpGet]
+        public IActionResult Classes()
+        {
+            if (HttpContext.Session.GetString("role") != "principal")
+                return Unauthorized();
 
+            var classes = _context.Classes
+                .Select(c => c.UClass)
+                .Distinct()
+                .ToList();
 
+            var counts = _context.Classes
+                .Where(c => !c.IsTeacher)
+                .GroupBy(c => c.UClass)
+                .Select(g => new { ClassName = g.Key, StudentCount = g.Count() })
+                .ToDictionary(x => x.ClassName, x => x.StudentCount);
+
+            var teachers = _context.Classes
+                .Where(c => c.IsTeacher)
+                .Join(_context.users,
+                      c => c.Student,
+                      u => u.dershaneid,
+                      (c, u) => new { c.UClass, TeacherName = u.firstname + " " + u.lastname })
+                .GroupBy(x => x.UClass)
+                .Select(g => new { ClassName = g.Key, TeacherName = g.First().TeacherName })
+                .ToDictionary(x => x.ClassName, x => x.TeacherName);
+
+            ViewBag.ClassStudentCount = counts;
+            ViewBag.ClassTeachers = teachers;
+
+            return View(classes);
+        }
     }
 }

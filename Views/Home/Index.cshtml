@@ -18,24 +18,30 @@
             </h5>
 
             <p class="lead text-muted">
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Libero, voluptatem. Maxime numquam maiores neque cum hic explicabo non tempore, voluptatibus alias fugiat eius similique consequuntur eveniet ad corrupti veniam cumque!
+                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Libero, voluptatem. Maxime numquam maiores
+                neque cum hic explicabo non tempore, voluptatibus alias fugiat eius similique consequuntur eveniet ad
+                corrupti veniam cumque!
             </p>
 
-            <a href="https://learn.microsoft.com/aspnet/core" 
-               class="btn btn-lg btn-success rounded-pill px-4 mt-3 shadow-sm">
-                📚 Documentation
+            <a href="@Url.Action("Index", "Student")" class="btn btn-lg btn-primary rounded-pill px-4 mt-3 shadow-sm">
+                📚 Exam Results
             </a>
-            
+
             @if (role == "TEACHER")
             {
-                <a href="@Url.Action("Index", "Teacher")"
-                   class="btn btn-lg btn-primary rounded-pill px-4 mt-3 shadow-sm">
-                    ⚠️ Teacher Panel
+                <a href="@Url.Action("Index", "Teacher")" class="btn btn-lg btn-warning rounded-pill px-4 mt-3 shadow-sm">
+                    🔨 Teacher Panel
                 </a>
             }
 
-            <a href="@Url.Action("Logout", "Auth")" 
-               class="btn btn-lg btn-outline-danger rounded-pill px-4 mt-3 ms-2">
+            @if (role == "PRİNCİPAL")
+            {
+                <a href="@Url.Action("Index", "Principal")" class="btn btn-lg btn-warning rounded-pill px-4 mt-3 shadow-sm">
+                    🛠️ Principal Panel
+                </a>
+            }
+
+            <a href="@Url.Action("Logout", "Auth")" class="btn btn-lg btn-outline-danger rounded-pill px-4 mt-3 ms-2">
                 🚪 Logout
             </a>
         </div>

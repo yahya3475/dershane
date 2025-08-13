@@ -1,0 +1,32 @@
+@model List<string>
+@{
+    var counts = ViewBag.ClassStudentCount as IDictionary<string, int>;
+    var teachers = ViewBag.ClassTeachers as IDictionary<string, string>;
+    ViewData["Title"] = "Classes - Principal";
+}
+
+<div class="container mt-4">
+    <h2>Class List</h2>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Class Name</th>
+                <th>Student Count</th>
+                <th>Teacher</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var cls in Model)
+        {
+            var n = (counts != null && counts.ContainsKey(cls)) ? counts[cls] : 0;
+            var t = (teachers != null && teachers.ContainsKey(cls)) ? teachers[cls] : "-";
+            <tr>
+                <td>@cls</td>
+                <td>@n</td>
+                <td>@t</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
