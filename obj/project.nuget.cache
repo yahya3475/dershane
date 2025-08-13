@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "5chCDpf534c=",
+  "dgSpecHash": "2iG7J82Saps=",
   "success": true,
   "projectFilePath": "C:\\dershane\\dershane.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\bapho\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\bapho\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\bapho\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\7.0.0\\microsoft.bcl.asyncinterfaces.7.0.0.nupkg.sha512",
     "C:\\Users\\bapho\\.nuget\\packages\\microsoft.build.framework\\17.8.3\\microsoft.build.framework.17.8.3.nupkg.sha512",

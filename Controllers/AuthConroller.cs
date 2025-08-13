@@ -34,12 +34,18 @@ namespace dershane.Controllers
                 HttpContext.Session.SetString("fullname", user.firstname + " " + user.lastname);
                 HttpContext.Session.SetString("role", user.role);
 
+                Console.WriteLine($"User logged in: {user.firstname} {user.lastname}, Role: {user.role}");
+
                 if (user.firstlogin)
                 {
                     return RedirectToAction("FirstLogin");
                 }
 
-                if (user.role == "teacher")
+                if (user.role == "principal")
+                {
+                    return RedirectToAction("Index", "Principal");
+                }
+                else if (user.role == "teacher")
                 {
                     return RedirectToAction("Index", "Teacher");
                 }
@@ -57,7 +63,7 @@ namespace dershane.Controllers
         [HttpGet]
         public IActionResult FirstLogin()
         {
-            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("schoolnumber")))
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("schoolnumber")))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -75,7 +81,11 @@ namespace dershane.Controllers
                 user.firstlogin = false;
                 _context.SaveChanges();
 
-                if (user.role == "teacher")
+                if (user.role == "principal")
+                {
+                    return RedirectToAction("Index", "Principal");
+                }
+                else if (user.role == "teacher")
                 {
                     return RedirectToAction("Index", "Teacher");
                 }

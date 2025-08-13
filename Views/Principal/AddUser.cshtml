@@ -1,0 +1,64 @@
+@model dershane.Models.User
+
+@{
+    ViewData["Title"] = "Add User - Principal";
+    var classList = ViewBag.Classes as List<string>;
+}
+
+<div class="container mt-4">
+    <h2>🏫 Add New User</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <form asp-controller="Principal" asp-action="AddUser" method="post">
+        @Html.AntiForgeryToken()
+        <div class="mb-3">
+            <label class="form-label">First Name</label>
+            <input asp-for="firstname" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Last Name</label>
+            <input asp-for="lastname" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input asp-for="password" type="password" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Role</label>
+            <select asp-for="role" class="form-select" required>
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
+                <option value="principal">Principal</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Select Existing Class</label>
+            <select asp-for="uclass" class="form-select">
+                <option value="">-- Select Class --</option>
+                @if (classList != null && classList.Any())
+                {
+                    foreach (var cls in classList)
+                    {
+                        <option value="@cls">@cls</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Or Add New Class</label>
+            <input type="text" name="newClass" class="form-control" placeholder="Enter new class name" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+    </form>
+</div>
