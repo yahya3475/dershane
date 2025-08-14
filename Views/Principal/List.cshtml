@@ -1,27 +1,78 @@
 @model List<dershane.Models.User>
+@{
+    ViewData["Title"] = "User List - Principal";
+}
 
-<div class="container mt-4">
-    <h2>User List</h2>
-
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>School Number</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Role</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@user.dershaneid</td>
-                <td>@user.firstname</td>
-                <td>@user.lastname</td>
-                <td>@user.role</td>
-            </tr>
-        }
-        </tbody>
-    </table>
+<div class="container-fluid mt-5">
+    <div class="card shadow-lg border-0 rounded-lg">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0"><i class="bi bi-people-fill me-2"></i>User List</h2>
+            <a asp-action="AddUser" class="btn btn-light">
+                <i class="bi bi-person-plus-fill me-2"></i>Add New User
+            </a>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table id="userTable" class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>School Number</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.dershaneid</td>
+                                <td>@user.firstname</td>
+                                <td>@user.lastname</td>
+                                <td>
+                                    <span class="badge bg-@(user.role == "student" ? "primary" : (user.role == "teacher" ? "success" : "warning"))">
+                                        @user.role.ToUpper()
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-outline-primary me-2" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle me-2"></i>No users found. Add a new user to get started.
+                </div>
+            }
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#userTable').DataTable({
+                "pageLength": 10,
+                "lengthChange": false,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true
+            });
+        });
+    </script>
+}

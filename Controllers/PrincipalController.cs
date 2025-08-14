@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using dershane.Data;
 using dershane.Models;
-using System;
-using System.Linq;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace dershane.Controllers
 {
@@ -37,10 +37,7 @@ namespace dershane.Controllers
             if (HttpContext.Session.GetString("role") != "principal")
                 return Unauthorized();
 
-            var classList = _context.Classes
-                                    .Select(c => c.UClass)
-                                    .Distinct()
-                                    .ToList();
+            var classList = _context.Classes.Select(c => c.UClass).Distinct().ToList();
 
             ViewBag.Classes = classList;
             return View();
@@ -72,8 +69,7 @@ namespace dershane.Controllers
                 if (++attempts > 10)
                     return BadRequest("Unique school number generate error.");
                 schoolNumber = rnd.Next(1000, 9999).ToString();
-            }
-            while (_context.users.Any(u => u.dershaneid == schoolNumber));
+            } while (_context.users.Any(u => u.dershaneid == schoolNumber));
 
             user.dershaneid = schoolNumber;
             user.uclass = newClass;
@@ -83,22 +79,27 @@ namespace dershane.Controllers
             _context.users.Add(user);
             _context.SaveChanges();
 
-            string finalClass = !string.IsNullOrWhiteSpace(uclass) ? uclass.Trim() : newClass?.Trim();
+            string finalClass = !string.IsNullOrWhiteSpace(uclass)
+                ? uclass.Trim()
+                : newClass?.Trim();
 
             if (!string.IsNullOrEmpty(finalClass))
             {
-                _context.Classes.Add(new UClass1
-                {
-                    UClass = finalClass,
-                    Student = schoolNumber,
-                    IsTeacher = user.role == "teacher"
-                });
+                _context.Classes.Add(
+                    new UClass1
+                    {
+                        UClass = finalClass,
+                        Student = schoolNumber,
+                        IsTeacher = user.role == "teacher",
+                    }
+                );
                 _context.SaveChanges();
             }
 
             TempData["Success"] = $"User added successfully. School Number: {schoolNumber}";
             return RedirectToAction("Index");
         }
+
         [HttpGet]
         public IActionResult List(string role)
         {
@@ -115,29 +116,29 @@ namespace dershane.Controllers
 
             return View(users.ToList());
         }
+
         [HttpGet]
         public IActionResult Classes()
         {
             if (HttpContext.Session.GetString("role") != "principal")
                 return Unauthorized();
 
-            var classes = _context.Classes
-                .Select(c => c.UClass)
-                .Distinct()
-                .ToList();
+            var classes = _context.Classes.Select(c => c.UClass).Distinct().ToList();
 
-            var counts = _context.Classes
-                .Where(c => !c.IsTeacher)
+            var counts = _context
+                .Classes.Where(c => !c.IsTeacher)
                 .GroupBy(c => c.UClass)
                 .Select(g => new { ClassName = g.Key, StudentCount = g.Count() })
                 .ToDictionary(x => x.ClassName, x => x.StudentCount);
 
-            var teachers = _context.Classes
-                .Where(c => c.IsTeacher)
-                .Join(_context.users,
-                      c => c.Student,
-                      u => u.dershaneid,
-                      (c, u) => new { c.UClass, TeacherName = u.firstname + " " + u.lastname })
+            var teachers = _context
+                .Classes.Where(c => c.IsTeacher)
+                .Join(
+                    _context.users,
+                    c => c.Student,
+                    u => u.dershaneid,
+                    (c, u) => new { c.UClass, TeacherName = u.firstname + " " + u.lastname }
+                )
                 .GroupBy(x => x.UClass)
                 .Select(g => new { ClassName = g.Key, TeacherName = g.First().TeacherName })
                 .ToDictionary(x => x.ClassName, x => x.TeacherName);

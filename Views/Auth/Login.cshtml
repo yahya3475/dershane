@@ -1,37 +1,64 @@
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Login - dershane";
 }
 
-<div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="card shadow-lg border-0 rounded-4 p-4" style="max-width: 400px; width: 100%;">
-        <div class="text-center mb-4">
-            <h2 class="fw-bold text-primary">🔐 Log In</h2>
-            <p class="text-secondary">Log in to access dershane</p>
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card shadow-lg border-0 rounded-4" style="max-width: 400px; width: 100%;">
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold text-primary">
+                    <i class="bi bi-lock-fill me-2"></i>Log In
+                </h2>
+                <p class="text-muted">Welcome back! Please enter your credentials.</p>
+            </div>
+
+            @if (ViewBag.Hata != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    @ViewBag.Hata
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <form method="post">
+                <div class="mb-4">
+                    <label for="schoolnumber" class="form-label">School Number</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                        <input name="schoolnumber" type="text" class="form-control" id="schoolnumber" placeholder="Enter your school number" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-key"></i></span>
+                        <input name="password" type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Log in
+                    </button>
+                </div>
+            </form>
         </div>
-
-        @if (ViewBag.Hata != null)
-        {
-            <div class="alert alert-danger text-center" role="alert">
-                @ViewBag.Hata
-            </div>
-        }
-
-        <form method="post">
-            <div class="mb-3">
-                <label for="schoolnumber" class="form-label fw-semibold">School Number</label>
-                <input name="schoolnumber" type="text" class="form-control" id="schoolnumber" placeholder="Enter your school number" required>
-            </div>
-
-            <div class="mb-4">
-                <label for="password" class="form-label fw-semibold">Password</label>
-                <input name="password" type="password" class="form-control" id="password" placeholder="••••••••" required>
-            </div>
-
-            <div class="d-grid">
-                <button type="submit" class="btn btn-primary btn-lg rounded-pill">
-                    🚀 Log in
-                </button>
-            </div>
-        </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function (e) {
+            const password = document.getElementById('password');
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('bi-eye');
+            this.querySelector('i').classList.toggle('bi-eye-slash');
+        });
+    </script>
+}

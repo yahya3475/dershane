@@ -1,35 +1,37 @@
 @model List<dershane.Models.Exams>
 
 @{
-    ViewData["Title"] = "My Exam Results";
+    ViewData["Title"] = "My Class Exam Results";
 }
 
 <div class="container mt-5">
     <div class="card shadow-lg border-0 rounded-lg">
         <div class="card-header bg-primary text-white">
-            <h2 class="mb-0"><i class="bi bi-journal-check"></i> My Exam Results</h2>
+            <h2 class="mb-0"><i class="bi bi-journal-check"></i> My Class Exam Results</h2>
         </div>
         <div class="card-body">
             @if (Model.Any())
             {
                 <div class="table-responsive">
                     <table class="table table-hover">
-                        <thead class="table-light">
+                        <thead class="table">
                             <tr>
+                                <th>Student</th>
                                 <th>Lesson</th>
                                 <th>Points</th>
                                 <th>Grade</th>
                             </tr>
                         </thead>
                         <tbody>
-                        @foreach (var note in Model)
+                        @foreach (var exam in Model)
                         {
                             <tr>
-                                <td>@note.lesson</td>
-                                <td>@note.points</td>
+                                <td>@exam.schoolnumber</td>
+                                <td>@exam.lesson</td>
+                                <td>@exam.points</td>
                                 <td>
                                     @{
-                                        var grade = note.points switch
+                                        var grade = exam.points switch
                                         {
                                             >= 90 => "A",
                                             >= 80 => "B",
@@ -57,7 +59,7 @@
             else
             {
                 <div class="alert alert-info" role="alert">
-                    <i class="bi bi-info-circle-fill"></i> You don't have any exam results yet.
+                    <i class="bi bi-info-circle-fill"></i> There are no exam results for your class yet.
                 </div>
             }
         </div>

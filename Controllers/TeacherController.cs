@@ -121,7 +121,7 @@ namespace dershane.Controllers
                 from exam in _context.notes
                 join cls in _context.Classes on exam.schoolnumber equals cls.Student
                 join student in _context.users on exam.schoolnumber equals student.dershaneid
-                where cls.UClass == teacherClass
+                where cls.UClass == teacherClass && !cls.IsTeacher
                 group new { exam, student } by exam.lesson into g
                 select new ExamGroupVM
                 {
