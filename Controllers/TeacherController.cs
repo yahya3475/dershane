@@ -126,8 +126,6 @@ namespace dershane.Controllers
                 select new ExamGroupVM
                 {
                     Lesson = g.Key,
-                    // In TeacherController.cs, inside the ViewExams action
-
                     ExamResults = g.Select(x => new ExamResultVM
                         {
                             Nid = x.exam.nid,

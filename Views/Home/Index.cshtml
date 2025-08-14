@@ -3,55 +3,54 @@
     ViewBag.SiteSetting = "Version 1.0.0 - All Systems Go";
 
     var role = ViewBag.role?.ToString().ToUpper();
-    var badgeClass = role == "TEACHER" ? "bg-primary" : "bg-success";
-    if (role == "PRİNCİPAL")
+    var (badgeClass, roleIcon) = role switch
     {
-        badgeClass = "bg-warning";
-    }
+        "TEACHER" => ("bg-primary", "👨‍🏫"),
+        "PRİNCİPAL" => ("bg-warning", "🏫"),
+        _ => ("bg-success", "🎓")
+    };
 }
 
 <div class="container mt-5">
-    <div class="card shadow-lg border-0 rounded-4 p-4">
-        <div class="text-center">
-            <h1 class="display-4 fw-bold text-primary mb-2">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body text-center p-5">
+            <h1 class="display-4 fw-bold text-primary mb-3">
                 👋 Welcome, @ViewBag.username!
             </h1>
-            <h5 class="text-secondary mb-3">
-                Role: <span class="badge @badgeClass">@role</span>
+            <h5 class="text-secondary mb-4">
+                Role: <span class="badge @badgeClass">@roleIcon @role</span>
             </h5>
 
-            <p class="lead text-muted mx-auto" style="max-width: 600px;">
-                Welcome to the dashboard! Here you can access your exams, teacher or principal panel depending on your
-                role.
+            <p class="lead text-muted mx-auto mb-4" style="max-width: 600px;">
+                Access your personalized dashboard to view exams, manage classes, or oversee the institution based on your role.
             </p>
 
-            <div class="alert alert-info mt-4 shadow-sm rounded-3">
-                ⚙️ Current Site Setting: @ViewBag.SiteSetting
+            <div class="alert alert-info mb-4 shadow-sm rounded-3">
+                <i class="bi bi-info-circle-fill me-2"></i>@ViewBag.SiteSetting
             </div>
 
-            <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
-                @if (role == "STUDENT")
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                @switch (role)
                 {
-                    <a href="@Url.Action("Index", "Exam")" class="btn btn-lg btn-primary rounded-pill px-4 shadow-sm">
-                        📚 Exam Results
-                    </a>
-                }
-                @if (role == "TEACHER")
-                {
-                    <a href="@Url.Action("Index", "Teacher")" class="btn btn-lg btn-warning rounded-pill px-4 shadow-sm">
-                        🔨 Teacher Panel
-                    </a>
-                }
-                @if (role == "PRİNCIPAL")
-                {
-                    <a href="@Url.Action("Index", "Principal")" class="btn btn-lg btn-warning rounded-pill px-4 shadow-sm">
-                        🛠️ Principal Panel
-                    </a>
+                    case "STUDENT":
+                        <a asp-controller="Exam" asp-action="Index" class="btn btn-lg btn-primary rounded-pill px-4 shadow-sm">
+                            <i class="bi bi-journal-text me-2"></i>Exam Results
+                        </a>
+                        break;
+                    case "TEACHER":
+                        <a asp-controller="Teacher" asp-action="Index" class="btn btn-lg btn-warning rounded-pill px-4 shadow-sm">
+                            <i class="bi bi-person-workspace me-2"></i>Teacher Panel
+                        </a>
+                        break;
+                    case "PRİNCİPAL":
+                        <a asp-controller="Principal" asp-action="Index" class="btn btn-lg btn-warning rounded-pill px-4 shadow-sm">
+                            <i class="bi bi-building me-2"></i>Principal Panel
+                        </a>
+                        break;
                 }
 
-                <a href="@Url.Action("Logout", "Auth")"
-                    class="btn btn-lg btn-outline-danger rounded-pill px-4 shadow-sm">
-                    🚪 Logout
+                <a asp-controller="Auth" asp-action="Logout" class="btn btn-lg btn-outline-danger rounded-pill px-4 shadow-sm">
+                    <i class="bi bi-box-arrow-right me-2"></i>Logout
                 </a>
             </div>
         </div>

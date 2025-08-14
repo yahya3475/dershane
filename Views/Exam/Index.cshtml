@@ -4,23 +4,65 @@
     ViewData["Title"] = "My Exam Results";
 }
 
-<div class="container mt-4">
-    <h2>My Exam Results</h2>
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Lesson</th>
-                <th>Points</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var note in Model)
-        {
-            <tr>
-                <td>@note.lesson</td>
-                <td>@note.points</td>
-            </tr>
-        }
-        </tbody>
-    </table>
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-lg">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0"><i class="bi bi-journal-check"></i> My Exam Results</h2>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Lesson</th>
+                                <th>Points</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var note in Model)
+                        {
+                            <tr>
+                                <td>@note.lesson</td>
+                                <td>@note.points</td>
+                                <td>
+                                    @{
+                                        var grade = note.points switch
+                                        {
+                                            >= 90 => "A",
+                                            >= 80 => "B",
+                                            >= 70 => "C",
+                                            >= 60 => "D",
+                                            _ => "F"
+                                        };
+                                        var badgeColor = grade switch
+                                        {
+                                            "A" => "success",
+                                            "B" => "primary",
+                                            "C" => "info",
+                                            "D" => "warning",
+                                            _ => "danger"
+                                        };
+                                    }
+                                    <span class="badge bg-@badgeColor">@grade</span>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle-fill"></i> You don't have any exam results yet.
+                </div>
+            }
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">Last updated: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</small>
+        </div>
+    </div>
 </div>

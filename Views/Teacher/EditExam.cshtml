@@ -1,39 +1,54 @@
 @model EditExamVM
 
-<div class="container mt-4">
-    <h2>Edit Exam Result</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">📝 Edit Exam Result</h3>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <form asp-action="EditExam" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Nid" />
+                        <input type="hidden" asp-for="SchoolNumber" />
+                        <input type="hidden" asp-for="Lesson" />
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Student</label>
+                            <input asp-for="StudentName" class="form-control form-control-lg" readonly />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Lesson</label>
+                            <input asp-for="Lesson" class="form-control form-control-lg" readonly />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Points</label>
+                            <input asp-for="Points" type="number" class="form-control form-control-lg" min="0" max="100" required />
+                            <span asp-validation-for="Points" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-lg me-2"></i>Update
+                            </button>
+                            <a asp-action="ViewExams" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-arrow-left me-2"></i>Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    }
-
-    <form asp-action="EditExam" method="post">
-        @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="Nid" />
-        <input type="hidden" asp-for="SchoolNumber" />
-        <input type="hidden" asp-for="Lesson" />
-
-        <div class="mb-3">
-            <label class="form-label">Student</label>
-            <input asp-for="StudentName" class="form-control" readonly />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Lesson</label>
-            <input asp-for="Lesson" class="form-control" readonly />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Points</label>
-            <input asp-for="Points" type="number" class="form-control" min="0" max="100" required />
-            <span asp-validation-for="Points" class="text-danger"></span>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Update</button>
-        <a asp-action="ViewExams" class="btn btn-secondary">Back to List</a>
-    </form>
+    </div>
 </div>

@@ -1,17 +1,19 @@
-using Microsoft.AspNetCore.Mvc;
-using dershane.Data;
 using System.Linq;
+using dershane.Data;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace dershane.Controllers
 {
     public class AuthController : Controller
     {
         private readonly AppDbContext _context;
+
         public AuthController(AppDbContext context)
         {
             _context = context;
         }
+
         [HttpGet]
         public IActionResult Login()
         {
@@ -35,7 +37,9 @@ namespace dershane.Controllers
                 HttpContext.Session.SetString("fullname", user.firstname + " " + user.lastname);
                 HttpContext.Session.SetString("role", user.role);
 
-                Console.WriteLine($"User logged in: {user.firstname} {user.lastname}, Role: {user.role}");
+                Console.WriteLine(
+                    $"User logged in: {user.firstname} {user.lastname}, Role: {user.role}"
+                );
 
                 if (user.firstlogin)
                 {
@@ -71,6 +75,7 @@ namespace dershane.Controllers
             }
             return View();
         }
+
         [HttpPost]
         public IActionResult FirstLogin(string password)
         {
@@ -79,25 +84,34 @@ namespace dershane.Controllers
 
             if (user != null)
             {
-                user.password = BCrypt.Net.BCrypt.HashPassword(password);
-                user.firstlogin = false;
-                _context.SaveChanges();
-
-                if (user.role == "principal")
+                if (BCrypt.Net.BCrypt.Verify(password, user.password))
                 {
-                    return RedirectToAction("Index", "Principal");
-                }
-                else if (user.role == "teacher")
-                {
-                    return RedirectToAction("Index", "Teacher");
+                    ViewBag.Hata = "New password cannot be the same as the current one";
+                    return View();
                 }
                 else
                 {
-                    return RedirectToAction("Index", "Home");
+                    // Hash and save the new password
+                    user.password = BCrypt.Net.BCrypt.HashPassword(password);
+                    user.firstlogin = false;
+                    _context.SaveChanges();
+
+                    Console.WriteLine($"New hash: {user.password}");
+
+                    // Redirect based on user role
+                    return RedirectToAction(
+                        "Index",
+                        user.role switch
+                        {
+                            "principal" => "Principal",
+                            "teacher" => "Teacher",
+                            _ => "Home",
+                        }
+                    );
                 }
             }
 
-            ViewBag.Hata = "User not found!";
+            ViewBag.Hata = "User not found";
             return View();
         }
 

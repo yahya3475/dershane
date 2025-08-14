@@ -1,34 +1,48 @@
-
 @model List<ExamGroupVM>
 
-<div class="container mt-4">
-    <h2>Exam Results</h2>
-
-    @foreach (var group in Model)
-    {
-        <h3>@group.Lesson</h3>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Student Number</th>
-                    <th>Student Name</th>
-                    <th>Points</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var result in group.ExamResults)
-                {
-                    <tr>
-                        <td>@result.StudentNumber</td>
-                        <td>@result.StudentName</td>
-                        <td>@result.Points</td>
-                        <td>
-                            <a asp-action="EditExam" asp-route-nid="@result.Nid" class="btn btn-primary btn-sm">Edit</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0"><i class="bi bi-clipboard-data me-2"></i>Exam Results</h2>
+        </div>
+        <div class="card-body">
+            @foreach (var group in Model)
+            {
+                <div class="mb-4">
+                    <h3 class="text-primary"><i class="bi bi-book me-2"></i>@group.Lesson</h3>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Student Number</th>
+                                    <th>Student Name</th>
+                                    <th>Points</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var result in group.ExamResults)
+                                {
+                                    <tr>
+                                        <td>@result.StudentNumber</td>
+                                        <td>@result.StudentName</td>
+                                        <td>
+                                            <span class="badge bg-@(result.Points >= 50 ? "success" : "danger") rounded-pill">
+                                                @result.Points
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a asp-action="EditExam" asp-route-nid="@result.Nid" class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-pencil-square me-1"></i>Edit
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>
