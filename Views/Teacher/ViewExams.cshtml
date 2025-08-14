@@ -1,31 +1,34 @@
-@model List<dershane.Models.ExamGroupVM>
 
-@{
-    ViewData["Title"] = "Exam Results";
-}
+@model List<ExamGroupVM>
 
-<h2>Exam Results</h2>
+<div class="container mt-4">
+    <h2>Exam Results</h2>
 
-@foreach (var group in Model)
-{
-    <h4>Lesson: @group.Lesson</h4>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Student Number</th>
-                <th>Student Name</th>
-                <th>Points</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var exam in group.ExamResults)
-        {
-            <tr>
-                <td>@exam.StudentNumber</td>
-                <td>@exam.StudentName</td>
-                <td>@exam.Points</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+    @foreach (var group in Model)
+    {
+        <h3>@group.Lesson</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Student Number</th>
+                    <th>Student Name</th>
+                    <th>Points</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var result in group.ExamResults)
+                {
+                    <tr>
+                        <td>@result.StudentNumber</td>
+                        <td>@result.StudentName</td>
+                        <td>@result.Points</td>
+                        <td>
+                            <a asp-action="EditExam" asp-route-nid="@result.Nid" class="btn btn-primary btn-sm">Edit</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

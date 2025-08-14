@@ -16,12 +16,4 @@ namespace dershane.Models
         public string Lesson { get; set; }
         public List<ExamResultVM> ExamResults { get; set; }
     }
-
-    public class ExamResultVM
-    {
-        public string StudentNumber { get; set; }
-        public string StudentName { get; set; }
-        public int Points { get; set; }
-    }
-
 }
