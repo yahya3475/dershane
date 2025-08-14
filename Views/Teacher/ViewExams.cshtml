@@ -1,0 +1,31 @@
+@model List<dershane.Models.ExamGroupVM>
+
+@{
+    ViewData["Title"] = "Exam Results";
+}
+
+<h2>Exam Results</h2>
+
+@foreach (var group in Model)
+{
+    <h4>Lesson: @group.Lesson</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Student Number</th>
+                <th>Student Name</th>
+                <th>Points</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var exam in group.ExamResults)
+        {
+            <tr>
+                <td>@exam.StudentNumber</td>
+                <td>@exam.StudentName</td>
+                <td>@exam.Points</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

@@ -101,6 +101,39 @@ namespace dershane.Controllers
 
             return View(students);
         }
+        public IActionResult ViewExams()
+        {
+            var role = HttpContext.Session.GetString("role");
+            if (role != "teacher")
+                return Unauthorized();
 
+            var teacherNumber = HttpContext.Session.GetString("schoolnumber");
+
+            var teacherClass = _context.Classes
+                .Where(c => c.Student == teacherNumber && c.IsTeacher)
+                .Select(c => c.UClass)
+                .FirstOrDefault();
+
+            if (teacherClass == null)
+                return Content("Teacher's class not found.");
+
+            var groupedExams = (from exam in _context.notes
+                                join cls in _context.Classes on exam.schoolnumber equals cls.Student
+                                join student in _context.users on exam.schoolnumber equals student.dershaneid
+                                where cls.UClass == teacherClass
+                                group new { exam, student } by exam.lesson into g
+                                select new ExamGroupVM
+                                {
+                                    Lesson = g.Key,
+                                    ExamResults = g.Select(x => new ExamResultVM
+                                    {
+                                        StudentNumber = x.exam.schoolnumber,
+                                        StudentName = x.student.firstname + " " + x.student.lastname,
+                                        Points = x.exam.points
+                                    }).ToList()
+                                }).ToList();
+
+            return View(groupedExams);
+        }
     }
 }
