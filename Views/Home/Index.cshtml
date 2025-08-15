@@ -22,7 +22,8 @@
             </h5>
 
             <p class="lead text-muted mx-auto mb-4" style="max-width: 600px;">
-                Access your personalized dashboard to view exams, manage classes, or oversee the institution based on your role.
+                Access your personalized dashboard to view exams, manage classes, or oversee the institution based on
+                your role.
             </p>
 
             <div class="alert alert-info mb-4 shadow-sm rounded-3">
@@ -38,21 +39,163 @@
                         </a>
                         break;
                     case "TEACHER":
-                        <a asp-controller="Teacher" asp-action="Index" class="btn btn-lg btn-warning rounded-pill px-4 shadow-sm">
+                        <a asp-controller="Teacher" asp-action="Index"
+                            class="btn btn-lg btn-warning rounded-pill px-4 shadow-sm">
                             <i class="bi bi-person-workspace me-2"></i>Teacher Panel
                         </a>
                         break;
                     case "PRİNCİPAL":
-                        <a asp-controller="Principal" asp-action="Index" class="btn btn-lg btn-warning rounded-pill px-4 shadow-sm">
+                        <a asp-controller="Principal" asp-action="Index"
+                            class="btn btn-lg btn-warning rounded-pill px-4 shadow-sm">
                             <i class="bi bi-building me-2"></i>Principal Panel
                         </a>
                         break;
                 }
 
-                <a asp-controller="Auth" asp-action="Logout" class="btn btn-lg btn-outline-danger rounded-pill px-4 shadow-sm">
+                <a asp-controller="Auth" asp-action="Logout"
+                    class="btn btn-lg btn-outline-danger rounded-pill px-4 shadow-sm">
                     <i class="bi bi-box-arrow-right me-2"></i>Logout
                 </a>
             </div>
         </div>
+    </div>
+
+    <div class="row mt-4">
+        @switch (role)
+        {
+            case "STUDENT":
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-calendar-check me-2"></i>Upcoming Exams</h5>
+                            <p class="card-text">View your upcoming exam schedule.</p>
+                            <a href="#" class="btn btn-outline-primary">View Schedule</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-graph-up me-2"></i>Performance</h5>
+                            <p class="card-text">Check your academic performance.</p>
+                            <a href="#" class="btn btn-outline-primary">View Performance</a>
+                        </div>
+                    </div>
+                </div>
+                break;
+            case "TEACHER":
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-people me-2"></i>My Classes</h5>
+                            <p class="card-text">Manage your classes and students.</p>
+                            <a href="#" class="btn btn-outline-warning">View Classes</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-file-earmark-text me-2"></i>Exam Management</h5>
+                            <p class="card-text">Create and manage exams.</p>
+                            <a href="#" class="btn btn-outline-warning">Manage Exams</a>
+                        </div>
+                    </div>
+                </div>
+                break;
+            case "PRİNCİPAL":
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-bar-chart me-2"></i>School Analytics</h5>
+                            <p class="card-text">View overall school performance.</p>
+                            <a href="#" class="btn btn-outline-warning">View Analytics</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-gear me-2"></i>School Settings</h5>
+                            <p class="card-text">Manage school-wide settings.</p>
+                            <a href="#" class="btn btn-outline-warning">Manage Settings</a>
+                        </div>
+                    </div>
+                </div>
+                break;
+        }
+    </div>
+
+    <div class="mt-4">
+        <h4 class="mb-3"><i class="bi bi-megaphone me-2"></i>Announcements</h4>
+        <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">Important Update</h5>
+                    <small>3 days ago</small>
+                </div>
+                <p class="mb-1">New features have been added to the system.</p>
+            </a>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        @switch (role)
+        {
+            case "STUDENT":
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Average Grade</h5>
+                            <p class="card-text display-4">85.5</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Attendance Rate</h5>
+                            <p class="card-text display-4">98%</p>
+                        </div>
+                    </div>
+                </div>
+                break;
+            case "TEACHER":
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Students</h5>
+                            <p class="card-text display-4">120</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Upcoming Exams</h5>
+                            <p class="card-text display-4">3</p>
+                        </div>
+                    </div>
+                </div>
+                break;
+            case "PRİNCİPAL":
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-danger text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Teachers</h5>
+                            <p class="card-text display-4">25</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-secondary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Students</h5>
+                            <p class="card-text display-4">500</p>
+                        </div>
+                    </div>
+                </div>
+                break;
+        }
     </div>
 </div>
