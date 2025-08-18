@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace dershane.Models
 {
@@ -35,10 +36,21 @@ namespace dershane.Models
         [DataType(DataType.Time)]
         public string EndTime { get; set; }
     }
-    
+
     public class Lesson
     {
         public int Id { get; set; }
         public string Name { get; set; }
+    }
+
+    public class ScheduleViewModel
+    {
+        public int Id { get; set; }
+        public string Lesson { get; set; }
+        public string UClass { get; set; }
+        public int Day { get; set; }
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
+        public string TeacherName { get; set; }
     }
 }

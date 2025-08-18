@@ -218,6 +218,37 @@ namespace dershane.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        [RoleAuthorize("student")]
+        public async Task<IActionResult> ViewSchedule()
+        {
+            var schedules = await _context
+                .Schedules.OrderBy(s => s.Day)
+                .ThenBy(s => s.StartTime)
+                .ToListAsync();
+
+            var teacherIds = schedules.Select(s => s.TeacherId).Distinct().ToList();
+            var teachers = await _context
+                .users.Where(u => teacherIds.Contains(u.dershaneid))
+                .ToDictionaryAsync(u => u.dershaneid, u => u);
+
+            var viewModel = schedules
+                .Select(s => new ScheduleViewModel
+                {
+                    Id = s.Id,
+                    Lesson = s.Lesson,
+                    UClass = s.UClass,
+                    Day = s.Day,
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime,
+                    TeacherName = teachers.ContainsKey(s.TeacherId)
+                        ? $"{teachers[s.TeacherId].firstname} {teachers[s.TeacherId].lastname}"
+                        : "Unknown",
+                })
+                .ToList();
+
+            return View(viewModel);
+        }
         // Diğer action'lar (Edit, Delete, vb.) buraya eklenebilir...
     }
 }

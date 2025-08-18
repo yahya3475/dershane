@@ -1,0 +1,52 @@
+@using dershane.Models
+@model List<ScheduleViewModel>
+
+@{
+    ViewData["Title"] = "View Schedule";
+
+    string[] days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+
+    var schedulesByDay = Model.GroupBy(s => s.Day).ToDictionary(g => g.Key, g => g.ToList());
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="bi bi-calendar-week me-2"></i>Weekly Schedule</h2>
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    @foreach (var day in days)
+                    {
+                        <th>@day</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @for (var hour = 8; hour < 18; hour++)
+                {
+                    <tr>
+                        <td>@($"{hour:D2}:00 - {hour + 1:D2}:00")</td>
+                        @for (var day = 0; day < 7; day++)
+                        {
+                            <td>
+                                @if (schedulesByDay.TryGetValue(day, out var daySchedules))
+                                {
+                                    foreach (var schedule in daySchedules.Where(s => s.StartTime.StartsWith($"{hour:D2}:")))
+                                    {
+                                        <div class="bg-primary text-white p-1 mb-1 rounded">
+                                            <small>@schedule.Lesson (@schedule.UClass)</small><br />
+                                            <small>@schedule.StartTime - @schedule.EndTime</small><br />
+                                            <small>Teacher: @schedule.TeacherName</small>
+                                        </div>
+                                    }
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
