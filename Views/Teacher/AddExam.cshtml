@@ -5,35 +5,39 @@
 
 <div class="container mt-4">
     <h2>📝 Add Exam</h2>
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
     <form asp-action="AddExam" method="post">
         @Html.AntiForgeryToken()
 
         <div class="mb-3">
-            <label class="form-label">Student</label>
+            <label asp-for="SchoolNumber" class="form-label"></label>
             <select asp-for="SchoolNumber" asp-items="Model.Students" class="form-select" required>
                 <option value="">-- Select Student --</option>
             </select>
+            <span asp-validation-for="SchoolNumber" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Lesson</label>
-            <input asp-for="Lesson" class="form-control" required />
+            <label asp-for="Lesson" class="form-label"></label>
+            <select asp-for="Lesson" asp-items="Model.Lessons" class="form-select" required>
+                <option value="">-- Select Lesson --</option>
+            </select>
+            <span asp-validation-for="Lesson" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Points</label>
+            <label asp-for="Points" class="form-label"></label>
             <input asp-for="Points" type="number" class="form-control" min="0" max="100" required />
+            <span asp-validation-for="Points" class="text-danger"></span>
         </div>
 
-        <button type="submit" class="btn btn-success">Save</button>
-        <a asp-action="Index" class="btn btn-secondary">Back</a>
+        <button type="submit" class="btn btn-primary">Add Exam</button>
     </form>
 </div>

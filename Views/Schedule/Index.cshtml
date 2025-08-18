@@ -1,0 +1,111 @@
+@model IEnumerable<dershane.Models.Schedule>
+
+@{
+    ViewData["Title"] = "Class Schedule";
+
+    string GetDayName(int day)
+    {
+        return day switch
+        {
+            0 => "Monday",
+            1 => "Tuesday",
+            2 => "Wednesday",
+            3 => "Thursday",
+            4 => "Friday",
+            5 => "Saturday",
+            6 => "Sunday",
+            _ => "Geçersiz Gün"
+        };
+    }
+}
+
+<div class="container-fluid mt-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title mb-4">
+                <i class="bi bi-calendar-week me-2"></i>Class Schedule
+            </h2>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>Add New Class
+                </a>
+                <div class="input-group w-50">
+                    <input type="text" class="form-control" placeholder="Search..." id="scheduleSearch">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover" id="scheduleTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Lesson</th>
+                            <th>Teacher ID</th>
+                            <th>Class</th>
+                            <th>Day</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Lesson</td>
+                                <td>@item.TeacherId</td>
+                                <td><span class="badge bg-primary">@item.UClass</span></td>
+                                <td>@GetDayName(item.Day)</td>
+                                <td>@item.StartTime</td>
+                                <td>@item.EndTime</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id"
+                                            class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#scheduleSearch").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#scheduleTable tbody tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        .card {
+            border-radius: 15px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, .12), 0 4px 8px rgba(0, 0, 0, .06);
+        }
+
+        .table th,
+        .table td {
+            vertical-align: middle;
+        }
+    </style>
+}

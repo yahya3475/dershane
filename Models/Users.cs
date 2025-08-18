@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace dershane.Models
 {
     public class User

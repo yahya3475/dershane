@@ -10,5 +10,7 @@ namespace dershane.Data
         public DbSet<User> users { get; set; }
         public DbSet<UClass1> Classes { get; set; }
         public DbSet<Exams> notes { get; set; }
+        public DbSet<Schedule> Schedules { get; set; } // Yeni eklenen satır
+        public DbSet<Lesson> Lessons { get; set; }
     }
 }

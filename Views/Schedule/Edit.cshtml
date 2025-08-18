@@ -1,0 +1,75 @@
+@model dershane.Models.Schedule
+
+@{
+    ViewData["Title"] = "Edit Schedule";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-warning text-dark">
+            <h2 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Schedule</h2>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Lesson" class="form-label"></label>
+                        <select asp-for="Lesson" class="form-select" asp-items="ViewBag.Lessons">
+                            <option value="">Select Lesson</option>
+                        </select>
+                        <span asp-validation-for="Lesson" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="UClass" class="form-label"></label>
+                        <select asp-for="UClass" class="form-select" asp-items="ViewBag.Classes">
+                            <option value="">Select Class</option>
+                        </select>
+                        <span asp-validation-for="UClass" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Day" class="form-label"></label>
+                        <select asp-for="Day" class="form-select" asp-items="ViewBag.Days">
+                            <option value="">Select Day</option>
+                        </select>
+                        <span asp-validation-for="Day" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="StartTime" class="form-label"></label>
+                        <input asp-for="StartTime" class="form-control" type="time" />
+                        <span asp-validation-for="StartTime" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="EndTime" class="form-label"></label>
+                        <input asp-for="EndTime" class="form-control" type="time" />
+                        <span asp-validation-for="EndTime" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="TeacherId" class="form-label"></label>
+                        <select asp-for="TeacherId" class="form-select" asp-items="ViewBag.Teachers">
+                            <option value="">Select Teacher</option>
+                        </select>
+                        <span asp-validation-for="TeacherId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Back to List
+                    </a>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-save me-2"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
