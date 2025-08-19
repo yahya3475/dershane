@@ -1,0 +1,78 @@
+@model dershane.ViewModels.ViewSubmissionVM
+
+@{
+    ViewData["Title"] = "View Submission";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-lg">
+        <div class="card-header bg-info text-white">
+            <h2 class="mb-0"><i class="bi bi-file-text me-2"></i>Homework Submission Details</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4 class="text-primary">@Model.Title</h4>
+                    <p class="text-muted mb-3">@Model.Description</p>
+                    
+                    <div class="mb-4">
+                        <h5>Your Answer:</h5>
+                        <div class="border rounded p-3 bg-light">
+                            @Model.Answer
+                        </div>
+                    </div>
+                    
+                    @if (Model.Grade.HasValue)
+                    {
+                        <div class="alert alert-success">
+                            <h5><i class="bi bi-star-fill me-2"></i>Your Grade: @Model.Grade/100</h5>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-clock me-2"></i>Not graded yet
+                        </div>
+                    }
+                    
+                    @if (!string.IsNullOrEmpty(Model.TeacherComment))
+                    {
+                        <div class="mb-4">
+                            <h5>Teacher's Comment:</h5>
+                            <div class="border rounded p-3 bg-warning bg-opacity-10">
+                                <i class="bi bi-chat-quote me-2"></i>@Model.TeacherComment
+                            </div>
+                        </div>
+                    }
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Assignment Information</h6>
+                            <hr>
+                            <p><strong>Subject:</strong> @Model.Lesson</p>
+                            <p><strong>Due Date:</strong> @Model.DueDate.ToString("dd.MM.yyyy HH:mm")</p>
+                            <p><strong>Submission Date:</strong> @Model.SubmissionDate.ToString("dd.MM.yyyy HH:mm")</p>
+                            
+                            @if (Model.SubmissionDate > Model.DueDate)
+                            {
+                                <span class="badge bg-danger">Late Submission</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">On Time</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <a asp-action="ViewHomeworks" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Assignments
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

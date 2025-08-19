@@ -91,14 +91,12 @@ namespace dershane.Controllers
                 }
                 else
                 {
-                    // Hash and save the new password
                     user.password = BCrypt.Net.BCrypt.HashPassword(password);
                     user.firstlogin = false;
                     _context.SaveChanges();
 
                     Console.WriteLine($"New hash: {user.password}");
 
-                    // Redirect based on user role
                     return RedirectToAction(
                         "Index",
                         user.role switch

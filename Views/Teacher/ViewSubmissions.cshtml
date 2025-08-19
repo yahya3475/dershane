@@ -1,0 +1,171 @@
+
+@{
+    var homework = ViewBag.Homework as Homework;
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-info text-white">
+            <h3 class="mb-0">
+                <i class="bi bi-clipboard-check me-2"></i>
+                "@homework.Title" - Submitted Homeworks
+            </h3>
+            <small>Subject: @homework.Lesson | Due Date: @homework.DueDate.ToString("dd.MM.yyyy HH:mm")</small>
+        </div>
+        <div class="card-body">
+            @if (Model != null && ((IEnumerable<dynamic>)Model).Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Student Number</th>
+                                <th>Student Name</th>
+                                <th>Submission Date</th>
+                                <th>Status</th>
+                                <th>Grade</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var submission in (IEnumerable<dynamic>)Model)
+                            {
+                                <tr>
+                                    <td>@submission.StudentNumber</td>
+                                    <td>@submission.StudentName</td>
+                                    <td>
+                                        @((DateTime)submission.SubmissionDate)
+                                        @if ((DateTime)submission.SubmissionDate > homework.DueDate)
+                                        {
+                                            <span class="badge bg-danger ms-2">Late Submission</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (submission.IsGraded)
+                                        {
+                                            <span class="badge bg-success">Graded</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">Pending</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (submission.Grade != null)
+                                        {
+                                            <span class="badge bg-@(submission.Grade >= 50 ? "success" : "danger") rounded-pill">
+                                                @submission.Grade
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                data-bs-toggle="modal" data-bs-target="#submissionModal@(submission.Id)">
+                                            <i class="bi bi-eye me-1"></i>View
+                                        </button>
+                                        @if (!submission.IsGraded)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-success ms-1"
+                                                    data-bs-toggle="modal" data-bs-target="#gradeModal@(submission.Id)">
+                                                <i class="bi bi-star me-1"></i>Grade
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+
+                                <!-- Homework View Modal -->
+                                <div class="modal fade" id="submissionModal@(submission.Id)" tabindex="-1">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">@submission.StudentName - Homework Answer</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <h6 class="card-subtitle mb-2 text-muted">
+                                                            Submission Dat6e: @{
+    var submissionDate = submission.SubmissionDate as DateTime?;
+    @(submissionDate?.ToString("dd.MM.yyyy HH:mm") ?? "Not available")
+}
+                                                        </h6>
+                                                        <div class="border p-3 bg-light">
+                                                            @Html.Raw(submission.Answer.Replace("\n", "<br>"))
+                                                        </div>
+                                                        @if (!string.IsNullOrEmpty(submission.TeacherComment))
+                                                        {
+                                                            <hr>
+                                                            <h6>Teacher Comment:</h6>
+                                                            <div class="alert alert-info">
+                                                                @submission.TeacherComment
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Grading Modal -->
+                                @if (!submission.IsGraded)
+                                {
+                                    <div class="modal fade" id="gradeModal@(submission.Id)" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">@submission.StudentName - Grade Homework</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <form asp-action="GradeHomework" method="post">
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="submissionId" value="@submission.Id" />
+                                                        
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-bold">Grade (0-100)</label>
+                                                            <input type="number" name="grade" class="form-control" min="0" max="100" required />
+                                                        </div>
+                                                        
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-bold">Comment (Optional)</label>
+                                                            <textarea name="comment" class="form-control" rows="3" 
+                                                                     placeholder="Give feedback to the student..."></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-success">
+                                                            <i class="bi bi-check-lg me-2"></i>Grade
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning text-center" role="alert">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    No one has submitted homework yet! Students might be procrastinating 📚
+                </div>
+            }
+
+            <div class="mt-3">
+                <a asp-action="ViewHomeworks" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Homeworks
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

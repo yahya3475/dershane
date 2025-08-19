@@ -9,30 +9,30 @@ namespace dershane.Models
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Ders adı zorunludur.")]
-        [Display(Name = "Ders")]
+        [Required(ErrorMessage = "Lesson name is required.")]
+        [Display(Name = "Lesson")]
         public string Lesson { get; set; }
 
-        [Required(ErrorMessage = "Öğretmen ID zorunludur.")]
-        [Display(Name = "Öğretmen")]
+        [Required(ErrorMessage = "Teacher ID is required.")]
+        [Display(Name = "Teacher")]
         public string TeacherId { get; set; }
 
-        [Required(ErrorMessage = "Sınıf zorunludur.")]
-        [Display(Name = "Sınıf")]
+        [Required(ErrorMessage = "Class is required.")]
+        [Display(Name = "Class")]
         public string UClass { get; set; }
 
-        [Required(ErrorMessage = "Gün seçimi zorunludur.")]
-        [Range(0, 6, ErrorMessage = "Geçerli bir gün seçiniz.")]
-        [Display(Name = "Gün")]
+        [Required(ErrorMessage = "Day selection is required.")]
+        [Range(0, 6, ErrorMessage = "Please select a valid day.")]
+        [Display(Name = "Day")]
         public int Day { get; set; }
 
-        [Required(ErrorMessage = "Başlangıç saati zorunludur.")]
-        [Display(Name = "Başlangıç Saati")]
+        [Required(ErrorMessage = "Start time is required.")]
+        [Display(Name = "Start Time")]
         [DataType(DataType.Time)]
         public string StartTime { get; set; }
 
-        [Required(ErrorMessage = "Bitiş saati zorunludur.")]
-        [Display(Name = "Bitiş Saati")]
+        [Required(ErrorMessage = "End time is required.")]
+        [Display(Name = "End Time")]
         [DataType(DataType.Time)]
         public string EndTime { get; set; }
     }

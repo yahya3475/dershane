@@ -29,7 +29,6 @@ else
     app.UseDeveloperExceptionPage();
 }
 
-// 404 sayfası için bu satırı ekleyin
 app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
 app.UseHttpsRedirection();

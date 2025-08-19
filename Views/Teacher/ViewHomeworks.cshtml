@@ -1,0 +1,83 @@
+@model List<HomeworkListVM>
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-list-task me-2"></i>My Homeworks</h3>
+            <a asp-action="CreateHomework" class="btn btn-light">
+                <i class="bi bi-plus-circle me-2"></i>New Homework
+            </a>
+        </div>
+        <div class="card-body">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Title</th>
+                                <th>Subject</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Submissions</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var homework in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@homework.Title</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">@homework.Lesson</span>
+                                    </td>
+                                    <td>
+                                        @homework.DueDate.ToString("dd.MM.yyyy HH:mm")
+                                        @if (homework.DueDate < DateTime.Now)
+                                        {
+                                            <span class="badge bg-danger ms-2">Overdue</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (homework.IsActive)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary rounded-pill">@homework.SubmissionCount</span>
+                                    </td>
+                                    <td>
+                                        <a asp-action="ViewSubmissions" asp-route-homeworkId="@homework.Id" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye me-1"></i>View Submissions
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center" role="alert">
+                    <i class="bi bi-info-circle me-2"></i>You haven't created any homework yet! Go create one so your students can work.
+                </div>
+            }
+        </div>
+    </div>
+</div>

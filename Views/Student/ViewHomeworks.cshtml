@@ -1,0 +1,165 @@
+@model List<dershane.Models.HomeworkWithSubmissionVM>
+
+@{
+    ViewData["Title"] = "My Homeworks";
+}
+
+<div class="container-fluid mt-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title mb-4">
+                <i class="bi bi-journal-text me-2"></i>My Assignments
+            </h2>
+            
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <label for="lessonFilter" class="form-label">Subject Filter</label>
+                    <select class="form-select" id="lessonFilter" onchange="filterHomeworks()">
+                        <option value="">All Subjects</option>
+                        @if (ViewBag.Lessons != null)
+                        {
+                            @foreach (var lesson in (List<SelectListItem>)ViewBag.Lessons)
+                            {
+                                <option value="@lesson.Value">@lesson.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="statusFilter" class="form-label">Status Filter</label>
+                    <select class="form-select" id="statusFilter" onchange="filterHomeworks()">
+                        <option value="">All</option>
+                        <option value="submitted">Submitted</option>
+                        <option value="pending">Pending</option>
+                        <option value="overdue">Overdue</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row" id="homeworksContainer">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var homework in Model)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-4 homework-card" data-lesson="@homework.Lesson" data-status="@(homework.IsSubmitted ? "submitted" : (homework.DueDate < DateTime.Now ? "overdue" : "pending"))">
+                            <div class="card h-100 @(homework.IsSubmitted ? "border-success" : (homework.DueDate < DateTime.Now ? "border-danger" : "border-warning"))">
+                                <div class="card-header @(homework.IsSubmitted ? "bg-success" : (homework.DueDate < DateTime.Now ? "bg-danger" : "bg-warning")) text-white">
+                                    <h6 class="card-title mb-0">
+                                        <i class="bi bi-book me-2"></i>@homework.Lesson
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">@homework.Title</h5>
+                                    
+                                    @if (!string.IsNullOrEmpty(homework.Description))
+                                    {
+                                        <p class="card-text text-muted">@homework.Description</p>
+                                    }
+                                    
+                                    <div class="mb-3">
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar me-1"></i>
+                                            Due Date: @homework.DueDate.ToString("dd/MM/yyyy HH:mm")
+                                        </small>
+                                    </div>
+
+                                    @if (homework.IsSubmitted)
+                                    {
+                                        <div class="alert alert-success py-2">
+                                            <i class="bi bi-check-circle me-2"></i>
+                                            Submitted
+                                            @if (homework.SubmissionDate.HasValue)
+                                            {
+                                                <br>
+                                                <small>@homework.SubmissionDate.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                            }
+                                        </div>
+                                        
+                                        @if (homework.Grade.HasValue)
+                                        {
+                                            <div class="alert alert-info py-2">
+                                                <i class="bi bi-star me-2"></i>
+                                                Grade: @homework.Grade/100
+                                            </div>
+                                        }
+
+                                        @if (!string.IsNullOrEmpty(homework.TeacherComment))
+                                        {
+                                            <div class="alert alert-secondary py-2">
+                                                <i class="bi bi-chat-text me-2"></i>
+                                                <strong>Teacher's Comment:</strong><br>
+                                                @homework.TeacherComment
+                                            </div>
+                                        }
+                                    }
+                                    else if (homework.DueDate < DateTime.Now)
+                                    {
+                                        <div class="alert alert-danger py-2">
+                                            <i class="bi bi-exclamation-triangle me-2"></i>
+                                            Overdue
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="alert alert-warning py-2">
+                                            <i class="bi bi-clock me-2"></i>
+                                            Pending Submission
+                                        </div>
+                                    }
+                                </div>
+                                <div class="card-footer">
+                                    @if (!homework.IsSubmitted && homework.DueDate >= DateTime.Now)
+                                    {
+                                        <a asp-action="SubmitHomework" asp-route-id="@homework.Id" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-upload me-2"></i>Submit Assignment
+                                        </a>
+                                    }
+                                    else if (homework.IsSubmitted)
+                                    {
+                                        <a asp-action="ViewSubmission" asp-route-id="@homework.Id" class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-eye me-2"></i>View Submission
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            <i class="bi bi-info-circle me-2"></i>
+                            No assignments found yet.
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterHomeworks() {
+    const lessonFilter = document.getElementById('lessonFilter').value;
+    const statusFilter = document.getElementById('statusFilter').value;
+    const cards = document.querySelectorAll('.homework-card');
+    
+    cards.forEach(card => {
+        const cardLesson = card.getAttribute('data-lesson');
+        const cardStatus = card.getAttribute('data-status');
+        
+        let showCard = true;
+        
+        if (lessonFilter && cardLesson !== lessonFilter) {
+            showCard = false;
+        }
+        
+        if (statusFilter && cardStatus !== statusFilter) {
+            showCard = false;
+        }
+        
+        card.style.display = showCard ? 'block' : 'none';
+    });
+}
+</script>

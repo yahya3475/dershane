@@ -81,7 +81,6 @@ namespace dershane.Controllers
             );
         }
 
-        // GET: Schedule/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -120,7 +119,6 @@ namespace dershane.Controllers
             return View(schedule);
         }
 
-        // POST: Schedule/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
@@ -191,7 +189,6 @@ namespace dershane.Controllers
             return _context.Schedules.Any(e => e.Id == id);
         }
 
-        // GET: Schedule/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -208,7 +205,6 @@ namespace dershane.Controllers
             return View(schedule);
         }
 
-        // POST: Schedule/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -249,6 +245,5 @@ namespace dershane.Controllers
 
             return View(viewModel);
         }
-        // Diğer action'lar (Edit, Delete, vb.) buraya eklenebilir...
     }
 }

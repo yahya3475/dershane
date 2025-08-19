@@ -18,35 +18,35 @@
         <h2 class="mb-4"><i class="bi bi-person-circle me-2"></i>Welcome, @ViewBag.username</h2>
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="card text-white bg-primary shadow-sm">
+                <div class="card text-white bg-primary shadow-lg border-0">
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="card-title">Students</h5>
-                            <p class="card-text display-6">@ViewBag.StudentCount</p>
+                            <p class="card-text display-6 fw-bold">@ViewBag.StudentCount</p>
                         </div>
-                        <i class="bi bi-mortarboard display-4"></i>
+                        <i class="bi bi-mortarboard display-4 opacity-75"></i>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card text-white bg-success shadow-sm">
+                <div class="card text-white bg-success shadow-lg border-0">
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="card-title">Teachers</h5>
-                            <p class="card-text display-6">@ViewBag.TeacherCount</p>
+                            <p class="card-text display-6 fw-bold">@ViewBag.TeacherCount</p>
                         </div>
-                        <i class="bi bi-person-video3 display-4"></i>
+                        <i class="bi bi-person-video3 display-4 opacity-75"></i>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card text-white bg-warning shadow-sm">
+                <div class="card text-white bg-warning shadow-lg border-0">
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="card-title">Classes</h5>
-                            <p class="card-text display-6">@ViewBag.ClassCount</p>
+                            <p class="card-text display-6 fw-bold">@ViewBag.ClassCount</p>
                         </div>
-                        <i class="bi bi-diagram-3 display-4"></i>
+                        <i class="bi bi-diagram-3 display-4 opacity-75"></i>
                     </div>
                 </div>
             </div>
@@ -56,18 +56,122 @@
             <h3 class="mb-4"><i class="bi bi-graph-up me-2"></i>Quick Actions</h3>
             <div class="row g-4">
                 <div class="col-md-6">
-                    <a asp-action="AddUser" class="btn btn-outline-primary btn-lg w-100 d-flex align-items-center justify-content-between">
+                    <a asp-action="AddUser" class="btn btn-outline-primary btn-lg w-100 d-flex align-items-center justify-content-between shadow-sm">
                         <span><i class="bi bi-person-plus me-2"></i>Add New User</span>
                         <i class="bi bi-chevron-right"></i>
                     </a>
                 </div>
                 <div class="col-md-6">
-                    <a asp-action="Classes" class="btn btn-outline-success btn-lg w-100 d-flex align-items-center justify-content-between">
+                    <a asp-action="Classes" class="btn btn-outline-success btn-lg w-100 d-flex align-items-center justify-content-between shadow-sm">
                         <span><i class="bi bi-diagram-3 me-2"></i>Manage Classes</span>
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <a asp-action="List" asp-route-role="student" class="btn btn-outline-info btn-lg w-100 d-flex align-items-center justify-content-between shadow-sm">
+                        <span><i class="bi bi-mortarboard me-2"></i>View All Students</span>
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <a asp-action="List" asp-route-role="teacher" class="btn btn-outline-warning btn-lg w-100 d-flex align-items-center justify-content-between shadow-sm">
+                        <span><i class="bi bi-person-video3 me-2"></i>View All Teachers</span>
                         <i class="bi bi-chevron-right"></i>
                     </a>
                 </div>
             </div>
         </div>
+
+        <div class="mt-5">
+            <h3 class="mb-4"><i class="bi bi-activity me-2"></i>Recent Activity</h3>
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-3"><i class="bi bi-clock-history me-2"></i>Latest Registrations</h6>
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item border-0 px-0">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary rounded-circle p-2 me-3">
+                                            <i class="bi bi-person-plus text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">New student registered</h6>
+                                            <small class="text-muted">2 hours ago</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item border-0 px-0">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-success rounded-circle p-2 me-3">
+                                            <i class="bi bi-person-check text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">Teacher profile updated</h6>
+                                            <small class="text-muted">5 hours ago</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-3"><i class="bi bi-bar-chart me-2"></i>System Stats</h6>
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="text-center p-3 bg-secondary rounded">
+                                        <h4 class="text-primary mb-1">98%</h4>
+                                        <small class="text-muted">Attendance Rate</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center p-3 bg-secondary rounded">
+                                        <h4 class="text-success mb-1">85%</h4>
+                                        <small class="text-muted">Pass Rate</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center p-3 bg-secondary rounded">
+                                        <h4 class="text-warning mb-1">12</h4>
+                                        <small class="text-muted">Active Classes</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center p-3 bg-secondary rounded">
+                                        <h4 class="text-info mb-1">24</h4>
+                                        <small class="text-muted">Exams This Week</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    transition: all 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    transition: all 0.2s ease-in-out;
+}
+
+.list-group-item:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+    transition: all 0.2s ease-in-out;
+}
+</style>

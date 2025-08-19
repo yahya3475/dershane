@@ -166,7 +166,9 @@ namespace dershane.Controllers
         {
             if (ModelState.IsValid)
             {
-                var existingUser = _context.users.FirstOrDefault(u => u.dershaneid == user.dershaneid);
+                var existingUser = _context.users.FirstOrDefault(u =>
+                    u.dershaneid == user.dershaneid
+                );
                 if (existingUser == null)
                 {
                     return NotFound();
@@ -185,6 +187,7 @@ namespace dershane.Controllers
             ViewBag.Classes = _context.Classes.Select(c => c.UClass).Distinct().ToList();
             return View(user);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteUser(string id)
@@ -198,17 +201,16 @@ namespace dershane.Controllers
                 return NotFound();
             }
 
-            // Önce ilişkili sınıf kayıtlarını silelim
             var classRecords = _context.Classes.Where(c => c.Student == id);
             _context.Classes.RemoveRange(classRecords);
 
-            // Sonra kullanıcıyı silelim
             _context.users.Remove(user);
             _context.SaveChanges();
 
             TempData["Success"] = "User deleted successfully.";
             return RedirectToAction(nameof(List));
         }
+
         [HttpGet]
         public IActionResult EditClass(string className)
         {
@@ -227,9 +229,15 @@ namespace dershane.Controllers
                 {
                     ClassName = className,
                     NewClassName = className,
-                    Students = _context.users.Where(u => u.uclass == className && u.role == "student").ToList(),
-                    Teacher = _context.users.FirstOrDefault(u => u.uclass == className && u.role == "teacher"),
-                    TeacherId = _context.users.FirstOrDefault(u => u.uclass == className && u.role == "teacher")?.dershaneid
+                    Students = _context
+                        .users.Where(u => u.uclass == className && u.role == "student")
+                        .ToList(),
+                    Teacher = _context.users.FirstOrDefault(u =>
+                        u.uclass == className && u.role == "teacher"
+                    ),
+                    TeacherId = _context
+                        .users.FirstOrDefault(u => u.uclass == className && u.role == "teacher")
+                        ?.dershaneid,
                 };
 
                 ViewBag.AllTeachers = _context.users.Where(u => u.role == "teacher").ToList();
@@ -259,43 +267,50 @@ namespace dershane.Controllers
                 }
             }
 
-            var existingClassRecords = _context.Classes.Where(c => c.UClass == model.ClassName).ToList();
+            var existingClassRecords = _context
+                .Classes.Where(c => c.UClass == model.ClassName)
+                .ToList();
             if (!existingClassRecords.Any())
             {
                 return NotFound();
             }
 
-            // Update class name in Classes table
             foreach (var record in existingClassRecords)
             {
                 record.UClass = model.NewClassName;
             }
 
-            // Update teacher in Classes table
             var currentTeacherRecord = existingClassRecords.FirstOrDefault(c => c.IsTeacher);
             if (currentTeacherRecord != null)
             {
                 _context.Classes.Remove(currentTeacherRecord);
             }
 
-            var newTeacher = _context.users.FirstOrDefault(u => u.dershaneid == model.TeacherId && u.role == "teacher");
+            var newTeacher = _context.users.FirstOrDefault(u =>
+                u.dershaneid == model.TeacherId && u.role == "teacher"
+            );
             if (newTeacher != null)
             {
-                _context.Classes.Add(new UClass1
-                {
-                    UClass = model.NewClassName,
-                    Student = newTeacher.dershaneid,
-                    IsTeacher = true
-                });
+                _context.Classes.Add(
+                    new UClass1
+                    {
+                        UClass = model.NewClassName,
+                        Student = newTeacher.dershaneid,
+                        IsTeacher = true,
+                    }
+                );
                 newTeacher.uclass = model.NewClassName;
             }
 
-            // Update students' class in both Users and Classes tables
-            var studentsInClass = _context.users.Where(u => u.uclass == model.ClassName && u.role == "student");
+            var studentsInClass = _context.users.Where(u =>
+                u.uclass == model.ClassName && u.role == "student"
+            );
             foreach (var student in studentsInClass)
             {
                 student.uclass = model.NewClassName;
-                var studentClassRecord = existingClassRecords.FirstOrDefault(c => c.Student == student.dershaneid);
+                var studentClassRecord = existingClassRecords.FirstOrDefault(c =>
+                    c.Student == student.dershaneid
+                );
                 if (studentClassRecord != null)
                 {
                     studentClassRecord.UClass = model.NewClassName;
@@ -320,10 +335,8 @@ namespace dershane.Controllers
                 return NotFound();
             }
 
-            // Remove class records
             _context.Classes.RemoveRange(classRecords);
 
-            // Update users' class to null
             var usersInClass = _context.users.Where(u => u.uclass == className);
             foreach (var user in usersInClass)
             {
