@@ -11,6 +11,7 @@ namespace dershane.Models
         public string lesson { get; set; }
         public int points { get; set; }
     }
+
     public class ExamGroupVM
     {
         public string Lesson { get; set; }

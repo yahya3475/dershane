@@ -1,0 +1,213 @@
+@model TakeExamVM
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card shadow-lg">
+                <div class="card-header bg-warning text-dark">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">🎯 @Model.Title</h4>
+                        <div class="timer-display">
+                            <span class="badge bg-danger fs-6" id="timer">
+                                <i class="bi bi-clock"></i> <span id="timeLeft">@Model.Duration:00</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>📚 Lesson:</strong> @Model.Lesson<br>
+                        <strong>📝 Description:</strong> @Model.Description<br>
+                        <strong>⏱️ Duration:</strong> @Model.Duration minutes<br>
+                        <strong>🚨 Warning:</strong> Sayfa yenilenirse sınav sıfırlanır! Dikkatli ol! 😎
+                    </div>
+
+                    <form asp-action="SubmitExam" method="post" id="examForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="ExamId" />
+                        <input type="hidden" asp-for="StartTime" />
+
+                        @for (int i = 0; i < Model.Questions.Count; i++)
+                        {
+                            <div class="question-container mb-4 p-3 border rounded bg-light">
+                                <h5 class="text-primary">Question @(i + 1)</h5>
+                                <p class="fs-6 mb-3">@Model.Questions[i].QuestionText</p>
+
+                                <div class="options">
+                                    @{
+                                        var questionId = Model.Questions[i].Id;
+                                        var selectedAnswer = Model.StudentAnswers.ContainsKey(questionId) ? Model.StudentAnswers[questionId] : "";
+                                    }
+
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" 
+                                               name="StudentAnswers[@questionId]" 
+                                               value="A" 
+                                               id="q@(questionId)_A"
+                                               @(selectedAnswer == "A" ? "checked" : "") />
+                                        <label class="form-check-label" for="q@(questionId)_A">
+                                            <strong>A)</strong> @Model.Questions[i].OptionA
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" 
+                                               name="StudentAnswers[@questionId]" 
+                                               value="B" 
+                                               id="q@(questionId)_B"
+                                               @(selectedAnswer == "B" ? "checked" : "") />
+                                        <label class="form-check-label" for="q@(questionId)_B">
+                                            <strong>B)</strong> @Model.Questions[i].OptionB
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" 
+                                               name="StudentAnswers[@questionId]" 
+                                               value="C" 
+                                               id="q@(questionId)_C"
+                                               @(selectedAnswer == "C" ? "checked" : "") />
+                                        <label class="form-check-label" for="q@(questionId)_C">
+                                            <strong>C)</strong> @Model.Questions[i].OptionC
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" 
+                                               name="StudentAnswers[@questionId]" 
+                                               value="D" 
+                                               id="q@(questionId)_D"
+                                               @(selectedAnswer == "D" ? "checked" : "") />
+                                        <label class="form-check-label" for="q@(questionId)_D">
+                                            <strong>D)</strong> @Model.Questions[i].OptionD
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success btn-lg" onclick="return confirmSubmit()">
+                                <i class="bi bi-check-circle"></i> Submit Exam - No Going Back! 🚀
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow sticky-top">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">📊 Question Navigator</h6>
+                </div>
+                <div class="card-body">
+                    <div class="question-nav">
+                        @for (int i = 0; i < Model.Questions.Count; i++)
+                        {
+                            var questionId = Model.Questions[i].Id;
+                            var isAnswered = Model.StudentAnswers.ContainsKey(questionId);
+                            
+                            <button type="button" 
+                                    class="btn btn-sm @(isAnswered ? "btn-success" : "btn-outline-secondary") m-1 question-nav-btn" 
+                                    data-question="@i"
+                                    onclick="scrollToQuestion(@i)">
+                                @(i + 1)
+                            </button>
+                        }
+                    </div>
+                    
+                    <hr>
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: @(Model.StudentAnswers.Count * 100 / Model.Questions.Count)%">
+                        </div>
+                    </div>
+                    <small class="text-muted">
+                        Answered: @Model.StudentAnswers.Count / @Model.Questions.Count
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let timeLeft = @Model.Duration * 60; // Convert to seconds
+let examStartTime = new Date('@Model.StartTime.ToString("yyyy-MM-ddTHH:mm:ss")');
+let currentTime = new Date();
+
+// Calculate actual time left based on start time
+let elapsedSeconds = Math.floor((currentTime - examStartTime) / 1000);
+timeLeft = Math.max(0, timeLeft - elapsedSeconds);
+
+const timer = setInterval(function() {
+    if (timeLeft <= 0) {
+        clearInterval(timer);
+        alert('⏰ Time is up! Submitting your exam automatically...');
+        document.getElementById('examForm').submit();
+        return;
+    }
+    
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    
+    document.getElementById('timeLeft').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+    // Warning when 5 minutes left
+    if (timeLeft === 300) {
+        alert('⚠️ Warning: Only 5 minutes left!');
+        document.getElementById('timer').classList.add('bg-warning');
+        document.getElementById('timer').classList.remove('bg-danger');
+    }
+    
+    // Critical warning when 1 minute left
+    if (timeLeft === 60) {
+        alert('🚨 Critical: Only 1 minute left!');
+        document.getElementById('timer').classList.add('bg-danger');
+        document.getElementById('timer').classList.remove('bg-warning');
+    }
+    
+    timeLeft--;
+}, 1000);
+
+// Auto-save answers every 30 seconds
+setInterval(function() {
+    saveAnswers();
+}, 30000);
+
+function saveAnswers() {
+    // Bu fonksiyon cevapları otomatik olarak kaydeder
+    // AJAX ile backend'e gönderebiliriz
+    console.log('Auto-saving answers...');
+}
+
+// Prevent page refresh/close during exam
+window.addEventListener('beforeunload', function(e) {
+    e.preventDefault();
+    e.returnValue = 'Are you sure you want to leave? Your exam progress will be lost!';
+});
+
+// Disable right-click and F12
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+
+document.addEventListener('keydown', function(e) {
+    // Disable F12, Ctrl+Shift+I, Ctrl+U
+    if (e.key === 'F12' || 
+        (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+        (e.ctrlKey && e.key === 'u')) {
+        e.preventDefault();
+        alert('🚫 Developer tools are disabled during exam!');
+    }
+});
+
+// Submit form confirmation
+document.getElementById('examForm').addEventListener('submit', function(e) {
+    if (!confirm('Are you sure you want to submit your exam? You cannot change your answers after submission!')) {
+        e.preventDefault();
+    }
+});
+</script>

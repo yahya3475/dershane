@@ -1,0 +1,165 @@
+@model StudentExamResult
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3 class="mb-0">🎯 Exam Result</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Score Display -->
+                    <div class="text-center mb-4">
+                        @{
+                            var totalPoints = Model.Exam.Questions.Sum(q => q.Points);
+                            var percentage = totalPoints > 0 ? (Model.Score * 100.0 / totalPoints) : 0;
+                            var gradeClass = percentage >= 85 ? "success" : percentage >= 70 ? "warning" : percentage >= 50 ? "info" : "danger";
+                            var gradeEmoji = percentage >= 85 ? "🏆" : percentage >= 70 ? "😊" : percentage >= 50 ? "😐" : "😢";
+                        }
+                        
+                        <div class="score-display p-4 bg-@gradeClass bg-opacity-10 rounded">
+                            <h1 class="display-4 text-@gradeClass">@gradeEmoji @Model.Score / @totalPoints</h1>
+                            <h4 class="text-@gradeClass">@percentage.ToString("F1")%</h4>
+                        </div>
+                    </div>
+
+                    <!-- Exam Info -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <strong>📚 Exam:</strong> @Model.Exam.Title<br>
+                            <strong>📖 Lesson:</strong> @Model.Exam.Lesson<br>
+                            <strong>⏰ Started:</strong> @Model.StartTime.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                        <div class="col-md-6">
+                            <strong>✅ Completed:</strong> @Model.EndTime?.ToString("dd/MM/yyyy HH:mm")<br>
+                            <strong>⏱️ Duration:</strong> @((Model.EndTime - Model.StartTime)?.TotalMinutes.ToString("F0")) minutes<br>
+                            <strong>❓ Questions:</strong> @Model.Exam.Questions.Count
+                        </div>
+                    </div>
+
+                    <!-- Questions Review -->
+                    @{
+                        var studentAnswers = new Dictionary<int, string>();
+                        if (!string.IsNullOrEmpty(Model.Answers))
+                        {
+                            try
+                            {
+                                studentAnswers = System.Text.Json.JsonSerializer.Deserialize<Dictionary<int, string>>(Model.Answers);
+                            }
+                            catch
+                            {
+                                // JSON parse hatası varsa boş bırak
+                            }
+                        }
+                    }
+
+                    <div class="question-review">
+                        <h5 class="text-primary mb-3">📝 Question Review</h5>
+                        
+                        @{
+                            var questionNumber = 1;
+                        }
+                        @foreach (var question in Model.Exam.Questions.OrderBy(q => q.QuestionOrder))
+                        {
+                            var studentAnswer = studentAnswers.ContainsKey(question.Id) ? studentAnswers[question.Id] : "";
+                            var isCorrect = studentAnswer == question.CorrectAnswer;
+                            
+                            <div class="card mb-3 border-@(isCorrect ? "success" : "danger")">
+                                <div class="card-header bg-@(isCorrect ? "success" : "danger") bg-opacity-10">
+                                    <div class="d-flex justify-content-between">
+                                        <span><strong>Question @questionNumber</strong></span>
+                                        <span class="badge bg-@(isCorrect ? "success" : "danger")">
+                                            @(isCorrect ? "✅ Correct" : "❌ Wrong") 
+                                            (@question.Points pts)
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-3"><strong>@question.QuestionText</strong></p>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="option-item @GetOptionClass("A", question.CorrectAnswer, studentAnswer, isCorrect)">
+                                                <strong>A)</strong> @question.OptionA
+                                                @if (studentAnswer == "A") { <span class="badge bg-primary ms-2">Your Answer</span> }
+                                                @if (question.CorrectAnswer == "A") { <span class="badge bg-success ms-2">Correct</span> }
+                                            </div>
+                                            <div class="option-item @GetOptionClass("B", question.CorrectAnswer, studentAnswer, isCorrect)">
+                                                <strong>B)</strong> @question.OptionB
+                                                @if (studentAnswer == "B") { <span class="badge bg-primary ms-2">Your Answer</span> }
+                                                @if (question.CorrectAnswer == "B") { <span class="badge bg-success ms-2">Correct</span> }
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="option-item @GetOptionClass("C", question.CorrectAnswer, studentAnswer, isCorrect)">
+                                                <strong>C)</strong> @question.OptionC
+                                                @if (studentAnswer == "C") { <span class="badge bg-primary ms-2">Your Answer</span> }
+                                                @if (question.CorrectAnswer == "C") { <span class="badge bg-success ms-2">Correct</span> }
+                                            </div>
+                                            <div class="option-item @GetOptionClass("D", question.CorrectAnswer, studentAnswer, isCorrect)">
+                                                <strong>D)</strong> @question.OptionD
+                                                @if (studentAnswer == "D") { <span class="badge bg-primary ms-2">Your Answer</span> }
+                                                @if (question.CorrectAnswer == "D") { <span class="badge bg-success ms-2">Correct</span> }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            questionNumber++;
+                        }
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a asp-action="ViewExamSystem" class="btn btn-primary btn-lg">
+                            <i class="bi bi-arrow-left"></i> Back to Exams
+                        </a>
+                        <button onclick="window.print()" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-printer"></i> Print Result
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetOptionClass(string option, string correctAnswer, string studentAnswer, bool isCorrect)
+    {
+        if (correctAnswer == option)
+            return "correct-answer";
+        if (studentAnswer == option && !isCorrect)
+            return "wrong-answer";
+        return "";
+    }
+}
+
+<style>
+.correct-answer {
+    background-color: #d4edda;
+    border-left: 4px solid #28a745;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.wrong-answer {
+    background-color: #f8d7da;
+    border-left: 4px solid #dc3545;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.option-item {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    border: 1px solid #e9ecef;
+}
+
+@@media print {
+    .btn { display: none !important; }
+    .card { border: 1px solid #000 !important; }
+}
+</style>

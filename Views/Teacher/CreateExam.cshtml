@@ -1,0 +1,187 @@
+@model CreateExamVM
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">🎯 Create New Exam - Make Students Sweat!</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateExam" method="post" id="examForm">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Exam Title</label>
+                                <input asp-for="Title" class="form-control" placeholder="Örn: Matematik Ara Sınavı" />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Lesson</label>
+                                <select asp-for="Lesson" asp-items="Model.Lessons" class="form-select">
+                                    <option value="">Select Lesson</option>
+                                </select>
+                                <span asp-validation-for="Lesson" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Sınav açıklaması..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Exam Date</label>
+                                <input asp-for="ExamDate" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="ExamDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Duration (minutes)</label>
+                                <input asp-for="Duration" type="number" class="form-control" min="1" max="300" />
+                                <span asp-validation-for="Duration" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <h4 class="text-primary">📝 Questions</h4>
+                        
+                        <div id="questionsContainer">
+                            @for (int i = 0; i < Model.Questions.Count; i++)
+                            {
+                                <div class="question-block border rounded p-3 mb-3 bg-dark">
+                                    <h6 class="text-success">Question @(i + 1)</h6>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Question Text</label>
+                                        <textarea asp-for="Questions[i].QuestionText" class="form-control" rows="2"></textarea>
+                                        <span asp-validation-for="Questions[i].QuestionText" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <label class="form-label">Option A</label>
+                                            <input asp-for="Questions[i].OptionA" class="form-control" />
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label class="form-label">Option B</label>
+                                            <input asp-for="Questions[i].OptionB" class="form-control" />
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label class="form-label">Option C</label>
+                                            <input asp-for="Questions[i].OptionC" class="form-control" />
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label class="form-label">Option D</label>
+                                            <input asp-for="Questions[i].OptionD" class="form-control" />
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Correct Answer</label>
+                                            <select asp-for="Questions[i].CorrectAnswer" class="form-select">
+                                                <option value="">Select</option>
+                                                <option value="A">A</option>
+                                                <option value="B">B</option>
+                                                <option value="C">C</option>
+                                                <option value="D">D</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Points</label>
+                                            <input asp-for="Questions[i].Points" type="number" class="form-control" min="1" max="100" value="5" />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="text-center mb-4">
+                            <button type="button" class="btn btn-outline-primary" onclick="addQuestion()">
+                                <i class="bi bi-plus-circle"></i> Add Question
+                            </button>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-lg"></i> Create Exam - Let's Make Them Sweat! 😈
+                            </button>
+                            <a asp-action="ViewExamSystem" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to Exams
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let questionCount = @Model.Questions.Count;
+
+function addQuestion() {
+    // Bu JavaScript muhteşem olacak!
+    const container = document.getElementById('questionsContainer');
+    const questionHtml = `
+        <div class="question-block border rounded p-3 mb-3 bg-dark">
+            <h6 class="text-success">Question ${questionCount + 1}</h6>
+            
+            <div class="mb-3">
+                <label class="form-label">Question Text</label>
+                <textarea name="Questions[${questionCount}].QuestionText" class="form-control" rows="2"></textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <label class="form-label">Option A</label>
+                    <input name="Questions[${questionCount}].OptionA" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label">Option B</label>
+                    <input name="Questions[${questionCount}].OptionB" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label">Option C</label>
+                    <input name="Questions[${questionCount}].OptionC" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label">Option D</label>
+                    <input name="Questions[${questionCount}].OptionD" class="form-control" />
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <label class="form-label">Correct Answer</label>
+                    <select name="Questions[${questionCount}].CorrectAnswer" class="form-select">
+                        <option value="">Select</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Points</label>
+                    <input name="Questions[${questionCount}].Points" type="number" class="form-control" min="1" max="100" value="5" />
+                </div>
+            </div>
+            
+            <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeQuestion(this)">
+                <i class="bi bi-trash"></i> Remove Question
+            </button>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', questionHtml);
+    questionCount++;
+}
+
+function removeQuestion(button) {
+    button.closest('.question-block').remove();
+}
+</script>

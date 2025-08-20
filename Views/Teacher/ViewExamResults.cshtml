@@ -1,0 +1,349 @@
+@using dershane.ViewModels
+@model ViewExamResultsVM
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-primary">📊 Exam Results</h2>
+            <h4 class="text-muted">@Model.ExamTitle - @Model.Lesson</h4>
+        </div>
+        <a asp-action="ViewExamSystem" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Exams
+        </a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>@Model.TotalStudents</h3>
+                    <p class="mb-0">Total Students</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>@Model.CompletedCount</h3>
+                    <p class="mb-0">Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h3>@Model.AverageScore.ToString("F1")</h3>
+                    <p class="mb-0">Average Score</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3>@Model.HighestScore</h3>
+                    <p class="mb-0">Highest Score</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.StudentResults.Any())
+    {
+        <div class="card shadow">
+            <div class="card-header bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Student Results</h5>
+                    <button class="btn btn-outline-success btn-sm" onclick="exportToExcel()">
+                        <i class="bi bi-file-earmark-excel"></i> Export to Excel
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="resultsTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Rank</th>
+                                <th>Student</th>
+                                <th>Score</th>
+                                <th>Percentage</th>
+                                <th>Status</th>
+                                <th>Duration</th>
+                                <th>Completed At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var rank = 1;
+                            }
+                            @foreach (var result in Model.StudentResults.OrderByDescending(r => r.Score))
+                            {
+                                var percentage = Model.TotalPoints > 0 ? (result.Score * 100.0 / Model.TotalPoints) : 0;
+                                var statusClass = percentage >= 85 ? "success" : percentage >= 70 ? "warning" : percentage >= 50 ? "info" : "danger";
+                                var statusText = percentage >= 85 ? "Excellent" : percentage >= 70 ? "Good" : percentage >= 50 ? "Average" : "Poor";
+                                var duration = result.EndTime.HasValue ? (result.EndTime.Value - result.StartTime).TotalMinutes : 0;
+
+                                <tr>
+                                    <td>
+                                        @if (rank == 1)
+                                        {
+                                            <span class="badge bg-warning">🏆 @rank</span>
+                                        }
+                                        else if (rank == 2)
+                                        {
+                                            <span class="badge bg-secondary">🥈 @rank</span>
+                                        }
+                                        else if (rank == 3)
+                                        {
+                                            <span class="badge bg-warning">🥉 @rank</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light text-dark">@rank</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <strong>@result.StudentName</strong><br>
+                                        <small class="text-muted">@result.StudentId</small>
+                                    </td>
+                                    <td>
+                                        <span class="fs-5 fw-bold text-@statusClass">@result.Score</span>
+                                        <small class="text-muted">/ @Model.TotalPoints</small>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-@statusClass" 
+                                                 style="width: @percentage%">
+                                                @percentage.ToString("F1")%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@statusClass">@statusText</span>
+                                    </td>
+                                    <td>
+                                        @if (result.IsCompleted)
+                                        {
+                                            <span>@duration.ToString("F0") min</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">In Progress</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (result.EndTime.HasValue)
+                                        {
+                                            <span>@result.EndTime.Value.ToString("dd/MM HH:mm")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (result.IsCompleted)
+                                        {
+                                            <a asp-action="ViewStudentExamDetail" 
+                                               asp-route-resultId="@result.Id" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> View Details
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                                rank++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">📈 Score Distribution</h6>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="scoreChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">🎯 Performance Breakdown</h6>
+                    </div>
+                    <div class="card-body">
+                        @{
+                            var excellentCount = Model.StudentResults.Count(r => r.Score * 100.0 / Model.TotalPoints >= 85);
+                            var goodCount = Model.StudentResults.Count(r => r.Score * 100.0 / Model.TotalPoints >= 70 && r.Score * 100.0 / Model.TotalPoints < 85);
+                            var averageCount = Model.StudentResults.Count(r => r.Score * 100.0 / Model.TotalPoints >= 50 && r.Score * 100.0 / Model.TotalPoints < 70);
+                            var poorCount = Model.StudentResults.Count(r => r.Score * 100.0 / Model.TotalPoints < 50);
+                        }
+                        
+                        <div class="performance-stats">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>🏆 Excellent (85%+)</span>
+                                <span class="badge bg-success">@excellentCount</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>😊 Good (70-84%)</span>
+                                <span class="badge bg-warning">@goodCount</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>😐 Average (50-69%)</span>
+                                <span class="badge bg-info">@averageCount</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>😢 Poor (Less than 50%)</span>
+                                <span class="badge bg-danger">@poorCount</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="empty-state">
+                <i class="bi bi-clipboard-data display-1 text-muted"></i>
+                <h4 class="text-muted mt-3">No Results Yet</h4>
+                <p class="text-muted">Students haven't taken this exam yet. Be patient! 😎</p>
+            </div>
+        </div>
+    }
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+@if (Model.StudentResults.Any())
+{
+    <text>
+    const ctx = document.getElementById('scoreChart').getContext('2d');
+    const scoreData = @Html.Raw(Json.Serialize(Model.StudentResults.Select(r => r.Score).ToArray()));
+    const studentNames = @Html.Raw(Json.Serialize(Model.StudentResults.Select(r => r.StudentName.Split(' ')[0]).ToArray()));
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: studentNames,
+            datasets: [{
+                label: 'Score',
+                data: scoreData,
+                backgroundColor: scoreData.map(score => {
+                    const percentage = (score * 100) / @Model.TotalPoints;
+                    if (percentage >= 85) return 'rgba(40, 167, 69, 0.8)';
+                    if (percentage >= 70) return 'rgba(255, 193, 7, 0.8)';
+                    if (percentage >= 50) return 'rgba(23, 162, 184, 0.8)';
+                    return 'rgba(220, 53, 69, 0.8)';
+                }),
+                borderColor: scoreData.map(score => {
+                    const percentage = (score * 100) / @Model.TotalPoints;
+                    if (percentage >= 85) return 'rgba(40, 167, 69, 1)';
+                                        if (percentage >= 70) return 'rgba(255, 193, 7, 1)';
+                    if (percentage >= 50) return 'rgba(23, 162, 184, 1)';
+                    return 'rgba(220, 53, 69, 1)';
+                }),
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: 'Student Scores'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: @Model.TotalPoints,
+                    ticks: {
+                        stepSize: Math.ceil(@Model.TotalPoints / 10)
+                    }
+                }
+            }
+        }
+    });
+    </text>
+}
+
+function exportToExcel() {
+    const table = document.getElementById('resultsTable');
+    const wb = XLSX.utils.table_to_book(table, {sheet: "Exam Results"});
+    const examTitle = '@Model.ExamTitle'.replace(/[^a-zA-Z0-9]/g, '_');
+    XLSX.writeFile(wb, `${examTitle}_Results.xlsx`);
+}
+</script>
+
+<style>
+.performance-stats {
+    font-size: 0.95rem;
+}
+
+.empty-state {
+    padding: 3rem 0;
+}
+
+.progress {
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+
+.badge {
+    font-size: 0.8rem;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    font-weight: 600;
+}
+
+@@media (max-width: 768px) {
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .btn-group {
+        width: 100%;
+    }
+    
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+}
+</style>

@@ -12,6 +12,5 @@ namespace dershane.Models
         public string lastname { get; set; } = string.Empty;
         public string? uclass { get; set; } = string.Empty;
         public bool firstlogin { get; set; } = true;
-
     }
 }

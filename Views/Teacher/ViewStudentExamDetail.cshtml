@@ -1,0 +1,224 @@
+@model StudentExamResult
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-primary">👤 Student Exam Detail</h2>
+            <h4 class="text-muted">@Model.Student.firstname - @Model.Exam.Title</h4>
+        </div>
+        <a asp-action="ViewExamResults" asp-route-examId="@Model.ExamId" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Results
+        </a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">📊 Performance Summary</h5>
+                </div>
+                <div class="card-body">
+                    @{
+                        var totalPoints = Model.Exam.Questions.Sum(q => q.Points);
+                        var percentage = totalPoints > 0 ? (Model.Score * 100.0 / totalPoints) : 0;
+                        var gradeClass = percentage >= 85 ? "success" : percentage >= 70 ? "warning" : percentage >= 50 ? "info" : "danger";
+                        var gradeEmoji = percentage >= 85 ? "🏆" : percentage >= 70 ? "😊" : percentage >= 50 ? "😐" : "😢";
+                    }
+                    
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="metric-card">
+                                <h3 class="text-@gradeClass">@gradeEmoji @Model.Score</h3>
+                                <p class="text-muted">Score / @totalPoints</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="metric-card">
+                                <h3 class="text-@gradeClass">@percentage.ToString("F1")%</h3>
+                                <p class="text-muted">Percentage</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="metric-card">
+                                <h3 class="text-info">@((Model.EndTime - Model.StartTime)?.TotalMinutes.ToString("F0"))</h3>
+                                <p class="text-muted">Minutes Used</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="metric-card">
+                                @{
+                                    var studentAnswers = new Dictionary<int, string>();
+                                    if (!string.IsNullOrEmpty(Model.Answers))
+                                    {
+                                        studentAnswers = System.Text.Json.JsonSerializer.Deserialize<Dictionary<int, string>>(Model.Answers);
+                                    }
+                                    var correctAnswers = Model.Exam.Questions.Count(q => studentAnswers.ContainsKey(q.Id) && studentAnswers[q.Id] == q.CorrectAnswer);
+                                }
+                                <h3 class="text-success">@correctAnswers</h3>
+                                <p class="text-muted">Correct / @Model.Exam.Questions.Count</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">📅 Exam Details</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>Student ID:</strong> @Model.StudentId</p>
+                    <p><strong>Exam:</strong> @Model.Exam.Title</p>
+                    <p><strong>Lesson:</strong> @Model.Exam.Lesson</p>
+                    <p><strong>Started:</strong> @Model.StartTime.ToString("dd/MM/yyyy HH:mm")</p>
+                    <p><strong>Completed:</strong> @Model.EndTime?.ToString("dd/MM/yyyy HH:mm")</p>
+                    <p><strong>Duration Limit:</strong> @Model.Exam.Duration minutes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">📝 Question by Question Analysis</h5>
+        </div>
+        <div class="card-body">
+            @for (int i = 0; i < Model.Exam.Questions.Count; i++)
+            {
+                var question = Model.Exam.Questions.OrderBy(q => q.QuestionOrder).ElementAt(i);
+                var studentAnswer = studentAnswers.ContainsKey(question.Id) ? studentAnswers[question.Id] : "";
+                var isCorrect = studentAnswer == question.CorrectAnswer;
+                var wasAnswered = !string.IsNullOrEmpty(studentAnswer);
+                
+                <div class="question-analysis mb-4 p-3 border rounded 
+                     @(isCorrect ? "border-success bg-success bg-opacity-10" : 
+                       wasAnswered ? "border-danger bg-danger bg-opacity-10" : 
+                       "border-warning bg-warning bg-opacity-10")">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-primary mb-0">Question @(i + 1)</h6>
+                        <div>
+                            @if (isCorrect)
+                            {
+                                <span class="badge bg-success">✅ Correct (+@question.Points pts)</span>
+                            }
+                            else if (wasAnswered)
+                            {
+                                <span class="badge bg-danger">❌ Wrong (0 pts)</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning">⚠️ Not Answered (0 pts)</span>
+                            }
+                        </div>
+                    </div>
+                    
+                    <p class="mb-3"><strong>@question.QuestionText</strong></p>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="option-analysis 
+                                 @(question.CorrectAnswer == "A" ? "correct-option" : "")
+                                 @(studentAnswer == "A" && !isCorrect ? "wrong-option" : "")">
+                                <strong>A)</strong> @question.OptionA
+                                @if (studentAnswer == "A")
+                                {
+                                    <span class="badge bg-primary ms-2">Student's Answer</span>
+                                }
+                                @if (question.CorrectAnswer == "A")
+                                {
+                                    <span class="badge bg-success ms-2">✅ Correct</span>
+                                }
+                            </div>
+                            
+                            <div class="option-analysis 
+                                 @(question.CorrectAnswer == "B" ? "correct-option" : "")
+                                 @(studentAnswer == "B" && !isCorrect ? "wrong-option" : "")">
+                                <strong>B)</strong> @question.OptionB
+                                @if (studentAnswer == "B")
+                                {
+                                    <span class="badge bg-primary ms-2">Student's Answer</span>
+                                }
+                                @if (question.CorrectAnswer == "B")
+                                {
+                                    <span class="badge bg-success ms-2">✅ Correct</span>
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="option-analysis 
+                                 @(question.CorrectAnswer == "C" ? "correct-option" : "")
+                                 @(studentAnswer == "C" && !isCorrect ? "wrong-option" : "")">
+                                <strong>C)</strong> @question.OptionC
+                                @if (studentAnswer == "C")
+                                {
+                                    <span class="badge bg-primary ms-2">Student's Answer</span>
+                                }
+                                @if (question.CorrectAnswer == "C")
+                                {
+                                    <span class="badge bg-success ms-2">✅ Correct</span>
+                                }
+                            </div>
+                            
+                            <div class="option-analysis 
+                                 @(question.CorrectAnswer == "D" ? "correct-option" : "")
+                                 @(studentAnswer == "D" && !isCorrect ? "wrong-option" : "")">
+                                <strong>D)</strong> @question.OptionD
+                                @if (studentAnswer == "D")
+                                {
+                                    <span class="badge bg-primary ms-2">Student's Answer</span>
+                                }
+                                @if (question.CorrectAnswer == "D")
+                                {
+                                    <span class="badge bg-success ms-2">✅ Correct</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+.metric-card {
+    padding: 20px;
+    text-align: center;
+}
+
+.metric-card h3 {
+    font-size: 2rem;
+    font-weight: bold;
+        margin-bottom: 8px;
+}
+
+.option-analysis {
+    padding: 8px 12px;
+    margin: 4px 0;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+}
+
+.correct-option {
+    background-color: #d4edda !important;
+    border-left: 4px solid #28a745;
+}
+
+.wrong-option {
+    background-color: #f8d7da !important;
+    border-left: 4px solid #dc3545;
+}
+
+.question-analysis {
+    transition: all 0.3s ease;
+}
+
+.question-analysis:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+</style>

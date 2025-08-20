@@ -48,7 +48,7 @@ namespace dershane.Models
         public int Id { get; set; }
         public string Lesson { get; set; }
         public string UClass { get; set; }
-        public int Day { get; set; }
+        public int Day { get; set; } // Bu satır eksikti
         public string StartTime { get; set; }
         public string EndTime { get; set; }
         public string TeacherName { get; set; }

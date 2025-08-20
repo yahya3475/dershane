@@ -1,0 +1,192 @@
+@model List<dershane.Models.ExamSystem>
+
+@{
+    ViewData["Title"] = "Exam System Management";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">🎯 Exam System Management</h2>
+        <div class="d-flex gap-2">
+            <a asp-action="CreateExam" class="btn btn-success">
+                <i class="bi bi-plus-circle me-2"></i>Create New Exam
+            </a>
+            <a asp-action="ViewExams" class="btn btn-outline-primary">
+                <i class="bi bi-list me-2"></i>View Results
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row">
+            @foreach (var exam in Model)
+            {
+                var isUpcoming = exam.ExamDate > DateTime.Now;
+                var isActive = exam.ExamDate <= DateTime.Now && exam.ExamDate.AddMinutes(exam.Duration) > DateTime.Now;
+                var isExpired = exam.ExamDate.AddMinutes(exam.Duration) <= DateTime.Now;
+                
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm border-0 exam-card">
+                        <div class="card-header 
+                            @(isActive ? "bg-warning" : 
+                              isUpcoming ? "bg-info" : 
+                              isExpired ? "bg-success" : "bg-secondary") text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="card-title mb-0">📝 @exam.Title</h6>
+                                @if (isActive)
+                                {
+                                    <span class="badge bg-danger blink">🔴 LIVE</span>
+                                }
+                                else if (isUpcoming)
+                                {
+                                    <span class="badge bg-light text-dark">⏰ Upcoming</span>
+                                }
+                                else if (isExpired)
+                                {
+                                    <span class="badge bg-light text-dark">✅ Finished</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-dark">📋 Draft</span>
+                                }
+                            </div>
+                            <small class="opacity-75">📚 @exam.Lesson</small>
+                        </div>
+                        
+                        <div class="card-body">
+                            <p class="card-text text-muted">@exam.Description</p>
+                            
+                            <div class="exam-info mb-3">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="info-item">
+                                            <h6 class="text-primary mb-0">@exam.Questions.Count</h6>
+                                            <small class="text-muted">Questions</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="info-item">
+                                            <h6 class="text-warning mb-0">@exam.Duration</h6>
+                                            <small class="text-muted">Minutes</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="info-item">
+                                            <h6 class="text-info mb-0">@exam.StudentResults.Count</h6>
+                                            <small class="text-muted">Submissions</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="exam-schedule mb-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar"></i> <strong>Date:</strong> @exam.ExamDate.ToString("dd/MM/yyyy")<br>
+                                    <i class="bi bi-clock"></i> <strong>Time:</strong> @exam.ExamDate.ToString("HH:mm") - @exam.ExamDate.AddMinutes(exam.Duration).ToString("HH:mm")<br>
+                                    <i class="bi bi-people"></i> <strong>Class:</strong> @exam.UClass
+                                </small>
+                            </div>
+
+                            @if (exam.IsActive)
+                            {
+                                <div class="alert alert-success alert-sm">
+                                    <i class="bi bi-check-circle"></i> <strong>Active</strong>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-secondary alert-sm">
+                                    <i class="bi bi-pause-circle"></i> <strong>Inactive</strong>
+                                </div>
+                            }
+                        </div>
+                        
+                        <div class="card-footer bg-transparent">
+<div class="btn-group w-100" role="group">
+    <a asp-action="EditExamSystem" asp-route-examId="@exam.Id" 
+       class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-pencil"></i> Edit
+    </a>
+    <a asp-action="ViewExamResults" asp-route-examId="@exam.Id" 
+       class="btn btn-outline-info btn-sm">
+        <i class="bi bi-bar-chart"></i> Results
+    </a>
+    <form asp-action="DeleteExam" asp-route-examId="@exam.Id" method="post" 
+          class="d-inline" onsubmit="return confirm('Are you sure?');">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-trash"></i>
+        </button>
+    </form>
+</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="empty-state">
+                <i class="bi bi-clipboard-plus display-1 text-muted"></i>
+                <h4 class="text-muted mt-3">No Exams Created</h4>
+                <p class="text-muted">Create your first exam to get started! 📝</p>
+                <a asp-action="CreateExam" class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-circle me-2"></i>Create First Exam
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+.exam-card {
+    transition: all 0.3s ease;
+}
+
+.exam-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.info-item {
+    padding: 8px;
+}
+
+.info-item h6 {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.alert-sm {
+    padding: 8px 12px;
+    margin-bottom: 0;
+}
+
+.blink {
+    animation: blink 1s infinite;
+}
+
+@@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.5; }
+}
+</style>

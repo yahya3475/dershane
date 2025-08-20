@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
 using dershane.Data;
 using dershane.Filters;
 using dershane.Models;
@@ -290,7 +290,7 @@ namespace dershane.Controllers
                 {
                     StudentId = uc.User.dershaneid,
                     StudentName = $"{uc.User.firstname} {uc.User.lastname}",
-                    IsPresent = true, 
+                    IsPresent = true,
                 })
                 .ToList();
 
@@ -429,7 +429,7 @@ namespace dershane.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteExam(int nid)
+        public IActionResult DeleteExamResult(int nid)
         {
             if (HttpContext.Session.GetString("role") != "teacher")
                 return Unauthorized();
@@ -451,14 +451,14 @@ namespace dershane.Controllers
         [RoleAuthorize("teacher")]
         public IActionResult CreateHomework()
         {
-            var model = new CreateHomeworkVM();
+            var model = new ViewModels.CreateHomeworkVM();
 
             var lessons = _context
                 .Lessons.Select(l => new SelectListItem { Value = l.Name, Text = l.Name })
                 .ToList();
 
             model.Lessons = lessons;
-            model.DueDate = DateTime.Now.AddDays(7); 
+            model.DueDate = DateTime.Now.AddDays(7);
 
             return View(model);
         }
@@ -466,7 +466,7 @@ namespace dershane.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [RoleAuthorize("teacher")]
-        public async Task<IActionResult> CreateHomework(CreateHomeworkVM model)
+        public async Task<IActionResult> CreateHomework(ViewModels.CreateHomeworkVM model)
         {
             if (!ModelState.IsValid)
             {
@@ -547,7 +547,7 @@ namespace dershane.Controllers
                 from submission in _context.HomeworkSubmissions
                 join student in _context.users on submission.StudentId equals student.dershaneid
                 where submission.HomeworkId == homeworkId
-                select new SubmissionListVM 
+                select new SubmissionListVM
                 {
                     Id = submission.Id,
                     Answer = submission.Answer,
@@ -584,6 +584,411 @@ namespace dershane.Controllers
 
             TempData["Success"] = "Ödev başarıyla notlandı! Öğrenci şimdi ağlayacak 😈";
             return RedirectToAction("ViewSubmissions", new { homeworkId = submission.HomeworkId });
+        }
+
+        [HttpGet]
+        [RoleAuthorize("teacher")]
+        public IActionResult CreateExam()
+        {
+            var model = new CreateExamVM();
+            model.Lessons = _context
+                .Lessons.Select(l => new SelectListItem { Value = l.Name, Text = l.Name })
+                .ToList();
+
+            // Başlangıçta 5 soru ekleyelim - bu muhteşem olacak!
+            for (int i = 0; i < 5; i++)
+            {
+                model.Questions.Add(new ExamQuestionVM());
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [RoleAuthorize("teacher")]
+        public async Task<IActionResult> CreateExam(CreateExamVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model.Lessons = _context
+                    .Lessons.Select(l => new SelectListItem { Value = l.Name, Text = l.Name })
+                    .ToList();
+                return View(model);
+            }
+
+            var teacherId = HttpContext.Session.GetString("schoolnumber");
+            var teacherClass = _context
+                .Classes.Where(c => c.Student == teacherId && c.IsTeacher)
+                .Select(c => c.UClass)
+                .FirstOrDefault();
+
+            if (teacherClass == null)
+            {
+                TempData["Error"] = "Sınıf bilgin bulunamadı lan!";
+                return RedirectToAction("Index");
+            }
+
+            var exam = new ExamSystem
+            {
+                Title = model.Title,
+                Description = model.Description,
+                Lesson = model.Lesson,
+                UClass = teacherClass,
+                TeacherId = teacherId,
+                ExamDate = model.ExamDate,
+                Duration = model.Duration,
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+            };
+
+            _context.ExamSystem.Add(exam);
+            await _context.SaveChangesAsync();
+
+            // Soruları ekleyelim
+            for (int i = 0; i < model.Questions.Count; i++)
+            {
+                var questionVM = model.Questions[i];
+                if (!string.IsNullOrEmpty(questionVM.QuestionText))
+                {
+                    var examQuestion = new ExamQuestion
+                    {
+                        ExamId = exam.Id,
+                        QuestionText = questionVM.QuestionText,
+                        OptionA = questionVM.OptionA,
+                        OptionB = questionVM.OptionB,
+                        OptionC = questionVM.OptionC,
+                        OptionD = questionVM.OptionD,
+                        CorrectAnswer = questionVM.CorrectAnswer,
+                        Points = questionVM.Points,
+                        QuestionOrder = i + 1,
+                    };
+
+                    _context.ExamQuestions.Add(examQuestion);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Sınav başarıyla oluşturuldu! Öğrenciler ter dökecek şimdi 😈";
+            return RedirectToAction("ViewExamSystem");
+        }
+
+        [HttpGet]
+        [RoleAuthorize("teacher")]
+        public IActionResult ViewExamSystem()
+        {
+            var teacherId = HttpContext.Session.GetString("schoolnumber");
+            var teacherClass = _context
+                .Classes.Where(c => c.Student == teacherId && c.IsTeacher)
+                .Select(c => c.UClass)
+                .FirstOrDefault();
+
+            var exams = _context
+                .ExamSystem.Where(e => e.TeacherId == teacherId)
+                .Include(e => e.Questions)
+                .Include(e => e.StudentResults)
+                .OrderByDescending(e => e.CreatedDate)
+                .ToList();
+
+            return View(exams);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [RoleAuthorize("teacher")]
+        public async Task<IActionResult> DeleteExam(int examId)
+        {
+            var exam = await _context
+                .ExamSystem.Include(e => e.Questions)
+                .Include(e => e.StudentResults)
+                .FirstOrDefaultAsync(e => e.Id == examId);
+
+            if (exam == null)
+            {
+                TempData["Error"] = "Sınav bulunamadı lan!";
+                return RedirectToAction("ViewExamSystem");
+            }
+
+            // Öğretmenin kendi sınıfının sınavını sildiğinden emin ol
+            var teacherId = HttpContext.Session.GetString("schoolnumber");
+            var teacherClass = _context
+                .Classes.Where(c => c.Student == teacherId && c.IsTeacher)
+                .Select(c => c.UClass)
+                .FirstOrDefault();
+
+            if (exam.UClass != teacherClass)
+            {
+                TempData["Error"] = "Bu sınavı silme yetkin yok!";
+                return RedirectToAction("ViewExamSystem");
+            }
+
+            // Eğer öğrenciler sınava girmişse uyarı ver
+            if (exam.StudentResults.Any(r => r.IsCompleted))
+            {
+                TempData["Error"] = "Bu sınava öğrenciler girmiş! Artık silemezsin! 😈";
+                return RedirectToAction("ViewExamSystem");
+            }
+
+            try
+            {
+                // Önce student results'ları sil
+                _context.StudentExamResults.RemoveRange(exam.StudentResults);
+
+                // Sonra questions'ları sil
+                _context.ExamQuestions.RemoveRange(exam.Questions);
+
+                // Son olarak exam'ı sil
+                _context.ExamSystem.Remove(exam);
+
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Sınav başarıyla silindi! Öğrenciler rahat nefes aldı 😅";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Sınav silinirken hata oluştu: " + ex.Message;
+            }
+
+            return RedirectToAction("ViewExamSystem");
+        }
+
+        [HttpGet]
+        [RoleAuthorize("teacher")]
+        public async Task<IActionResult> EditExamSystem(int examId)
+        {
+            var exam = await _context
+                .ExamSystem.Include(e => e.Questions)
+                .FirstOrDefaultAsync(e => e.Id == examId);
+
+            if (exam == null)
+            {
+                TempData["Error"] = "Sınav bulunamadı!";
+                return RedirectToAction("ViewExamSystem");
+            }
+
+            var teacherId = HttpContext.Session.GetString("schoolnumber");
+            var teacherClass = _context
+                .Classes.Where(c => c.Student == teacherId && c.IsTeacher)
+                .Select(c => c.UClass)
+                .FirstOrDefault();
+
+            if (exam.UClass != teacherClass)
+            {
+                TempData["Error"] = "Bu sınavı düzenleme yetkin yok!";
+                return RedirectToAction("ViewExamSystem");
+            }
+
+            if (exam.ExamDate <= DateTime.Now)
+            {
+                TempData["Error"] = "Başlamış veya bitmiş sınavı düzenleyemezsin!";
+                return RedirectToAction("ViewExamSystem");
+            }
+
+            var viewModel = new CreateExamVM
+            {
+                Id = exam.Id,
+                Title = exam.Title,
+                Description = exam.Description,
+                Lesson = exam.Lesson,
+                ExamDate = exam.ExamDate,
+                Duration = exam.Duration,
+                Questions = exam
+                    .Questions.OrderBy(q => q.QuestionOrder)
+                    .Select(q => new ExamQuestionVM
+                    {
+                        Id = q.Id,
+                        ExamId = q.ExamId,
+                        QuestionText = q.QuestionText,
+                        OptionA = q.OptionA,
+                        OptionB = q.OptionB,
+                        OptionC = q.OptionC,
+                        OptionD = q.OptionD,
+                        CorrectAnswer = q.CorrectAnswer,
+                        Points = q.Points,
+                        QuestionOrder = q.QuestionOrder,
+                    })
+                    .ToList(),
+                Lessons = _context
+                    .Lessons.Select(l => new SelectListItem
+                    {
+                        Value = l.Name,
+                        Text = l.Name,
+                        Selected = l.Name == exam.Lesson,
+                    })
+                    .ToList(),
+            };
+
+            return View("CreateExam", viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [RoleAuthorize("teacher")]
+        public async Task<IActionResult> EditExamSystem(CreateExamVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model.Lessons = _context
+                    .Lessons.Select(l => new SelectListItem { Value = l.Name, Text = l.Name })
+                    .ToList();
+                return View("CreateExam", model);
+            }
+
+            var exam = await _context
+                .ExamSystem.Include(e => e.Questions)
+                .FirstOrDefaultAsync(e => e.Id == model.Id);
+
+            if (exam == null)
+            {
+                TempData["Error"] = "Sınav bulunamadı!";
+                return RedirectToAction("ViewExamSystem");
+            }
+
+            // Sınav başlamışsa düzenlemeye izin verme
+            if (exam.ExamDate <= DateTime.Now)
+            {
+                TempData["Error"] = "Başlamış sınavı düzenleyemezsin!";
+                return RedirectToAction("ViewExamSystem");
+            }
+
+            try
+            {
+                // Exam bilgilerini güncelle
+                exam.Title = model.Title;
+                exam.Description = model.Description;
+                exam.Lesson = model.Lesson;
+                exam.ExamDate = model.ExamDate;
+                exam.Duration = model.Duration;
+
+                // Eski soruları sil
+                _context.ExamQuestions.RemoveRange(exam.Questions);
+
+                // Yeni soruları ekle
+                for (int i = 0; i < model.Questions.Count; i++)
+                {
+                    var questionVM = model.Questions[i];
+                    var question = new ExamQuestion
+                    {
+                        ExamId = exam.Id,
+                        QuestionText = questionVM.QuestionText,
+                        OptionA = questionVM.OptionA,
+                        OptionB = questionVM.OptionB,
+                        OptionC = questionVM.OptionC,
+                        OptionD = questionVM.OptionD,
+                        CorrectAnswer = questionVM.CorrectAnswer,
+                        Points = questionVM.Points,
+                        QuestionOrder = i + 1,
+                    };
+                    _context.ExamQuestions.Add(question);
+                }
+
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Sınav başarıyla güncellendi! Öğrenciler yine ağlayacak 😈";
+                return RedirectToAction("ViewExamSystem");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Sınav güncellenirken hata oluştu: " + ex.Message;
+                model.Lessons = _context
+                    .Lessons.Select(l => new SelectListItem { Value = l.Name, Text = l.Name })
+                    .ToList();
+                return View("CreateExam", model);
+            }
+        }
+
+        [HttpGet]
+        [RoleAuthorize("teacher")]
+        public async Task<IActionResult> ViewExamResults(int examId)
+        {
+            var exam = await _context
+                .ExamSystem.Include(e => e.Questions)
+                .Include(e => e.StudentResults)
+                .ThenInclude(r => r.Student)
+                .FirstOrDefaultAsync(e => e.Id == examId);
+
+            if (exam == null)
+            {
+                TempData["Error"] = "Sınav bulunamadı!";
+                return RedirectToAction("ViewExamSystem");
+            }
+
+            // Öğretmenin kendi sınıfının sınavını görüntülediğinden emin ol
+            var teacherId = HttpContext.Session.GetString("schoolnumber");
+            var teacherClass = _context
+                .Classes.Where(c => c.Student == teacherId && c.IsTeacher)
+                .Select(c => c.UClass)
+                .FirstOrDefault();
+
+            if (exam.UClass != teacherClass)
+            {
+                TempData["Error"] = "Bu sınavın sonuçlarını görme yetkin yok!";
+                return RedirectToAction("ViewExamSystem");
+            }
+
+            var totalPoints = exam.Questions.Sum(q => q.Points);
+
+            // Sınıftaki tüm öğrencileri al
+            var classStudents = await _context
+                .users.Join(
+                    _context.Classes,
+                    u => u.dershaneid,
+                    c => c.Student,
+                    (u, c) => new { User = u, Class = c }
+                )
+                .Where(uc =>
+                    uc.User.role == "student"
+                    && uc.Class.UClass == teacherClass
+                    && !uc.Class.IsTeacher
+                )
+                .Select(uc => uc.User)
+                .ToListAsync();
+
+            // Sonuçları hazırla
+            var studentResults = new List<ExamResultDetailVM>();
+
+            foreach (var student in classStudents)
+            {
+                var result = exam.StudentResults.FirstOrDefault(r =>
+                    r.StudentId == student.dershaneid
+                );
+
+                studentResults.Add(
+                    new ExamResultDetailVM
+                    {
+                        Id = result?.Id ?? 0,
+                        StudentId = student.dershaneid,
+                        StudentName = $"{student.firstname} {student.lastname}",
+                        Score = result?.Score ?? 0,
+                        IsCompleted = result?.IsCompleted ?? false,
+                        StartTime = result?.StartTime ?? DateTime.MinValue,
+                        EndTime = result?.EndTime,
+                        Answers = result?.Answers,
+                        TotalPoints = totalPoints,
+                    }
+                );
+            }
+
+            var completedResults = studentResults.Where(r => r.IsCompleted).ToList();
+
+            var viewModel = new ViewExamResultsVM
+            {
+                ExamId = exam.Id,
+                ExamTitle = exam.Title,
+                Lesson = exam.Lesson,
+                ExamDate = exam.ExamDate,
+                Duration = exam.Duration,
+                TotalPoints = totalPoints,
+                TotalStudents = classStudents.Count,
+                CompletedCount = completedResults.Count,
+                AverageScore = completedResults.Any() ? completedResults.Average(r => r.Score) : 0,
+                HighestScore = completedResults.Any() ? completedResults.Max(r => r.Score) : 0,
+                LowestScore = completedResults.Any() ? completedResults.Min(r => r.Score) : 0,
+                StudentResults = studentResults,
+            };
+
+            return View(viewModel);
         }
     }
 }

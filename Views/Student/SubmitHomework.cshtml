@@ -1,5 +1,5 @@
 @using dershane.Models
-@model SubmitHomeworkVM
+@model dershane.Models.SubmitHomeworkVM
 
 <div class="container mt-4">
     <div class="row justify-content-center">
@@ -9,76 +9,50 @@
                     <h3 class="mb-0">📝 Submit Assignment</h3>
                 </div>
                 <div class="card-body">
-                    @* Debug information *@
-                    <div class="alert alert-secondary">
-                        <strong>Debug:</strong><br>
-                        Model is null: @(Model == null)<br>
-                        ViewData Model: @(ViewData["DebugModel"] != null)<br>
-                        ViewBag Homework: @(ViewBag.DebugHomework != null)<br>
-                        @if (Model != null)
-                        {
-                            <text>
-                            HomeworkId: @Model.HomeworkId<br>
-                            Title: @(Model.Title ?? "NULL")<br>
-                            DueDate: @Model.DueDate.ToString("yyyy-MM-dd HH:mm:ss")<br>
-                            DueDate Ticks: @Model.DueDate.Ticks<br>
-                            DueDate == MinValue: @(Model.DueDate == DateTime.MinValue)<br>
-                            Now: @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")<br>
-                            Is Expired: @(Model.DueDate < DateTime.Now)
-                            </text>
-                        }
-                        @if (ViewBag.DebugHomework != null)
-                        {
-                            var hw = ViewBag.DebugHomework as dershane.Models.Homework;
-                            <text>
-                            <br><strong>ViewBag Homework:</strong><br>
-                            ID: @hw.Id<br>
-                            Title: @hw.Title<br>
-                            DueDate: @hw.DueDate.ToString("yyyy-MM-dd HH:mm:ss")
-                            </text>
-                        }
-                    </div>
-
-                    @* Rest of the code remains the same *@
-                    <div class="alert alert-info">
-                        <h5><i class="bi bi-info-circle me-2"></i>@(Model?.Title ?? "No Title")</h5>
-                        <p><strong>Subject:</strong> @(Model?.Lesson ?? "No Subject")</p>
-                        <p><strong>Due Date:</strong> @(Model?.DueDate.ToString("dd.MM.yyyy HH:mm") ?? "No Date")</p>
-                        <hr>
-                        <p><strong>Description:</strong></p>
-                        <p>@(Model?.Description ?? "No Description")</p>
-                    </div>
-
                     @if (Model == null)
                     {
-                        <div class="alert alert-danger">Model is NULL!</div>
-                    }
-                    else if (Model.DueDate == DateTime.MinValue)
-                    {
-                        <div class="alert alert-warning">DueDate is MinValue!</div>
-                    }
-                    else if (Model.DueDate < DateTime.Now)
-                    {
-                        <div class="alert alert-danger">Assignment deadline has passed!</div>
+                        <div class="alert alert-danger">
+                            <h5><i class="bi bi-exclamation-triangle me-2"></i>Assignment Not Found</h5>
+                            <p>The assignment you're looking for could not be loaded. Please try again or contact your instructor.</p>
+                        </div>
                     }
                     else
                     {
-                        <form asp-action="SubmitHomework" method="post">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" asp-for="HomeworkId" />
+                        <div class="alert alert-info">
+                            <h5><i class="bi bi-info-circle me-2"></i>@Model.Title</h5>
+                            <p><strong>Subject:</strong> @Model.Lesson</p>
+                            <p><strong>Due Date:</strong> @Model.DueDate.ToString("dd.MM.yyyy HH:mm")</p>
+                            <hr>
+                            <p><strong>Description:</strong></p>
+                            <p>@Model.Description</p>
+                        </div>
 
-                            <div class="mb-4">
-                                <label asp-for="Answer" class="form-label fw-bold">Your Answer</label>
-                                <textarea asp-for="Answer" class="form-control" rows="10"></textarea>
-                                <span asp-validation-for="Answer" class="text-danger"></span>
+                        @if (Model.DueDate < DateTime.Now)
+                        {
+                            <div class="alert alert-danger">
+                                <h5><i class="bi bi-clock-history me-2"></i>Assignment Deadline Passed</h5>
+                                <p>Unfortunately, the deadline for this assignment has passed. You can no longer submit your work.</p>
                             </div>
+                        }
+                        else
+                        {
+                            <form asp-action="SubmitHomework" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" asp-for="HomeworkId" />
 
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-success btn-lg">
-                                    <i class="bi bi-check-lg me-2"></i>Submit Assignment
-                                </button>
-                            </div>
-                        </form>
+                                <div class="mb-4">
+                                    <label asp-for="Answer" class="form-label fw-bold">Your Answer</label>
+                                    <textarea asp-for="Answer" class="form-control" rows="10" placeholder="Write your detailed answer here..."></textarea>
+                                    <span asp-validation-for="Answer" class="text-danger"></span>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="bi bi-check-lg me-2"></i>Submit Assignment
+                                    </button>
+                                </div>
+                            </form>
+                        }
                     }
 
                     <div class="mt-3">

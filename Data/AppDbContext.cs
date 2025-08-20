@@ -1,12 +1,13 @@
 
-using Microsoft.EntityFrameworkCore;
 using dershane.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace dershane.Data
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options) { }
 
         public DbSet<User> users { get; set; }
         public DbSet<UClass1> Classes { get; set; }
@@ -16,5 +17,10 @@ namespace dershane.Data
         public DbSet<Attendance> Attendances { get; set; }
         public DbSet<Homework> Homeworks { get; set; }
         public DbSet<HomeworkSubmission> HomeworkSubmissions { get; set; }
+
+        // Yeni sınav sistemi tabloları - Bu muhteşem olacak!
+        public DbSet<ExamSystem> ExamSystem { get; set; }
+        public DbSet<ExamQuestion> ExamQuestions { get; set; }
+        public DbSet<StudentExamResult> StudentExamResults { get; set; }
     }
 }

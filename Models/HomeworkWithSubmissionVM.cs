@@ -1,4 +1,3 @@
-
 namespace dershane.Models
 {
     public class HomeworkWithSubmissionVM

@@ -1,4 +1,3 @@
-
 namespace dershane.ViewModels
 {
     public class SubmissionListVM

@@ -11,7 +11,7 @@ namespace dershane.Filters
         {
             _role = role;
         }
-        
+
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             var userRole = context.HttpContext.Session.GetString("role");

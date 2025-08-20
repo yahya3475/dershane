@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using dershane.Models;
 using dershane.Filters;
+using dershane.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace dershane.Controllers;
 
@@ -14,10 +14,10 @@ public class HomeController : Controller
     {
         _logger = logger;
     }
+
     [SessionAuthorizer]
     public IActionResult Index()
     {
-
         ViewBag.username = HttpContext.Session.GetString("fullname");
         ViewBag.role = HttpContext.Session.GetString("role");
         return View();
@@ -31,7 +31,9 @@ public class HomeController : Controller
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View(
+            new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier }
+        );
     }
 
     [Route("Error/{statusCode}")]
@@ -42,6 +44,8 @@ public class HomeController : Controller
             return View("NotFound");
         }
 
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View(
+            new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier }
+        );
     }
 }
