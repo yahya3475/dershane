@@ -18,7 +18,6 @@ namespace dershane.Data
         public DbSet<Homework> Homeworks { get; set; }
         public DbSet<HomeworkSubmission> HomeworkSubmissions { get; set; }
 
-        // Yeni sınav sistemi tabloları - Bu muhteşem olacak!
         public DbSet<ExamSystem> ExamSystem { get; set; }
         public DbSet<ExamQuestion> ExamQuestions { get; set; }
         public DbSet<StudentExamResult> StudentExamResults { get; set; }

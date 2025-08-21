@@ -168,7 +168,7 @@ namespace dershane.Controllers
                 select new ExamGroupVM
                 {
                     Lesson = g.Key,
-                    ExamResults = g.Select(x => new ExamResultVM
+                    ExamResults = g.Select(x => new dershane.Models.ExamResultVM
                         {
                             Nid = x.exam.nid,
                             StudentNumber = x.exam.schoolnumber,
@@ -595,7 +595,6 @@ namespace dershane.Controllers
                 .Lessons.Select(l => new SelectListItem { Value = l.Name, Text = l.Name })
                 .ToList();
 
-            // Başlangıçta 5 soru ekleyelim - bu muhteşem olacak!
             for (int i = 0; i < 5; i++)
             {
                 model.Questions.Add(new ExamQuestionVM());
@@ -645,7 +644,6 @@ namespace dershane.Controllers
             _context.ExamSystem.Add(exam);
             await _context.SaveChangesAsync();
 
-            // Soruları ekleyelim
             for (int i = 0; i < model.Questions.Count; i++)
             {
                 var questionVM = model.Questions[i];
@@ -710,7 +708,6 @@ namespace dershane.Controllers
                 return RedirectToAction("ViewExamSystem");
             }
 
-            // Öğretmenin kendi sınıfının sınavını sildiğinden emin ol
             var teacherId = HttpContext.Session.GetString("schoolnumber");
             var teacherClass = _context
                 .Classes.Where(c => c.Student == teacherId && c.IsTeacher)
@@ -723,7 +720,6 @@ namespace dershane.Controllers
                 return RedirectToAction("ViewExamSystem");
             }
 
-            // Eğer öğrenciler sınava girmişse uyarı ver
             if (exam.StudentResults.Any(r => r.IsCompleted))
             {
                 TempData["Error"] = "Bu sınava öğrenciler girmiş! Artık silemezsin! 😈";
@@ -732,13 +728,10 @@ namespace dershane.Controllers
 
             try
             {
-                // Önce student results'ları sil
                 _context.StudentExamResults.RemoveRange(exam.StudentResults);
 
-                // Sonra questions'ları sil
                 _context.ExamQuestions.RemoveRange(exam.Questions);
 
-                // Son olarak exam'ı sil
                 _context.ExamSystem.Remove(exam);
 
                 await _context.SaveChangesAsync();
@@ -845,7 +838,6 @@ namespace dershane.Controllers
                 return RedirectToAction("ViewExamSystem");
             }
 
-            // Sınav başlamışsa düzenlemeye izin verme
             if (exam.ExamDate <= DateTime.Now)
             {
                 TempData["Error"] = "Başlamış sınavı düzenleyemezsin!";
@@ -854,17 +846,14 @@ namespace dershane.Controllers
 
             try
             {
-                // Exam bilgilerini güncelle
                 exam.Title = model.Title;
                 exam.Description = model.Description;
                 exam.Lesson = model.Lesson;
                 exam.ExamDate = model.ExamDate;
                 exam.Duration = model.Duration;
 
-                // Eski soruları sil
                 _context.ExamQuestions.RemoveRange(exam.Questions);
 
-                // Yeni soruları ekle
                 for (int i = 0; i < model.Questions.Count; i++)
                 {
                     var questionVM = model.Questions[i];
@@ -914,7 +903,6 @@ namespace dershane.Controllers
                 return RedirectToAction("ViewExamSystem");
             }
 
-            // Öğretmenin kendi sınıfının sınavını görüntülediğinden emin ol
             var teacherId = HttpContext.Session.GetString("schoolnumber");
             var teacherClass = _context
                 .Classes.Where(c => c.Student == teacherId && c.IsTeacher)
@@ -929,7 +917,6 @@ namespace dershane.Controllers
 
             var totalPoints = exam.Questions.Sum(q => q.Points);
 
-            // Sınıftaki tüm öğrencileri al
             var classStudents = await _context
                 .users.Join(
                     _context.Classes,
@@ -945,7 +932,6 @@ namespace dershane.Controllers
                 .Select(uc => uc.User)
                 .ToListAsync();
 
-            // Sonuçları hazırla
             var studentResults = new List<ExamResultDetailVM>();
 
             foreach (var student in classStudents)

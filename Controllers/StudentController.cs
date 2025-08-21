@@ -1,4 +1,3 @@
-
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -119,7 +118,7 @@ namespace dershane.Controllers
             Console.WriteLine($"SubmitHomework GET action'ına girdi! ID: {id}");
 
             var homework = await _context.Homeworks.FindAsync(id);
-            Console.WriteLine($"Homework bulundu: {homework != null}");
+            Console.WriteLine($"EF Homework: {homework?.Title}");
 
             if (homework == null)
             {
@@ -171,14 +170,42 @@ namespace dershane.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [RoleAuthorize("student")]
-        public async Task<IActionResult> SubmitHomework(Models.SubmitHomeworkVM model)
+        public async Task<IActionResult> SubmitHomework(dershane.Models.SubmitHomeworkVM model)
         {
+            Console.WriteLine("=== POST METHOD DEBUG ===");
+            Console.WriteLine($"HomeworkId: {model.HomeworkId}");
+            Console.WriteLine($"Answer: '{model.Answer}'");
+            Console.WriteLine($"Answer Length: {model.Answer?.Length ?? 0}");
+
+            ModelState.Remove("Title");
+            ModelState.Remove("Description");
+            ModelState.Remove("Lesson");
+            ModelState.Remove("DueDate");
             ModelState.Remove("Grade");
             ModelState.Remove("TeacherComment");
+
             if (!ModelState.IsValid)
             {
+                Console.WriteLine("ModelState INVALID!");
+                foreach (var error in ModelState)
+                {
+                    Console.WriteLine(
+                        $"Key: {error.Key}, Errors: {string.Join(", ", error.Value.Errors.Select(e => e.ErrorMessage))}"
+                    );
+                }
+
+                var homework = await _context.Homeworks.FindAsync(model.HomeworkId);
+                if (homework != null)
+                {
+                    model.Title = homework.Title;
+                    model.Description = homework.Description;
+                    model.Lesson = homework.Lesson;
+                    model.DueDate = homework.DueDate;
+                }
                 return View(model);
             }
+
+            Console.WriteLine("ModelState VALID! Submission oluşturuluyor...");
 
             var studentId = HttpContext.Session.GetString("schoolnumber");
             var submission = new HomeworkSubmission
@@ -192,11 +219,14 @@ namespace dershane.Controllers
             _context.HomeworkSubmissions.Add(submission);
             await _context.SaveChangesAsync();
 
+            Console.WriteLine("Submission başarıyla kaydedildi!");
+
             TempData["Success"] =
                 "Ödev başarıyla teslim edildi! Şimdi bekle bakalım kaç alacaksın 😏";
             return RedirectToAction("ViewHomeworks");
         }
 
+        [RoleAuthorize("student")]
         [RoleAuthorize("student")]
         public async Task<IActionResult> ViewSubmission(int id)
         {
@@ -222,7 +252,7 @@ namespace dershane.Controllers
                 Answer = submission.Answer,
                 SubmissionDate = submission.SubmissionDate,
                 Grade = submission.Grade,
-                TeacherComment = submission.TeacherComment,
+                TeacherComment = submission.TeacherComment ?? string.Empty,
             };
 
             return View(model);
@@ -237,7 +267,6 @@ namespace dershane.Controllers
 
             var studentId = HttpContext.Session.GetString("schoolnumber");
 
-            // Öğrencinin sınıfını bul
             var studentClass = await _context
                 .Classes.Where(c => c.Student == studentId && !c.IsTeacher)
                 .Select(c => c.UClass)
@@ -249,7 +278,6 @@ namespace dershane.Controllers
                 return View(new StudentExamSystemVM());
             }
 
-            // Bu sınıfa ait sınavları getir
             var exams = await _context
                 .ExamSystem.Include(e => e.Questions)
                 .Include(e => e.StudentResults)
@@ -300,7 +328,6 @@ namespace dershane.Controllers
         {
             var studentId = HttpContext.Session.GetString("schoolnumber");
 
-            // Öğrenci daha önce bu sınavı aldı mı kontrol et
             var existingResult = _context.StudentExamResults.FirstOrDefault(r =>
                 r.ExamId == examId && r.StudentId == studentId
             );
@@ -321,7 +348,6 @@ namespace dershane.Controllers
                 return RedirectToAction("ViewExamSystem");
             }
 
-            // Sınav zamanı kontrolü
             if (DateTime.Now < exam.ExamDate)
             {
                 TempData["Error"] = "Sınav henüz başlamadı! Sabırlı ol 😎";
@@ -351,7 +377,6 @@ namespace dershane.Controllers
                     .ToList(),
             };
 
-            // Eğer öğrenci sınavı başlatmışsa ama tamamlamamışsa devam ettir
             if (existingResult != null && !existingResult.IsCompleted)
             {
                 model.StartTime = existingResult.StartTime;
@@ -364,7 +389,6 @@ namespace dershane.Controllers
             }
             else
             {
-                // Yeni sınav kaydı oluştur
                 var newResult = new StudentExamResult
                 {
                     ExamId = examId,
@@ -398,7 +422,6 @@ namespace dershane.Controllers
                 return RedirectToAction("ViewExamSystem");
             }
 
-            // Süre kontrolü - Bu çok önemli!
             var exam = _context
                 .ExamSystem.Include(e => e.Questions)
                 .FirstOrDefault(e => e.Id == model.ExamId);
@@ -409,10 +432,8 @@ namespace dershane.Controllers
                 TempData["Warning"] = "Süre doldu! Sınav otomatik olarak teslim edildi 😅";
             }
 
-            // Cevapları JSON olarak kaydet
             var answersJson = System.Text.Json.JsonSerializer.Serialize(model.StudentAnswers);
 
-            // Puanı hesapla - Bu muhteşem bir algoritma!
             int totalScore = 0;
             foreach (var question in exam.Questions)
             {
@@ -444,7 +465,6 @@ namespace dershane.Controllers
             if (string.IsNullOrEmpty(schoolNumber))
                 return RedirectToAction("Login", "Auth");
 
-            // Exam result'ı bul
             var result = _context
                 .StudentExamResults.Include(r => r.Exam)
                 .ThenInclude(e => e.Questions)

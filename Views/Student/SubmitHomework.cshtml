@@ -1,5 +1,30 @@
-@using dershane.Models
 @model dershane.Models.SubmitHomeworkVM
+
+<!-- DEBUG BİLGİLERİ -->
+<div class="alert alert-warning">
+    <h5>DEBUG BİLGİLERİ:</h5>
+    <p><strong>Model null mu:</strong> @(Model == null ? "EVET" : "HAYIR")</p>
+    @if (Model != null)
+    {
+        <p><strong>HomeworkId:</strong> @Model.HomeworkId</p>
+        <p><strong>Title:</strong> '@Model.Title' (Length: @(Model.Title?.Length ?? 0))</p>
+        <p><strong>Description:</strong> '@Model.Description' (Length: @(Model.Description?.Length ?? 0))</p>
+        <p><strong>Lesson:</strong> '@Model.Lesson' (Length: @(Model.Lesson?.Length ?? 0))</p>
+        <p><strong>DueDate:</strong> @Model.DueDate.ToString("dd.MM.yyyy HH:mm:ss")</p>
+        <p><strong>DueDate Ticks:</strong> @Model.DueDate.Ticks</p>
+    }
+    
+    @if (ViewBag.DebugHomework != null)
+    {
+        var hw = ViewBag.DebugHomework as dershane.Models.Homework;
+        <hr>
+        <h6>ViewBag Homework:</h6>
+        <p><strong>Title:</strong> '@hw.Title'</p>
+        <p><strong>Description:</strong> '@hw.Description'</p>
+        <p><strong>Lesson:</strong> '@hw.Lesson'</p>
+        <p><strong>DueDate:</strong> @hw.DueDate.ToString("dd.MM.yyyy HH:mm:ss")</p>
+    }
+</div>
 
 <div class="container mt-4">
     <div class="row justify-content-center">
@@ -9,6 +34,7 @@
                     <h3 class="mb-0">📝 Submit Assignment</h3>
                 </div>
                 <div class="card-body">
+                    
                     @if (Model == null)
                     {
                         <div class="alert alert-danger">

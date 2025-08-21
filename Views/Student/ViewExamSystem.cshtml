@@ -136,14 +136,14 @@
                         <div class="card-footer bg-transparent">
                             @if (exam.IsCompleted)
                             {
-                                <a asp-action="ExamResult" asp-route-resultId="@exam.Id" 
+                                <a asp-action="ExamResult" asp-route-examId="@exam.Id" 
                                    class="btn btn-success w-100">
                                     <i class="bi bi-bar-chart"></i> View Result
                                 </a>
                             }
                             else if (exam.CanTake)
                             {
-                                <a asp-action="TakeExam" asp-route-resultId="@exam.Id" 
+                                <a asp-action="TakeExam" asp-route-examId="@exam.Id" 
                                    class="btn btn-warning w-100 btn-pulse">
                                     <i class="bi bi-play-fill"></i> Take Exam Now!
                                 </a>

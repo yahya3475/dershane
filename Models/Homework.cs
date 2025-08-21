@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace dershane.Models
 {
@@ -39,6 +40,7 @@ namespace dershane.Models
         public bool IsActive { get; set; } = true;
 
         // Navigation properties
+        [NotMapped]
         public virtual ICollection<HomeworkSubmission> Submissions { get; set; }
     }
 }
