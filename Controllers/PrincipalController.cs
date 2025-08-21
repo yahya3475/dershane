@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using dershane.Data;
+using dershane.Filters;
 using dershane.Models;
+using dershane.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace dershane.Controllers
 {
@@ -15,20 +18,6 @@ namespace dershane.Controllers
         public PrincipalController(AppDbContext context)
         {
             _context = context;
-        }
-
-        [HttpGet]
-        public IActionResult Index()
-        {
-            if (HttpContext.Session.GetString("role") != "principal")
-                return Unauthorized();
-
-            ViewBag.StudentCount = _context.users.Count(u => u.role == "student");
-            ViewBag.TeacherCount = _context.users.Count(u => u.role == "teacher");
-            ViewBag.ClassCount = _context.Classes.Select(c => c.UClass).Distinct().Count();
-            ViewBag.username = HttpContext.Session.GetString("fullname");
-
-            return View();
         }
 
         [HttpGet]
@@ -225,7 +214,7 @@ namespace dershane.Controllers
                     return NotFound();
                 }
 
-                var viewModel = new EditClassViewModel
+                var viewModel = new dershane.Models.EditClassViewModel
                 {
                     ClassName = className,
                     NewClassName = className,
@@ -253,7 +242,7 @@ namespace dershane.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EditClass(EditClassViewModel model)
+        public IActionResult EditClass(Models.EditClassViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -347,6 +336,259 @@ namespace dershane.Controllers
 
             TempData["Success"] = "Class deleted successfully.";
             return RedirectToAction(nameof(Classes));
+        }
+
+        [HttpGet]
+        [RoleAuthorize("principal")]
+        public async Task<IActionResult> Index()
+        {
+            var model = new PrincipalDashboardVM();
+
+            // Temel istatistikler
+            model.TotalStudents = await _context.users.CountAsync(u => u.role == "student");
+            model.TotalTeachers = await _context.users.CountAsync(u => u.role == "teacher");
+            model.TotalClasses = await _context
+                .Classes.Select(c => c.UClass)
+                .Distinct()
+                .CountAsync();
+            model.TotalExams = await _context.ExamSystem.CountAsync();
+            model.TotalHomeworks = await _context.Homeworks.CountAsync();
+
+            // Sınıf istatistikleri
+            var classStats = await _context
+                .Classes.Where(c => !c.IsTeacher)
+                .GroupBy(c => c.UClass)
+                .Select(g => new ClassStatisticVM { ClassName = g.Key, StudentCount = g.Count() })
+                .ToListAsync();
+
+            // Her sınıf için ortalama hesapla
+            foreach (var classStat in classStats)
+            {
+                var classStudentIds = await _context
+                    .Classes.Where(c => c.UClass == classStat.ClassName && !c.IsTeacher)
+                    .Select(c => c.Student)
+                    .ToListAsync();
+
+                // Sınav ortalaması
+                var examScores = await _context
+                    .StudentExamResults.Where(r =>
+                        classStudentIds.Contains(r.StudentId) && r.IsCompleted
+                    )
+                    .Select(r => r.Score)
+                    .ToListAsync();
+
+                classStat.AverageScore = examScores.Any() ? examScores.Average() : 0;
+
+                // Devamsızlık oranı hesapla
+                var totalAttendances = await _context
+                    .Attendances.Where(a => classStudentIds.Contains(a.StudentId))
+                    .CountAsync();
+
+                var presentAttendances = await _context
+                    .Attendances.Where(a => classStudentIds.Contains(a.StudentId) && a.IsPresent)
+                    .CountAsync();
+
+                classStat.AttendanceRate =
+                    totalAttendances > 0 ? (double)presentAttendances / totalAttendances * 100 : 0;
+            }
+
+            model.ClassStatistics = classStats;
+
+            // Öğretmen performansları
+            var teachers = await _context.users.Where(u => u.role == "teacher").ToListAsync();
+
+            var teacherPerformances = new List<TeacherPerformanceVM>();
+
+            foreach (var teacher in teachers)
+            {
+                var examsCreated = await _context.ExamSystem.CountAsync(e =>
+                    e.TeacherId == teacher.dershaneid
+                );
+
+                var homeworksCreated = await _context.Homeworks.CountAsync(h =>
+                    h.TeacherId == teacher.dershaneid
+                );
+
+                // Öğretmenin sınavlarındaki ortalama
+                var teacherExamIds = await _context
+                    .ExamSystem.Where(e => e.TeacherId == teacher.dershaneid)
+                    .Select(e => e.Id)
+                    .ToListAsync();
+
+                var avgScore =
+                    await _context
+                        .StudentExamResults.Where(r =>
+                            teacherExamIds.Contains(r.ExamId) && r.IsCompleted
+                        )
+                        .AverageAsync(r => (double?)r.Score) ?? 0;
+
+                teacherPerformances.Add(
+                    new TeacherPerformanceVM
+                    {
+                        TeacherName = $"{teacher.firstname} {teacher.lastname}",
+                        TeacherId = teacher.dershaneid,
+                        ExamsCreated = examsCreated,
+                        HomeworksCreated = homeworksCreated,
+                        AverageStudentScore = avgScore,
+                    }
+                );
+            }
+
+            model.TeacherPerformances = teacherPerformances
+                .OrderByDescending(t => t.AverageStudentScore)
+                .ToList();
+
+            // Son sınavlar
+            model.RecentExams = await _context
+                .ExamSystem.OrderByDescending(e => e.ExamDate)
+                .Take(5)
+                .Select(e => new ExamStatisticVM
+                {
+                    ExamTitle = e.Title,
+                    Lesson = e.Lesson,
+                    ExamDate = e.ExamDate,
+                    ParticipantCount = e.StudentResults.Count(r => r.IsCompleted),
+                    AverageScore =
+                        e.StudentResults.Where(r => r.IsCompleted).Average(r => (double?)r.Score)
+                        ?? 0,
+                })
+                .ToListAsync();
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [RoleAuthorize("principal")]
+        public async Task<IActionResult> Reports()
+        {
+            var model = new PrincipalReportsVM();
+
+            // Genel istatistikler
+            model.TotalStudents = await _context.users.CountAsync(u => u.role == "student");
+            model.TotalTeachers = await _context.users.CountAsync(u => u.role == "teacher");
+            model.TotalExams = await _context.ExamSystem.CountAsync();
+            model.TotalHomeworks = await _context.Homeworks.CountAsync();
+
+            // Ders bazında istatistikler
+            var lessonStats = await _context
+                .Lessons.Select(l => new LessonStatisticVM
+                {
+                    LessonName = l.Name,
+                    ExamCount = _context.ExamSystem.Count(e => e.Lesson == l.Name),
+                    HomeworkCount = _context.Homeworks.Count(h => h.Lesson == l.Name),
+                    AverageExamScore =
+                        _context
+                            .StudentExamResults.Where(r => r.Exam.Lesson == l.Name && r.IsCompleted)
+                            .Average(r => (double?)r.Score) ?? 0,
+                    AverageHomeworkGrade =
+                        _context
+                            .HomeworkSubmissions.Where(s =>
+                                s.Homework.Lesson == l.Name && s.Grade.HasValue
+                            )
+                            .Average(s => (double?)s.Grade) ?? 0,
+                })
+                .ToListAsync();
+
+            model.LessonStatistics = lessonStats;
+
+            // Aylık sınav istatistikleri (son 6 ay)
+            var monthlyExamStats = new List<MonthlyExamStatVM>();
+            for (int i = 5; i >= 0; i--)
+            {
+                var targetMonth = DateTime.Now.AddMonths(-i);
+                var examCount = await _context.ExamSystem.CountAsync(e =>
+                    e.ExamDate.Month == targetMonth.Month && e.ExamDate.Year == targetMonth.Year
+                );
+
+                var avgScore =
+                    await _context
+                        .StudentExamResults.Where(r =>
+                            r.Exam.ExamDate.Month == targetMonth.Month
+                            && r.Exam.ExamDate.Year == targetMonth.Year
+                            && r.IsCompleted
+                        )
+                        .AverageAsync(r => (double?)r.Score) ?? 0;
+
+                monthlyExamStats.Add(
+                    new MonthlyExamStatVM
+                    {
+                        Month = targetMonth.ToString("MMMM yyyy"),
+                        ExamCount = examCount,
+                        AverageScore = avgScore,
+                        ParticipantCount = await _context.StudentExamResults.CountAsync(r =>
+                            r.Exam.ExamDate.Month == targetMonth.Month
+                            && r.Exam.ExamDate.Year == targetMonth.Year
+                            && r.IsCompleted
+                        ),
+                    }
+                );
+            }
+
+            model.MonthlyExamStats = monthlyExamStats;
+
+            // En başarılı öğrenciler (top 10)
+            var topStudents = await _context
+                .users.Where(u => u.role == "student")
+                .Select(u => new TopStudentVM
+                {
+                    StudentId = u.dershaneid,
+                    StudentName = u.firstname + " " + u.lastname,
+                    AverageExamScore =
+                        _context
+                            .StudentExamResults.Where(r =>
+                                r.StudentId == u.dershaneid && r.IsCompleted
+                            )
+                            .Average(r => (double?)r.Score) ?? 0,
+                    AverageHomeworkGrade =
+                        _context
+                            .HomeworkSubmissions.Where(s =>
+                                s.StudentId == u.dershaneid && s.Grade.HasValue
+                            )
+                            .Average(s => (double?)s.Grade) ?? 0,
+                    ExamCount = _context.StudentExamResults.Count(r =>
+                        r.StudentId == u.dershaneid && r.IsCompleted
+                    ),
+                    HomeworkCount = _context.HomeworkSubmissions.Count(s =>
+                        s.StudentId == u.dershaneid
+                    ),
+                })
+                .Where(s => s.ExamCount > 0)
+                .OrderByDescending(s => s.AverageExamScore)
+                .Take(10)
+                .ToListAsync();
+
+            model.TopStudents = topStudents;
+
+            // Devamsızlık raporu
+            var attendanceReport = await _context
+                .Classes.Where(c => !c.IsTeacher)
+                .GroupBy(c => c.UClass)
+                .Select(g => new AttendancesReportVM
+                {
+                    ClassName = g.Key,
+                    TotalStudents = g.Count(),
+                    PresentToday = _context.Attendances.Count(a =>
+                        a.Date.Date == DateTime.Today
+                        && a.IsPresent
+                        && _context.Classes.Any(c =>
+                            c.Student == a.StudentId && c.UClass == g.Key && !c.IsTeacher
+                        )
+                    ),
+                    AttendanceRate = _context
+                        .Attendances.Where(a =>
+                            _context.Classes.Any(c =>
+                                c.Student == a.StudentId && c.UClass == g.Key && !c.IsTeacher
+                            )
+                        )
+                        .GroupBy(a => 1)
+                        .Select(group => group.Average(a => a.IsPresent ? 100.0 : 0.0))
+                        .FirstOrDefault(),
+                })
+                .ToListAsync();
+
+            model.AttendanceReports = attendanceReport;
+
+            return View(model);
         }
     }
 }

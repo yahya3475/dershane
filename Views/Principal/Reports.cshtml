@@ -1,0 +1,228 @@
+@model PrincipalReportsVM
+@{
+    ViewData["Title"] = "Principal Reports";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="text-primary">
+                    <i class="bi bi-graph-up"></i> School Reports & Analytics
+                </h2>
+                <div>
+                    <button class="btn btn-outline-primary" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Print Report
+                    </button>
+                    <a asp-action="Dashboard" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Genel İstatistikler -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-gradient-primary text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-people-fill fs-1"></i>
+                    <h3 class="mt-2">@Model.TotalStudents</h3>
+                    <p class="mb-0">Total Students</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-gradient-success text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-workspace fs-1"></i>
+                    <h3 class="mt-2">@Model.TotalTeachers</h3>
+                    <p class="mb-0">Total Teachers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-gradient-warning text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-earmark-text fs-1"></i>
+                    <h3 class="mt-2">@Model.TotalExams</h3>
+                    <p class="mb-0">Total Exams</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-gradient-danger text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-journal-bookmark fs-1"></i>
+                    <h3 class="mt-2">@Model.TotalHomeworks</h3>
+                    <p class="mb-0">Total Homeworks</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Ders Bazında İstatistikler -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-book"></i> Subject Statistics</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.LessonStatistics.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Exams</th>
+                                        <th>Homeworks</th>
+                                        <th>Avg Exam</th>
+                                        <th>Avg HW</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var lesson in Model.LessonStatistics)
+                                    {
+                                        <tr>
+                                            <td><strong>@lesson.LessonName</strong></td>
+                                            <td><span class="badge bg-info">@lesson.ExamCount</span></td>
+                                            <td><span class="badge bg-secondary">@lesson.HomeworkCount</span></td>
+                                            <td>
+                                                <span class="badge @(lesson.AverageExamScore >= 70 ? "bg-success" : lesson.AverageExamScore >= 50 ? "bg-warning" : "bg-danger")">
+                                                    @lesson.AverageExamScore.ToString("F1")
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge @(lesson.AverageHomeworkGrade >= 70 ? "bg-success" : lesson.AverageHomeworkGrade >= 50 ? "bg-warning" : "bg-danger")">
+                                                    @lesson.AverageHomeworkGrade.ToString("F1")
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-book-half fs-1"></i>
+                            <p class="mt-2">No subject data available</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- En Başarılı Öğrenciler -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-trophy-fill"></i> Top 10 Students</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.TopStudents.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Grade</th>
+                                        <th>Average Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var student in Model.TopStudents)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <i class="bi bi-person-circle me-2"></i>
+                                                @student.StudentName
+                                            </td>
+                                            <td><span class="badge bg-primary">@student.Grade</span></td>
+                                            <td>
+                                                <span class="badge @(student.AverageScore >= 70 ? "bg-success" : student.AverageScore >= 50 ? "bg-warning" : "bg-danger")">
+                                                    @student.AverageScore.ToString("F1")
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-emoji-sunglasses fs-1"></i>
+                            <p class="mt-2">No student data available</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grafikler -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Performance Overview</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="performanceChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var ctx = document.getElementById('performanceChart').getContext('2d');
+            var performanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Math', 'Science', 'English', 'History', 'Art'],
+                    datasets: [{
+                        label: 'Average Scores',
+                        data: [85, 78, 92, 76, 88],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(255, 205, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 205, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

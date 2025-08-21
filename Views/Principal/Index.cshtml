@@ -1,147 +1,258 @@
+@model PrincipalDashboardVM
 @{
-    ViewData["Title"] = "Principal Dashboard - dershane";
+    ViewData["Title"] = "Principal Dashboard";
 }
 
-<div class="row g-0">
-    <div class="col-md-3 bg-dark text-white p-4" style="min-height:100vh;">
-        <h4 class="mb-4"><i class="bi bi-building"></i> Principal Panel</h4>
-        <ul class="nav flex-column">
-            <li class="nav-item mb-3"><a class="nav-link text-white active" asp-action="Index"><i class="bi bi-house-door me-2"></i>Dashboard</a></li>
-            <li class="nav-item mb-3"><a class="nav-link text-white" asp-action="AddUser"><i class="bi bi-person-plus me-2"></i>Add User</a></li>
-            <li class="nav-item mb-3"><a class="nav-link text-white" asp-action="Classes"><i class="bi bi-diagram-3 me-2"></i>Classes</a></li>
-            <li class="nav-item mb-3"><a class="nav-link text-white" asp-action="List" asp-route-role="student"><i class="bi bi-mortarboard me-2"></i>Students</a></li>
-            <li class="nav-item mb-3"><a class="nav-link text-white" asp-action="List" asp-route-role="teacher"><i class="bi bi-person-video3 me-2"></i>Teachers</a></li>
-        </ul>
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="text-primary">
+                    <i class="bi bi-speedometer2"></i> Principal Dashboard
+                </h2>
+                <div class="text-muted">
+                    <i class="bi bi-calendar3"></i> @DateTime.Now.ToString("dd MMMM yyyy")
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="col-md-9 p-4">
-        <h2 class="mb-4"><i class="bi bi-person-circle me-2"></i>Welcome, @ViewBag.username</h2>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card text-white bg-primary shadow-lg border-0">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="card-title">Students</h5>
-                            <p class="card-text display-6 fw-bold">@ViewBag.StudentCount</p>
-                        </div>
-                        <i class="bi bi-mortarboard display-4 opacity-75"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-white bg-success shadow-lg border-0">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="card-title">Teachers</h5>
-                            <p class="card-text display-6 fw-bold">@ViewBag.TeacherCount</p>
-                        </div>
-                        <i class="bi bi-person-video3 display-4 opacity-75"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-white bg-warning shadow-lg border-0">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="card-title">Classes</h5>
-                            <p class="card-text display-6 fw-bold">@ViewBag.ClassCount</p>
-                        </div>
-                        <i class="bi bi-diagram-3 display-4 opacity-75"></i>
-                    </div>
+    <!-- İstatistik Kartları -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card bg-primary text-white shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-people-fill fs-1"></i>
+                    <h3 class="mt-2">@Model.TotalStudents</h3>
+                    <p class="mb-0">Students</p>
                 </div>
             </div>
         </div>
-
-        <div class="mt-5">
-            <h3 class="mb-4"><i class="bi bi-graph-up me-2"></i>Quick Actions</h3>
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <a asp-action="AddUser" class="btn btn-outline-primary btn-lg w-100 d-flex align-items-center justify-content-between shadow-sm">
-                        <span><i class="bi bi-person-plus me-2"></i>Add New User</span>
-                        <i class="bi bi-chevron-right"></i>
-                    </a>
-                </div>
-                <div class="col-md-6">
-                    <a asp-action="Classes" class="btn btn-outline-success btn-lg w-100 d-flex align-items-center justify-content-between shadow-sm">
-                        <span><i class="bi bi-diagram-3 me-2"></i>Manage Classes</span>
-                        <i class="bi bi-chevron-right"></i>
-                    </a>
-                </div>
-                <div class="col-md-6">
-                    <a asp-action="List" asp-route-role="student" class="btn btn-outline-info btn-lg w-100 d-flex align-items-center justify-content-between shadow-sm">
-                        <span><i class="bi bi-mortarboard me-2"></i>View All Students</span>
-                        <i class="bi bi-chevron-right"></i>
-                    </a>
-                </div>
-                <div class="col-md-6">
-                    <a asp-action="List" asp-route-role="teacher" class="btn btn-outline-warning btn-lg w-100 d-flex align-items-center justify-content-between shadow-sm">
-                        <span><i class="bi bi-person-video3 me-2"></i>View All Teachers</span>
-                        <i class="bi bi-chevron-right"></i>
-                    </a>
+        <div class="col-md-2">
+            <div class="card bg-success text-white shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-workspace fs-1"></i>
+                    <h3 class="mt-2">@Model.TotalTeachers</h3>
+                    <p class="mb-0">Teachers</p>
                 </div>
             </div>
         </div>
+        <div class="col-md-2">
+            <div class="card bg-info text-white shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-building fs-1"></i>
+                    <h3 class="mt-2">@Model.TotalClasses</h3>
+                    <p class="mb-0">Classes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-earmark-text fs-1"></i>
+                    <h3 class="mt-2">@Model.TotalExams</h3>
+                    <p class="mb-0">Total Exams</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-journal-bookmark fs-1"></i>
+                    <h3 class="mt-2">@Model.TotalHomeworks</h3>
+                    <p class="mb-0">Homeworks</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <div class="mt-5">
-            <h3 class="mb-4"><i class="bi bi-activity me-2"></i>Recent Activity</h3>
-            <div class="card shadow-sm border-0">
+    <div class="row">
+        <!-- Sınıf İstatistikleri -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Class Statistics</h5>
+                </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6 class="text-muted mb-3"><i class="bi bi-clock-history me-2"></i>Latest Registrations</h6>
-                            <div class="list-group list-group-flush">
-                                <div class="list-group-item border-0 px-0">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-primary rounded-circle p-2 me-3">
-                                            <i class="bi bi-person-plus text-white"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">New student registered</h6>
-                                            <small class="text-muted">2 hours ago</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="list-group-item border-0 px-0">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-success rounded-circle p-2 me-3">
-                                            <i class="bi bi-person-check text-white"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">Teacher profile updated</h6>
-                                            <small class="text-muted">5 hours ago</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    @if (Model.ClassStatistics.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Class</th>
+                                        <th>Students</th>
+                                        <th>Avg Score</th>
+                                        <th>Attendance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var classStat in Model.ClassStatistics)
+                                    {
+                                        <tr>
+                                            <td><strong>@classStat.ClassName</strong></td>
+                                            <td>
+                                                <span class="badge bg-info">@classStat.StudentCount</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge @(classStat.AverageScore >= 70 ? "bg-success" : classStat.AverageScore >= 50 ? "bg-warning" : "bg-danger")">
+                                                    @classStat.AverageScore.ToString("F1")
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar @(classStat.AttendanceRate >= 80 ? "bg-success" : classStat.AttendanceRate >= 60 ? "bg-warning" : "bg-danger")" 
+                                                         style="width: @classStat.AttendanceRate%">
+                                                        @classStat.AttendanceRate.ToString("F1")%
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="col-md-6">
-                            <h6 class="text-muted mb-3"><i class="bi bi-bar-chart me-2"></i>System Stats</h6>
-                            <div class="row g-3">
-                                <div class="col-6">
-                                    <div class="text-center p-3 bg-secondary rounded">
-                                        <h4 class="text-primary mb-1">98%</h4>
-                                        <small class="text-muted">Attendance Rate</small>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-1"></i>
+                            <p class="mt-2">No class data available</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Öğretmen Performansları -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-trophy"></i> Teacher Performance</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.TeacherPerformances.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Teacher</th>
+                                        <th>Exams</th>
+                                        <th>Homeworks</th>
+                                        <th>Avg Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var teacher in Model.TeacherPerformances.Take(5))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@teacher.TeacherName</strong>
+                                                <br><small class="text-muted">@teacher.TeacherId</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary">@teacher.ExamsCreated</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">@teacher.HomeworksCreated</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge @(teacher.AverageStudentScore >= 70 ? "bg-success" : teacher.AverageStudentScore >= 50 ? "bg-warning" : "bg-danger")">
+                                                    @teacher.AverageStudentScore.ToString("F1")
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-person-x fs-1"></i>
+                            <p class="mt-2">No teacher data available</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Son Sınavlar -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Exams</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentExams.Any())
+                    {
+                        <div class="row">
+                            @foreach (var exam in Model.RecentExams)
+                            {
+                                <div class="col-md-4 mb-3">
+                                    <div class="card border-left-primary">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-primary">@exam.ExamTitle</h6>
+                                            <p class="card-text">
+                                                <strong>Lesson:</strong> @exam.Lesson<br>
+                                                <strong>Date:</strong> @exam.ExamDate.ToString("dd/MM/yyyy HH:mm")<br>
+                                                <strong>Participants:</strong> @exam.ParticipantCount<br>
+                                                <strong>Average:</strong> 
+                                                <span class="badge @(exam.AverageScore >= 70 ? "bg-success" : exam.AverageScore >= 50 ? "bg-warning" : "bg-danger")">
+                                                    @exam.AverageScore.ToString("F1")
+                                                </span>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-6">
-                                    <div class="text-center p-3 bg-secondary rounded">
-                                        <h4 class="text-success mb-1">85%</h4>
-                                        <small class="text-muted">Pass Rate</small>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="text-center p-3 bg-secondary rounded">
-                                        <h4 class="text-warning mb-1">12</h4>
-                                        <small class="text-muted">Active Classes</small>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="text-center p-3 bg-secondary rounded">
-                                        <h4 class="text-info mb-1">24</h4>
-                                        <small class="text-muted">Exams This Week</small>
-                                    </div>
-                                </div>
-                            </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-file-earmark-x fs-1"></i>
+                            <p class="mt-2">No recent exams</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3 mb-2">
+                            <a asp-action="AddUser" class="btn btn-primary btn-lg w-100">
+                                <i class="bi bi-person-plus"></i><br>Add User
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a asp-action="List" class="btn btn-success btn-lg w-100">
+                                <i class="bi bi-people"></i><br>Manage Users
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a asp-action="Classes" class="btn btn-info btn-lg w-100">
+                                <i class="bi bi-building"></i><br>Manage Classes
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a asp-action="Reports" class="btn btn-warning btn-lg w-100">
+                                <i class="bi bi-graph-up"></i><br>View Reports
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -151,27 +262,7 @@
 </div>
 
 <style>
-.card {
-    transition: transform 0.2s ease-in-out;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    transition: all 0.2s ease-in-out;
-}
-
-.nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
-    transition: all 0.2s ease-in-out;
-}
-
-.list-group-item:hover {
-    background-color: rgba(0, 0, 0, 0.02);
-    transition: all 0.2s ease-in-out;
+.border-left-primary {
+    border-left: 4px solid #007bff !important;
 }
 </style>

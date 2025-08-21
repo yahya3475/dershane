@@ -89,12 +89,12 @@
                                                 <div class="card">
                                                     <div class="card-body">
                                                         <h6 class="card-subtitle mb-2 text-muted">
-                                                            Submission Dat6e: @{
+                                                            Submission Date: @{
     var submissionDate = submission.SubmissionDate as DateTime?;
     @(submissionDate?.ToString("dd.MM.yyyy HH:mm") ?? "Not available")
 }
                                                         </h6>
-                                                        <div class="border p-3 bg-light">
+                                                        <div class="border p-3 bg-dark">
                                                             @Html.Raw(submission.Answer.Replace("\n", "<br>"))
                                                         </div>
                                                         @if (!string.IsNullOrEmpty(submission.TeacherComment))
