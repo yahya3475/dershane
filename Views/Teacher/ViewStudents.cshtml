@@ -1,0 +1,481 @@
+
+@model ViewStudentsVM
+@{
+    ViewData["Title"] = "Öğrenci Listesi";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header Section -->
+            <div class="page-header mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="page-title">
+                            <i class="bi bi-people-fill me-2"></i>
+                            @Model.ClassName Sınıfı Öğrencileri
+                        </h2>
+                        <p class="page-subtitle">Sınıfınızdaki öğrencilerin detaylı bilgileri ve performans analizi</p>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-outline-primary me-2" onclick="exportToExcel()">
+                            <i class="bi bi-file-earmark-excel"></i> Excel'e Aktar
+                        </button>
+                        <button class="btn btn-primary" onclick="printReport()">
+                            <i class="bi bi-printer"></i> Rapor Yazdır
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card bg-gradient-primary">
+                        <div class="stat-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>@Model.TotalStudents</h3>
+                            <p>Toplam Öğrenci</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card bg-gradient-success">
+                        <div class="stat-icon">
+                            <i class="bi bi-trophy-fill"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>@Model.ClassAverage.ToString("F1")</h3>
+                            <p>Sınıf Ortalaması</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card bg-gradient-info">
+                        <div class="stat-icon">
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>@Model.ExcellentStudents</h3>
+                            <p>Mükemmel Öğrenci</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card bg-gradient-warning">
+                        <div class="stat-icon">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>@Model.NeedsImprovementStudents</h3>
+                            <p>Geliştirilmeli</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Distribution Chart -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card modern-card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-bar-chart me-2"></i>Performans Dağılımı</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="performance-chart">
+                                <div class="performance-bar">
+                                    <div class="performance-segment excellent" 
+                                         style="width: @(Model.TotalStudents > 0 ? (Model.ExcellentStudents * 100.0 / Model.TotalStudents) : 0)%"
+                                         title="Mükemmel (@Model.ExcellentStudents öğrenci)">
+                                    </div>
+                                    <div class="performance-segment good" 
+                                         style="width: @(Model.TotalStudents > 0 ? (Model.GoodStudents * 100.0 / Model.TotalStudents) : 0)%"
+                                         title="İyi (@Model.GoodStudents öğrenci)">
+                                    </div>
+                                    <div class="performance-segment average" 
+                                         style="width: @(Model.TotalStudents > 0 ? (Model.AverageStudents * 100.0 / Model.TotalStudents) : 0)%"
+                                         title="Orta (@Model.AverageStudents öğrenci)">
+                                    </div>
+                                    <div class="performance-segment needs-improvement" 
+                                         style="width: @(Model.TotalStudents > 0 ? (Model.NeedsImprovementStudents * 100.0 / Model.TotalStudents) : 0)%"
+                                         title="Geliştirilmeli (@Model.NeedsImprovementStudents öğrenci)">
+                                    </div>
+                                </div>
+                                <div class="performance-legend">
+                                    <div class="legend-item">
+                                        <span class="legend-color excellent"></span>
+                                        <span>Mükemmel (85+)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color good"></span>
+                                        <span>İyi (70-84)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color average"></span>
+                                        <span>Orta (50-69)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color needs-improvement"></span>
+                                        <span>Geliştirilmeli (0-49)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card modern-card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-search me-2"></i>Öğrenci Ara ve Filtrele</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <input type="text" id="searchInput" class="form-control" placeholder="Öğrenci adı veya soyadı...">
+                                </div>
+                                <div class="col-md-4">
+                                    <select id="gradeFilter" class="form-select">
+                                        <option value="">Tüm Notlar</option>
+                                        <option value="85">Mükemmel (85+)</option>
+                                        <option value="70">İyi (70-84)</option>
+                                        <option value="50">Orta (50-69)</option>
+                                        <option value="0">Geliştirilmeli (0-49)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-primary w-100" onclick="filterStudents()">
+                                        <i class="bi bi-funnel"></i> Filtrele
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students Table -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card modern-card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-table me-2"></i>Öğrenci Listesi</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Öğrenci Adı</th>
+                                            <th>Sınıf</th>
+                                            <th>Not Ortalaması</th>
+                                            <th>Performans</th>
+                                            <th>İşlemler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.Students.Count; i++)
+                                        {
+                                            var student = Model.Students[i];
+                                            <tr>
+                                                <td>@(i + 1)</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="student-avatar me-2">
+                                                            <span class="avatar-initials">
+                                                                @(student.FirstName.Substring(0, 1).ToUpper())@(student.LastName.Substring(0, 1).ToUpper())
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            <div class="fw-bold">@student.FullName</div>
+                                                            <small class="text-muted">@student.DershaneId</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>@student.ClassName</td>
+                                                <td>
+                                                    <span class="badge bg-@(student.AverageGrade >= 85 ? "success" : student.AverageGrade >= 70 ? "info" : student.AverageGrade >= 50 ? "warning" : "danger")">
+                                                        @student.AverageGrade.ToString("F1")
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-@(student.AverageGrade >= 85 ? "success" : student.AverageGrade >= 70 ? "info" : student.AverageGrade >= 50 ? "warning" : "danger")">
+                                                        @(student.AverageGrade >= 85 ? "Mükemmel" : student.AverageGrade >= 70 ? "İyi" : student.AverageGrade >= 50 ? "Orta" : "Geliştirilmeli")
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <button class="btn btn-sm btn-outline-primary" onclick="viewStudentDetails(@student.StudentId)" title="Detayları Görüntüle">
+                                                            <i class="bi bi-eye"></i>
+                                                        </button>
+                                                        <button class="btn btn-sm btn-outline-info" onclick="viewStudentGrades(@student.StudentId)" title="Notları Görüntüle">
+                                                            <i class="bi bi-clipboard-data"></i>
+                                                        </button>
+                                                        <button class="btn btn-sm btn-outline-warning" onclick="viewStudentAttendance(@student.StudentId)" title="Devamsızlık">
+                                                            <i class="bi bi-calendar-check"></i>
+                                                        </button>
+                                                        <button class="btn btn-sm btn-outline-secondary" onclick="editStudent(@student.StudentId)" title="Düzenle">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function exportToExcel() {
+        // Excel export functionality
+        alert('Excel aktarma işlemi başlatılıyor...');
+    }
+
+    function printReport() {
+        // Print report functionality
+        window.print();
+    }
+
+    function filterStudents() {
+        const searchValue = document.getElementById('searchInput').value.toLowerCase();
+        const gradeFilter = document.getElementById('gradeFilter').value;
+        const rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+            const studentName = row.cells[1].textContent.toLowerCase();
+            const averageGrade = parseFloat(row.cells[3].textContent);
+            
+            const matchesSearch = searchValue === '' || studentName.includes(searchValue);
+            const matchesGrade = gradeFilter === '' || averageGrade >= parseInt(gradeFilter);
+
+            row.style.display = (matchesSearch && matchesGrade) ? '' : 'none';
+        });
+    }
+
+    function viewStudentDetails(studentId) {
+        // View student details functionality
+        alert(`Öğrenci detayları gösteriliyor: ${studentId}`);
+    }
+
+    function editStudent(studentId) {
+        // Edit student functionality
+        alert(`Öğrenci düzenleme: ${studentId}`);
+    }
+
+    // Initialize search and filter
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('searchInput').addEventListener('keyup', filterStudents);
+        document.getElementById('gradeFilter').addEventListener('change', filterStudents);
+    });
+</script>
+@section Styles {
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary) 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            color: white;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .bg-gradient-primary { background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); }
+        .bg-gradient-success { background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); }
+        .bg-gradient-info { background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%); }
+        .bg-gradient-warning { background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .stat-info h3 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .modern-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .modern-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .performance-chart {
+            padding: 1rem 0;
+        }
+
+        .performance-bar {
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            margin-bottom: 1rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .performance-segment {
+            transition: all 0.3s ease;
+        }
+
+        .performance-segment:hover {
+            opacity: 0.8;
+        }
+
+        .excellent { background: linear-gradient(90deg, #28a745, #20c997); }
+        .good { background: linear-gradient(90deg, #17a2b8, #20c997); }
+        .average { background: linear-gradient(90deg, #ffc107, #fd7e14); }
+        .needs-improvement { background: linear-gradient(90deg, #dc3545, #e83e8c); }
+
+        .performance-legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            border: none;
+            font-weight: 600;
+            color: #495057;
+            padding: 1rem 0.75rem;
+        }
+
+        .table td {
+            border: none;
+            padding: 1rem 0.75rem;
+            vertical-align: middle;
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .btn-group .btn {
+            border-radius: 8px;
+            margin-right: 0.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-group .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .badge {
+            font-size: 0.8rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+        }
+
+        @@media (max-width: 768px) {
+            .page-header {
+                text-align: center;
+            }
+            
+            .page-actions {
+                margin-top: 1rem;
+            }
+            
+            .performance-legend {
+                gap: 1rem;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn-group .btn {
+                margin-bottom: 0.25rem;
+                margin-right: 0;
+            }
+        }
+    </style>
+}

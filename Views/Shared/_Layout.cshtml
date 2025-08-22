@@ -12,31 +12,162 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/dershane.styles.css" asp-append-version="true" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body data-bs-theme="dark">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-dark modern-navbar">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">dershane</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
-                    <span class="navbar-toggler-icon"></span>
+                <a class="navbar-brand modern-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="brand-icon">🎓</span>
+                    <span class="brand-text">dershane</span>
+                    <span class="brand-subtitle">academy</span>
+                </a>
+                
+                <button class="navbar-toggler modern-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                
+                <div class="navbar-collapse collapse">
+                    <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link modern-nav-link" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house-door"></i>
+                                <span>Ana Sayfa</span>
+                            </a>
                         </li>
 
-                        @if (string.IsNullOrEmpty(HttpContextAccessor.HttpContext.Session.GetString("schoolnumber")))
+                        @{
+                            var userRole = HttpContextAccessor.HttpContext.Session.GetString("role");
+                            var schoolNumber = HttpContextAccessor.HttpContext.Session.GetString("schoolnumber");
+                            var userName = HttpContextAccessor.HttpContext.Session.GetString("username");
+                        }
+
+                        @if (!string.IsNullOrEmpty(schoolNumber))
+                        {
+                            @if (userRole == "student")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link modern-nav-link" asp-controller="Student" asp-action="ViewExamSystem">
+                                        <i class="bi bi-clipboard-check"></i>
+                                        <span>Sınavlarım</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link modern-nav-link" asp-controller="Student" asp-action="ViewExamSystem">
+                                        <i class="bi bi-graph-up"></i>
+                                        <span>Notlarım</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link modern-nav-link" asp-controller="Schedule" asp-action="ViewSchedule">
+                                        <i class="bi bi-calendar3"></i>
+                                        <span>Ders Programı</span>
+                                    </a>
+                                </li>
+                            }
+                            else if (userRole == "teacher")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link modern-nav-link" asp-controller="Teacher" asp-action="ViewExamSystem">
+                                        <i class="bi bi-clipboard-data"></i>
+                                        <span>Sınav Sistemi</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link modern-nav-link" asp-controller="Teacher" asp-action="ViewExams">
+                                        <i class="bi bi-journal-text"></i>
+                                        <span>Notlar</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link modern-nav-link" asp-controller="Teacher" asp-action="ViewStudents">
+                                        <i class="bi bi-people"></i>
+                                        <span>Öğrenciler</span>
+                                    </a>
+                                </li>
+                            }
+                            else if (userRole == "principal")
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link modern-nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-gear"></i>
+                                        <span>Yönetim</span>
+                                    </a>
+                                    <ul class="dropdown-menu modern-dropdown">
+                                        <li><a class="dropdown-item" asp-controller="Principal" asp-action="List">
+                                            <i class="bi bi-person-lines-fill"></i> Kullanıcılar
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Principal" asp-action="Classes">
+                                            <i class="bi bi-diagram-3"></i> Sınıflar
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Principal" asp-action="Lessons">
+                                            <i class="bi bi-book"></i> Dersler
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-controller="Principal" asp-action="Reports">
+                                            <i class="bi bi-bar-chart"></i> Raporlar
+                                        </a></li>
+                                    </ul>
+                                </li>
+                            }
+                        }
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto">
+                        @if (string.IsNullOrEmpty(schoolNumber))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Auth" asp-action="Login">Login</a>
+                                <a class="nav-link modern-nav-link login-btn" asp-controller="Auth" asp-action="Login">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                    <span>Giriş Yap</span>
+                                </a>
                             </li>
                         }
                         else
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Auth" asp-action="Logout">Logout</a>
+                            <li class="nav-item dropdown user-dropdown">
+                                <a class="nav-link modern-nav-link dropdown-toggle user-profile" href="#" role="button" data-bs-toggle="dropdown">
+                                    <div class="user-avatar">
+                                        @if (userRole == "student")
+                                        {
+                                            <i class="bi bi-person-circle"></i>
+                                        }
+                                        else if (userRole == "teacher")
+                                        {
+                                            <i class="bi bi-mortarboard"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-shield-check"></i>
+                                        }
+                                    </div>
+                                    <div class="user-info">
+                                        <span class="user-name">@userName</span>
+                                        <span class="user-role">@(userRole == "student" ? "Öğrenci" : userRole == "teacher" ? "Öğretmen" : "Müdür")</span>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu modern-dropdown user-menu">
+                                    <li class="dropdown-header">
+                                        <div class="user-details">
+                                            <strong>@userName</strong>
+                                            <small>@schoolNumber</small>
+                                        </div>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#">
+                                        <i class="bi bi-person"></i> Profil
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="#">
+                                        <i class="bi bi-gear"></i> Ayarlar
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item logout-item" asp-controller="Auth" asp-action="Logout">
+                                        <i class="bi bi-box-arrow-right"></i> Çıkış Yap
+                                    </a></li>
+                                </ul>
                             </li>
                         }
                     </ul>
@@ -44,15 +175,34 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+    <div class="main-content">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="modern-footer">
         <div class="container">
-            &copy; 2025 - dershane - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-brand">
+                        <span class="brand-icon">🎓</span>
+                        <span class="brand-text">dershane</span>
+                    </div>
+                    <p class="footer-description">Modern eğitim yönetim sistemi</p>
+                </div>
+                <div class="footer-right">
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Gizlilik</a>
+                        <a href="#" class="footer-link">Kullanım Şartları</a>
+                        <a href="#" class="footer-link">Destek</a>
+                    </div>
+                    <div class="footer-copyright">
+                        &copy; 2025 dershane. Tüm hakları saklıdır.
+                    </div>
+                </div>
+            </div>
         </div>
     </footer>
 
@@ -62,3 +212,410 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+<style>
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+        background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+        min-height: 100vh;
+        margin: 0;
+    }
+
+    /* Modern Navbar */
+    .modern-navbar {
+        background: rgba(30, 30, 46, 0.95) !important;
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1rem 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .modern-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        color: white !important;
+        font-weight: 700;
+        font-size: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .modern-brand:hover {
+        color: #6366f1 !important;
+        transform: translateY(-2px);
+    }
+
+    .brand-icon {
+        font-size: 2rem;
+        filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.3));
+    }
+
+    .brand-text {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .brand-subtitle {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 400;
+        margin-left: -0.5rem;
+    }
+
+    /* Modern Toggler */
+    .modern-toggler {
+        border: none;
+        padding: 0.5rem;
+        width: 40px;
+        height: 40px;
+        position: relative;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .modern-toggler:focus {
+        box-shadow: none;
+    }
+
+    .modern-toggler span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background: white;
+        margin: 4px auto;
+        transition: all 0.3s ease;
+        border-radius: 2px;
+    }
+
+    .modern-toggler:hover {
+        background: rgba(99, 102, 241, 0.2);
+    }
+
+    /* Navigation Links */
+    .modern-nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem !important;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        color: rgba(255, 255, 255, 0.8) !important;
+        font-weight: 500;
+        margin: 0 0.25rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .modern-nav-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .modern-nav-link:hover::before {
+        left: 100%;
+    }
+
+    .modern-nav-link:hover {
+        color: white !important;
+        background: rgba(99, 102, 241, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .modern-nav-link i {
+        font-size: 1.1rem;
+        opacity: 0.8;
+    }
+
+    .modern-nav-link:hover i {
+        opacity: 1;
+        color: #6366f1;
+    }
+
+    /* Login Button */
+    .login-btn {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+        border-radius: 25px !important;
+        padding: 0.75rem 1.5rem !important;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        background: linear-gradient(135deg, #5855eb, #7c3aed) !important;
+    }
+
+    /* User Profile */
+    .user-profile {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border-radius: 50px !important;
+        padding: 0.5rem 1rem !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.75rem;
+    }
+
+    .user-avatar i {
+        font-size: 1.2rem;
+        color: white;
+    }
+
+    .user-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .user-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: white;
+    }
+
+    .user-role {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Dropdown Menus */
+    .modern-dropdown {
+        background: rgba(30, 30, 46, 0.95) !important;
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
+        padding: 0.5rem 0;
+        margin-top: 0.5rem;
+    }
+
+    .modern-dropdown .dropdown-item {
+        color: rgba(255, 255, 255, 0.8) !important;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        margin: 0 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .modern-dropdown .dropdown-item:hover {
+        background: rgba(99, 102, 241, 0.2) !important;
+        color: white !important;
+        transform: translateX(5px);
+    }
+
+    .modern-dropdown .dropdown-item i {
+        width: 16px;
+        opacity: 0.7;
+    }
+
+    .modern-dropdown .dropdown-item:hover i {
+        opacity: 1;
+        color: #6366f1;
+    }
+
+    .dropdown-header .user-details {
+        padding: 0.5rem 0;
+    }
+
+    .dropdown-header .user-details strong {
+        color: white;
+        font-size: 0.9rem;
+    }
+
+    .dropdown-header .user-details small {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.75rem;
+    }
+
+    .logout-item {
+        color: #ef4444 !important;
+    }
+
+    .logout-item:hover {
+        background: rgba(239, 68, 68, 0.2) !important;
+        color: #ef4444 !important;
+    }
+
+    .logout-item:hover i {
+        color: #ef4444 !important;
+    }
+
+    /* Main Content */
+    .main-content {
+        min-height: calc(100vh - 200px);
+        padding: 2rem 0;
+    }
+
+    /* Footer */
+    .modern-footer {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem 0;
+        margin-top: auto;
+    }
+
+    .footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+    }
+
+    .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: white;
+    }
+
+    .footer-brand .brand-icon {
+        font-size: 1.5rem;
+    }
+
+    .footer-brand .brand-text {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .footer-description {
+        color: rgba(255, 255, 255, 0.6);
+        margin: 0.5rem 0 0 0;
+        font-size: 0.9rem;
+    }
+
+    .footer-links {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .footer-link {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .footer-link:hover {
+        color: #6366f1;
+        text-decoration: none;
+    }
+
+    .footer-copyright {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.8rem;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .modern-brand {
+            font-size: 1.2rem;
+        }
+
+        .brand-subtitle {
+            display: none;
+        }
+
+        .user-info {
+            display: none;
+        }
+
+        .footer-content {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .footer-links {
+            justify-content: center;
+        }
+
+        .modern-nav-link span {
+            display: none;
+        }
+
+        .modern-nav-link {
+            justify-content: center;
+            padding: 0.75rem !important;
+        }
+    }
+
+    /* Animations */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .modern-dropdown {
+        animation: fadeInUp 0.3s ease;
+    }
+
+    /* Active States */
+    .navbar-nav .nav-link.active,
+    .navbar-nav .nav-link[aria-current="page"] {
+        background: rgba(99, 102, 241, 0.3) !important;
+        color: white !important;
+    }
+
+    .navbar-nav .nav-link.active i,
+    .navbar-nav .nav-link[aria-current="page"] i {
+        color: #6366f1 !important;
+        opacity: 1;
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(99, 102, 241, 0.5);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(99, 102, 241, 0.7);
+    }
+</style>

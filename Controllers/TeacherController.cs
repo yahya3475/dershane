@@ -672,6 +672,120 @@ namespace dershane.Controllers
             return RedirectToAction("ViewExamSystem");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [RoleAuthorize("teacher")]
+        public async Task<IActionResult> GenerateAIQuestions(
+            [FromBody] GenerateAIQuestionsRequest request
+        )
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(request.Topic) || string.IsNullOrEmpty(request.Lesson))
+                {
+                    return Json(
+                        new { success = false, message = "Topic and lesson are required!" }
+                    );
+                }
+
+                var aiService = new AIQuestionGeneratorService();
+                var questions = await aiService.GenerateQuestionsAsync(
+                    request.Topic,
+                    request.Lesson,
+                    request.Count,
+                    request.Difficulty
+                );
+
+                return Json(new { success = true, questions = questions });
+            }
+            catch (Exception ex)
+            {
+                return Json(
+                    new
+                    {
+                        success = false,
+                        message = "AI service is currently unavailable. Please try again later.",
+                    }
+                );
+            }
+        }
+
+        [HttpGet]
+        [RoleAuthorize("teacher")]
+        public IActionResult ViewStudents()
+        {
+            var teacherId = HttpContext.Session.GetString("schoolnumber");
+
+            // Öğretmenin sınıfını bul
+            var teacherClass = _context
+                .Classes.Where(c => c.Student == teacherId && c.IsTeacher)
+                .Select(c => c.UClass)
+                .FirstOrDefault();
+
+            if (teacherClass == null)
+            {
+                TempData["Error"] = "Sınıf bilginiz bulunamadı!";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Sınıftaki öğrencileri getir
+            var students = _context
+                .users.Join(
+                    _context.Classes,
+                    u => u.dershaneid,
+                    c => c.Student,
+                    (u, c) => new { User = u, Class = c }
+                )
+                .Where(uc =>
+                    uc.User.role == "student"
+                    && uc.Class.UClass == teacherClass
+                    && !uc.Class.IsTeacher
+                )
+                .Select(uc => new StudentDetailVM
+                {
+                    DershaneId = uc.User.dershaneid,
+                    FirstName = uc.User.firstname,
+                    LastName = uc.User.lastname,
+                    UClass = uc.Class.UClass,
+                    // Öğrencinin sınav ortalamasını hesapla
+                    ExamAverage =
+                        _context
+                            .StudentExamResults.Where(r =>
+                                r.StudentId == uc.User.dershaneid && r.IsCompleted
+                            )
+                            .Average(r => (double?)r.Score) ?? 0,
+                    // Toplam sınav sayısı
+                    TotalExams = _context.StudentExamResults.Count(r =>
+                        r.StudentId == uc.User.dershaneid && r.IsCompleted
+                    ),
+                    // Devamsızlık sayısı
+                    AbsenceCount = _context.Attendances.Count(a =>
+                        a.StudentId == uc.User.dershaneid && !a.IsPresent
+                    ),
+                    // Son sınav tarihi
+                    LastExamDate = _context
+                        .StudentExamResults.Where(r =>
+                            r.StudentId == uc.User.dershaneid && r.IsCompleted
+                        )
+                        .OrderByDescending(r => r.EndTime)
+                        .Select(r => r.EndTime)
+                        .FirstOrDefault(),
+                })
+                .OrderBy(s => s.FirstName)
+                .ThenBy(s => s.LastName)
+                .ToList();
+
+            var viewModel = new ViewStudentsVM
+            {
+                ClassName = teacherClass,
+                Students = students,
+                TotalStudents = students.Count,
+                ClassAverage = students.Any() ? students.Average(s => s.ExamAverage) : 0,
+            };
+
+            return View(viewModel);
+        }
+
         [HttpGet]
         [RoleAuthorize("teacher")]
         public IActionResult ViewExamSystem()

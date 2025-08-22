@@ -4,472 +4,859 @@
     var username = ViewBag.username?.ToString();
 }
 
-<div class="dashboard-container">
-    <!-- Hero Section -->
-    <div class="hero-section">
-        <div class="hero-content">
-            <div class="user-avatar">
+<div class="dashboard-wrapper">
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="user-info">
+            <div class="user-avatar-small">
                 @switch (role)
                 {
                     case "TEACHER":
                         <span>👨‍🏫</span>
                         break;
                     case "PRİNCİPAL":
-
                         <span>🏫</span>
                         break;
                     default:
-
                         <span>🎓</span>
                         break;
                 }
             </div>
-            <h1 class="hero-title">Welcome back, @username!</h1>
-            <span
-                class="role-badge @(role switch { "TEACHER" => "bg-primary", "PRİNCİPAL" => "bg-warning", _ => "bg-success" })">
-                @role
-            </span>
-            <p class="hero-description">Your personalized education hub</p>
+            <div class="user-details">
+                <h4 class="mb-0">@username</h4>
+                <span class="role-text">@role</span>
+            </div>
+        </div>
+        <div class="top-actions">
+            <button class="btn btn-outline-light btn-sm me-2">
+                <i class="bi bi-bell"></i>
+            </button>
+            <a asp-controller="Auth" asp-action="Logout" class="btn btn-danger btn-sm">
+                <i class="bi bi-box-arrow-right"></i> Çık
+            </a>
+        </div>
+    </div>
 
-            <!-- Quick Actions -->
-            <div class="quick-actions">
+    <!-- Main Dashboard Grid -->
+    <div class="dashboard-grid">
+        <!-- Sol Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h5><i class="bi bi-speedometer2 me-2"></i>Hızlı Erişim</h5>
+            </div>
+            <div class="sidebar-menu">
                 @switch (role)
                 {
                     case "STUDENT":
-                        <a asp-controller="Student" asp-action="ViewExamSystem"
-                            class="btn btn-light btn-lg rounded-pill px-4 shadow-sm">
-                            <i class="bi bi-journal-text me-2"></i>My Results
+                        <a asp-controller="Student" asp-action="ViewExamSystem" class="menu-item">
+                            <i class="bi bi-journal-text"></i>
+                            <span>Sınav Sonuçlarım</span>
                         </a>
-                        <a asp-controller="Student" asp-action="MyAttendance"
-                            class="btn btn-outline-light btn-lg rounded-pill px-4 shadow-sm">
-                            <i class="bi bi-calendar-check me-2"></i>Attendance
+                        <a asp-controller="Student" asp-action="MyAttendance" class="menu-item">
+                            <i class="bi bi-calendar-check"></i>
+                            <span>Devamsızlık</span>
                         </a>
-                        <a asp-controller="Student" asp-action="ViewHomeworks"
-                            class="btn btn-outline-light btn-lg rounded-pill px-4 shadow-sm">
-                            <i class="bi bi-journal-bookmark me-2"></i>Homeworks
+                        <a asp-controller="Student" asp-action="ViewHomeworks" class="menu-item">
+                            <i class="bi bi-journal-bookmark"></i>
+                            <span>Ödevlerim</span>
                         </a>
-                        <a asp-controller="Schedule" asp-action="ViewSchedule"
-                            class="btn btn-outline-light btn-lg rounded-pill px-4 shadow-sm">
-                            <i class="bi bi-calendar-event me-2"></i>Schedule
+                        <a asp-controller="Schedule" asp-action="ViewSchedule" class="menu-item">
+                            <i class="bi bi-calendar-event"></i>
+                            <span>Ders Programı</span>
                         </a>
                         break;
                     case "TEACHER":
-                        <a asp-controller="Teacher" asp-action="Index" class="btn btn-light btn-lg rounded-pill px-4 shadow-sm">
-                            <i class="bi bi-person-workspace me-2"></i>Teaching Hub
+                        <a asp-controller="Teacher" asp-action="ViewExamSystem" class="menu-item">
+                            <i class="bi bi-clipboard-data"></i>
+                            <span>Sınav Sistemi</span>
                         </a>
-                        <a asp-controller="Teacher" asp-action="ViewExams"
-                            class="btn btn-outline-light btn-lg rounded-pill px-4 shadow-sm">
-                            <i class="bi bi-clipboard-check me-2"></i>Exam Results
+                        <a asp-controller="Teacher" asp-action="ViewExams" class="menu-item">
+                            <i class="bi bi-clipboard-check"></i>
+                            <span>Not Girişi</span>
                         </a>
-                        <a asp-controller="Teacher" asp-action="CreateHomework"
-                            class="btn btn-outline-light btn-lg rounded-pill px-4 shadow-sm">
-                            <i class="bi bi-plus-circle me-2"></i>Create Homework
+                        <a asp-controller="Teacher" asp-action="TakeAttendance" class="menu-item">
+                            <i class="bi bi-person-check"></i>
+                            <span>Yoklama Al</span>
                         </a>
-                        <a asp-controller="Teacher" asp-action="ViewHomeworks"
-                            class="btn btn-outline-light btn-lg rounded-pill px-4 shadow-sm">
-                            <i class="bi bi-journal-bookmark me-2"></i>View Homeworks
+                        <a asp-controller="Teacher" asp-action="CreateHomework" class="menu-item">
+                            <i class="bi bi-plus-circle"></i>
+                            <span>Ödev Ver</span>
+                        </a>
+                        <a asp-controller="Teacher" asp-action="ViewHomeworks" class="menu-item">
+                            <i class="bi bi-journal-bookmark"></i>
+                            <span>Ödev Yönetimi</span>
                         </a>
                         break;
                     case "PRİNCİPAL":
-                        <a asp-controller="Principal" asp-action="Index"
-                            class="btn btn-light btn-lg rounded-pill px-4 shadow-sm">
-                            <i class="bi bi-building me-2"></i>Admin Center
+                        <a asp-controller="Principal" asp-action="AddUser" class="menu-item">
+                            <i class="bi bi-person-plus"></i>
+                            <span>Kullanıcı Ekle</span>
                         </a>
-                        <a asp-controller="Principal" asp-action="List"
-                            class="btn btn-outline-light btn-lg rounded-pill px-4 shadow-sm">
-                            <i class="bi bi-people me-2"></i>Manage Users
+                        <a asp-controller="Principal" asp-action="List" class="menu-item">
+                            <i class="bi bi-people"></i>
+                            <span>Kullanıcı Yönetimi</span>
                         </a>
-                        <a asp-controller="Principal" asp-action="Classes"
-                            class="btn btn-outline-light btn-lg rounded-pill px-4 shadow-sm">
-                            <i class="bi bi-diagram-3 me-2"></i>Manage Classes
+                        <a asp-controller="Principal" asp-action="Classes" class="menu-item">
+                            <i class="bi bi-diagram-3"></i>
+                            <span>Sınıf Yönetimi</span>
                         </a>
-                        <a asp-controller="Schedule" asp-action="Index"
-                            class="btn btn-outline-light btn-lg rounded-pill px-4 shadow-sm">
-                            <i class="bi bi-calendar-week me-2"></i>Schedules
+                        <a asp-controller="Schedule" asp-action="Index" class="menu-item">
+                            <i class="bi bi-calendar-week"></i>
+                            <span>Program Yönetimi</span>
                         </a>
                         break;
                 }
-
-                <a asp-controller="Auth" asp-action="Logout" class="btn btn-danger btn-lg rounded-pill px-4 shadow-sm">
-                    <i class="bi bi-box-arrow-right me-2"></i>Sign Out
-                </a>
             </div>
         </div>
-    </div>
 
-    <!-- Stats Cards -->
-    <div class="stats-section">
-        <div class="row g-4">
-            @switch (role)
-            {
-                case "STUDENT":
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card bg-primary text-white border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-trophy-fill display-4 mb-3 opacity-75"></i>
-                                <h3 class="display-6 fw-bold">85</h3>
-                                <p class="mb-0 opacity-75">Average Grade</p>
+        <!-- Ana İçerik -->
+        <div class="main-content">
+            <!-- İstatistik Kartları -->
+            <div class="stats-grid">
+                @switch (role)
+                {
+                    case "STUDENT":
+                        <div class="stat-card bg-gradient-primary">
+                            <div class="stat-icon">
+                                <i class="bi bi-trophy-fill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>85</h3>
+                                <p>Ortalama Not</p>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card bg-success text-white border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-calendar-check-fill display-4 mb-3 opacity-75"></i>
-                                <h3 class="display-6 fw-bold">92%</h3>
-                                <p class="mb-0 opacity-75">Attendance Rate</p>
+                        <div class="stat-card bg-gradient-success">
+                            <div class="stat-icon">
+                                <i class="bi bi-calendar-check-fill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>92%</h3>
+                                <p>Devam Oranı</p>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card bg-info text-white border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-journal-bookmark-fill display-4 mb-3 opacity-75"></i>
-                                <h3 class="display-6 fw-bold">5</h3>
-                                <p class="mb-0 opacity-75">Pending Homework</p>
+                        <div class="stat-card bg-gradient-warning">
+                            <div class="stat-icon">
+                                <i class="bi bi-journal-bookmark-fill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>5</h3>
+                                <p>Bekleyen Ödev</p>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card bg-warning text-white border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-clock-fill display-4 mb-3 opacity-75"></i>
-                                <h3 class="display-6 fw-bold">6</h3>
-                                <p class="mb-0 opacity-75">Classes Today</p>
+                        <div class="stat-card bg-gradient-info">
+                            <div class="stat-icon">
+                                <i class="bi bi-clock-fill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>6</h3>
+                                <p>Bugünkü Ders</p>
                             </div>
                         </div>
-                    </div>
-                    break;
-                case "TEACHER":
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card bg-primary text-white border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-people-fill display-4 mb-3 opacity-75"></i>
-                                <h3 class="display-6 fw-bold">32</h3>
-                                <p class="mb-0 opacity-75">Students</p>
+                        break;
+                    case "TEACHER":
+                        <div class="stat-card bg-gradient-primary">
+                            <div class="stat-icon">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>32</h3>
+                                <p>Öğrenci Sayısı</p>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card bg-success text-white border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-clipboard-check-fill display-4 mb-3 opacity-75"></i>
-                                <h3 class="display-6 fw-bold">12</h3>
-                                <p class="mb-0 opacity-75">Exam Results</p>
+                        <div class="stat-card bg-gradient-success">
+                            <div class="stat-icon">
+                                <i class="bi bi-clipboard-check-fill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>12</h3>
+                                <p>Sınav Sonucu</p>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card bg-info text-white border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-backpack-fill display-4 mb-3 opacity-75"></i>
-                                <h3 class="display-6 fw-bold">8</h3>
-                                <p class="mb-0 opacity-75">Homeworks</p>
+                        <div class="stat-card bg-gradient-warning">
+                            <div class="stat-icon">
+                                <i class="bi bi-backpack-fill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>8</h3>
+                                <p>Aktif Ödev</p>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card bg-warning text-white border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-calendar-week-fill display-4 mb-3 opacity-75"></i>
-                                <h3 class="display-6 fw-bold">24</h3>
-                                <p class="mb-0 opacity-75">Weekly Lessons</p>
+                        <div class="stat-card bg-gradient-info">
+                            <div class="stat-icon">
+                                <i class="bi bi-calendar-week-fill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>24</h3>
+                                <p>Haftalık Ders</p>
                             </div>
                         </div>
-                    </div>
-                    break;
-                case "PRİNCİPAL":
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card bg-danger text-white border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-people-fill display-4 mb-3 opacity-75"></i>
-                                <h3 class="display-6 fw-bold">156</h3>
-                                <p class="mb-0 opacity-75">Total Users</p>
+                        break;
+                    case "PRİNCİPAL":
+                        <div class="stat-card bg-gradient-danger">
+                            <div class="stat-icon">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>156</h3>
+                                <p>Toplam Kullanıcı</p>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card bg-secondary text-white border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-diagram-3-fill display-4 mb-3 opacity-75"></i>
-                                <h3 class="display-6 fw-bold">8</h3>
-                                <p class="mb-0 opacity-75">Active Classes</p>
+                        <div class="stat-card bg-gradient-secondary">
+                            <div class="stat-icon">
+                                <i class="bi bi-diagram-3-fill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>8</h3>
+                                <p>Aktif Sınıf</p>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card bg-primary text-white border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-person-workspace display-4 mb-3 opacity-75"></i>
-                                <h3 class="display-6 fw-bold">15</h3>
-                                <p class="mb-0 opacity-75">Teachers</p>
+                        <div class="stat-card bg-gradient-primary">
+                            <div class="stat-icon">
+                                <i class="bi bi-person-workspace"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>15</h3>
+                                <p>Öğretmen</p>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card bg-success text-white border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-calendar-event-fill display-4 mb-3 opacity-
-                                                                        <i class=" bi bi-calendar-event-fill display-4 mb-3
-                                    opacity-75"></i>
-                                <h3 class="display-6 fw-bold">45</h3>
-                                <p class="mb-0 opacity-75">Total Schedules</p>
+                        <div class="stat-card bg-gradient-success">
+                            <div class="stat-icon">
+                                <i class="bi bi-calendar-event-fill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>45</h3>
+                                <p>Toplam Program</p>
                             </div>
                         </div>
-                    </div>
-                    break;
-            }
-        </div>
-    </div>
+                        break;
+                }
+            </div>
 
-    <!-- Feature Cards -->
-    <div class="features-section">
-        <div class="row g-4 mt-4">
-            @switch (role)
-            {
-                case "STUDENT":
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card border-0 shadow-sm h-100 feature-card">
-                            <div class="card-body text-center p-4">
-                                <div class="feature-icon bg-primary text-white rounded-circle mx-auto mb-3">
-                                    <i class="bi bi-graph-up"></i>
-                                </div>
-                                <h5 class="card-title">Track Progress</h5>
-                                <p class="card-text text-muted">Monitor your academic performance and see detailed analytics of
-                                    your grades.</p>
-                                <a asp-controller="Student" asp-action="ViewExamSystem" class="btn btn-outline-primary">View
-                                    Results</a>
-                            </div>
-                        </div>
+            <!-- Ana Paneller -->
+            <div class="panels-grid">
+                <!-- Sol Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h5><i class="bi bi-activity me-2"></i>Son Aktiviteler</h5>
                     </div>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card border-0 shadow-sm h-100 feature-card">
-                            <div class="card-body text-center p-4">
-                                <div class="feature-icon bg-success text-white rounded-circle mx-auto mb-3">
-                                    <i class="bi bi-calendar-check"></i>
-                                </div>
-                                <h5 class="card-title">Attendance</h5>
-                                <p class="card-text text-muted">Keep track of your attendance record and never miss important
-                                    classes.</p>
-                                <a asp-controller="Student" asp-action="MyAttendance" class="btn btn-outline-success">Check
-                                    Attendance</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card border-0 shadow-sm h-100 feature-card">
-                            <div class="card-body text-center p-4">
-                                <div class="feature-icon bg-info text-white rounded-circle mx-auto mb-3">
-                                    <i class="bi bi-journal-bookmark"></i>
-                                </div>
-                                <h5 class="card-title">Homework Hub</h5>
-                                <p class="card-text text-muted">Access all your assignments and submit homework on time.</p>
-                                <a asp-controller="Student" asp-action="ViewHomeworks" class="btn btn-outline-info">View
-                                    Homeworks</a>
-                            </div>
-                        </div>
-                    </div>
-                    break;
-                case "TEACHER":
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card border-0 shadow-sm h-100 feature-card">
-                            <div class="card-body text-center p-4">
-                                <div class="feature-icon bg-primary text-white rounded-circle mx-auto mb-3">
-                                    <i class="bi bi-clipboard-data"></i>
-                                </div>
-                                <h5 class="card-title">Grade Management</h5>
-                                <p class="card-text text-muted">Efficiently manage student grades and track class performance.
-                                </p>
-                                <a asp-controller="Teacher" asp-action="ViewExams" class="btn btn-outline-primary">Manage
-                                    Grades</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card border-0 shadow-sm h-100 feature-card">
-                            <div class="card-body text-center p-4">
-                                <div class="feature-icon bg-warning text-white rounded-circle mx-auto mb-3">
-                                    <i class="bi bi-person-check"></i>
-                                </div>
-                                <h5 class="card-title">Attendance Tracking</h5>
-                                <p class="card-text text-muted">Take attendance and monitor student participation in your
-                                    classes.</p>
-                                <a asp-controller="Teacher" asp-action="TakeAttendance" class="btn btn-outline-warning">Take
-                                    Attendance</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card border-0 shadow-sm h-100 feature-card">
-                            <div class="card-body text-center p-4">
-                                <div class="feature-icon bg-success text-white rounded-circle mx-auto mb-3">
+                    <div class="panel-body">
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <div class="activity-icon bg-primary">
                                     <i class="bi bi-journal-plus"></i>
                                 </div>
-                                <h5 class="card-title">Assignment Creator</h5>
-                                <p class="card-text text-muted">Create and manage homework assignments for your students.</p>
-                                <a asp-controller="Teacher" asp-action="CreateHomework" class="btn btn-outline-success">Create
-                                    Homework</a>
-                            </div>
-                        </div>
-                    </div>
-                    break;
-                case "PRİNCİPAL":
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card border-0 shadow-sm h-100 feature-card">
-                            <div class="card-body text-center p-4">
-                                <div class="feature-icon bg-danger text-white rounded-circle mx-auto mb-3">
-                                    <i class="bi bi-people"></i>
+                                <div class="activity-content">
+                                    <p class="mb-1">Yeni ödev eklendi</p>
+                                    <small class="text-muted">2 saat önce</small>
                                 </div>
-                                <h5 class="card-title">User Management</h5>
-                                <p class="card-text text-muted">Manage all users, add new students and teachers to the system.
-                                </p>
-                                <a asp-controller="Principal" asp-action="List" class="btn btn-outline-danger">Manage Users</a>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card border-0 shadow-sm h-100 feature-card">
-                            <div class="card-body text-center p-4">
-                                <div class="feature-icon bg-secondary text-white rounded-circle mx-auto mb-3">
-                                    <i class="bi bi-diagram-3"></i>
+                            <div class="activity-item">
+                                <div class="activity-icon bg-success">
+                                    <i class="bi bi-check-circle"></i>
                                 </div>
-                                <h5 class="card-title">Class Organization</h5>
-                                <p class="card-text text-muted">Create and manage classes, organize the school structure.</p>
-                                <a asp-controller="Principal" asp-action="Classes" class="btn btn-outline-secondary">Manage
-                                    Classes</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card border-0 shadow-sm h-100 feature-card">
-                            <div class="card-body text-center p-4">
-                                <div class="feature-icon bg-primary text-white rounded-circle mx-auto mb-3">
-                                    <i class="bi bi-calendar-week"></i>
+                                <div class="activity-content">
+                                    <p class="mb-1">Sınav sonuçları girildi</p>
+                                    <small class="text-muted">5 saat önce</small>
                                 </div>
-                                <h5 class="card-title">Schedule Management</h5>
-                                <p class="card-text text-muted">Create and manage class schedules for the entire school.</p>
-                                <a asp-controller="Schedule" asp-action="Index" class="btn btn-outline-primary">Manage
-                                    Schedules</a>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon bg-warning">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="mb-1">Devamsızlık uyarısı</p>
+                                    <small class="text-muted">1 gün önce</small>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    break;
-            }
+                </div>
+
+                <!--                <!-- Sağ Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h5><i class="bi bi-calendar-event me-2"></i>Bugünkü Program</h5>
+                    </div>
+                    <div class="panel-body">
+                        @switch (role)
+                        {
+                            case "STUDENT":
+                                <div class="schedule-list">
+                                    <div class="schedule-item">
+                                        <div class="schedule-time">09:00</div>
+                                        <div class="schedule-content">
+                                            <h6>Matematik</h6>
+                                            <small>Sınıf A-101</small>
+                                        </div>
+                                    </div>
+                                    <div class="schedule-item">
+                                        <div class="schedule-time">10:00</div>
+                                        <div class="schedule-content">
+                                            <h6>Fizik</h6>
+                                            <small>Sınıf B-205</small>
+                                        </div>
+                                    </div>
+                                    <div class="schedule-item">
+                                        <div class="schedule-time">11:00</div>
+                                        <div class="schedule-content">
+                                            <h6>Kimya</h6>
+                                            <small>Lab-301</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                break;
+                            case "TEACHER":
+                                <div class="schedule-list">
+                                    <div class="schedule-item">
+                                        <div class="schedule-time">09:00</div>
+                                        <div class="schedule-content">
+                                            <h6>9-A Sınıfı</h6>
+                                            <small>Matematik Dersi</small>
+                                        </div>
+                                    </div>
+                                    <div class="schedule-item">
+                                        <div class="schedule-time">10:00</div>
+                                        <div class="schedule-content">
+                                            <h6>10-B Sınıfı</h6>
+                                            <small>Matematik Dersi</small>
+                                        </div>
+                                    </div>
+                                    <div class="schedule-item">
+                                        <div class="schedule-time">14:00</div>
+                                        <div class="schedule-content">
+                                            <h6>Öğretmen Toplantısı</h6>
+                                            <small>Toplantı Salonu</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                break;
+                            case "PRİNCİPAL":
+                                <div class="schedule-list">
+                                    <div class="schedule-item">
+                                        <div class="schedule-time">10:00</div>
+                                        <div class="schedule-content">
+                                            <h6>Veli Görüşmesi</h6>
+                                            <small>Müdür Odası</small>
+                                        </div>
+                                    </div>
+                                    <div class="schedule-item">
+                                        <div class="schedule-time">14:00</div>
+                                        <div class="schedule-content">
+                                            <h6>Öğretmen Toplantısı</h6>
+                                            <small>Toplantı Salonu</small>
+                                        </div>
+                                    </div>
+                                    <div class="schedule-item">
+                                        <div class="schedule-time">16:00</div>
+                                        <div class="schedule-content">
+                                            <h6>Bütçe Değerlendirmesi</h6>
+                                            <small>Müdür Odası</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                break;
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alt Panel - Hızlı Aksiyonlar -->
+            <div class="quick-actions-panel">
+                <div class="panel-header">
+                    <h5><i class="bi bi-lightning-fill me-2"></i>Hızlı İşlemler</h5>
+                </div>
+                <div class="quick-actions-grid">
+                    @switch (role)
+                    {
+                        case "STUDENT":
+                            <a asp-controller="Student" asp-action="ViewExamSystem" class="quick-action-btn bg-primary">
+                                <i class="bi bi-journal-text"></i>
+                                <span>Sınav Sonuçları</span>
+                            </a>
+                            <a asp-controller="Student" asp-action="ViewHomeworks" class="quick-action-btn bg-success">
+                                <i class="bi bi-journal-bookmark"></i>
+                                <span>Ödevlerim</span>
+                            </a>
+                            <a asp-controller="Student" asp-action="MyAttendance" class="quick-action-btn bg-warning">
+                                <i class="bi bi-calendar-check"></i>
+                                <span>Devamsızlık</span>
+                            </a>
+                            <a asp-controller="Schedule" asp-action="ViewSchedule" class="quick-action-btn bg-info">
+                                <i class="bi bi-calendar-event"></i>
+                                <span>Ders Programı</span>
+                            </a>
+                            break;
+                        case "TEACHER":
+                            <a asp-controller="Teacher" asp-action="CreateExam" class="quick-action-btn bg-primary">
+                                <i class="bi bi-plus-circle"></i>
+                                <span>Sınav Oluştur</span>
+                            </a>
+                            <a asp-controller="Teacher" asp-action="TakeAttendance" class="quick-action-btn bg-success">
+                                <i class="bi bi-person-check"></i>
+                                <span>Yoklama Al</span>
+                            </a>
+                            <a asp-controller="Teacher" asp-action="CreateHomework" class="quick-action-btn bg-warning">
+                                <i class="bi bi-journal-plus"></i>
+                                <span>Ödev Ver</span>
+                            </a>
+                            <a asp-controller="Teacher" asp-action="ViewExams" class="quick-action-btn bg-info">
+                                <i class="bi bi-clipboard-data"></i>
+                                <span>Not Girişi</span>
+                            </a>
+                            break;
+                        case "PRİNCİPAL":
+                            <a asp-controller="Principal" asp-action="AddUser" class="quick-action-btn bg-danger">
+                                <i class="bi bi-person-plus"></i>
+                                <span>Kullanıcı Ekle</span>
+                            </a>
+                            <a asp-controller="Principal" asp-action="Classes" class="quick-action-btn bg-secondary">
+                                <i class="bi bi-diagram-3"></i>
+                                <span>Sınıf Yönetimi</span>
+                            </a>
+                            <a asp-controller="Principal" asp-action="List" class="quick-action-btn bg-primary">
+                                <i class="bi bi-people"></i>
+                                <span>Kullanıcı Listesi</span>
+                            </a>
+                            <a asp-controller="Schedule" asp-action="Index" class="quick-action-btn bg-success">
+                                <i class="bi bi-calendar-week"></i>
+                                <span>Program Yönetimi</span>
+                            </a>
+                            break;
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <style>
-    .dashboard-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
+    .dashboard-wrapper {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        padding: 0;
+        margin: 0;
     }
 
-    .hero-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 20px;
-        padding: 4rem 2rem;
-        text-align: center;
-        color: white;
-        margin-bottom: 3rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    }
-
-    .user-avatar {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-        animation: bounce 2s infinite;
-    }
-
-    .hero-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-    }
-
-    .role-badge {
-        display: inline-block;
-        padding: 0.5rem 1.5rem;
-        border-radius: 50px;
-        font-weight: 600;
-        margin-bottom: 1rem;
-    }
-
-    .hero-description {
-        font-size: 1.1rem;
-        margin-bottom: 2rem;
-        opacity: 0.9;
-    }
-
-    .quick-actions {
+    .top-bar {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 1rem 2rem;
         display: flex;
-        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
         gap: 1rem;
-        justify-content: center;
-        margin-top: 2rem;
     }
 
-    .stats-section {
-        margin-bottom: 3rem;
-    }
-
-    .features-section .card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .features-section .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    }
-
-    .feature-icon {
-        width: 80px;
-        height: 80px;
+    .user-avatar-small {
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .user-details h4 {
+        color: white;
+        font-weight: 600;
+    }
+
+    .role-text {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+        padding: 2rem;
+        height: calc(100vh - 80px);
+    }
+
+    .sidebar {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-header h5 {
+        color: white;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .menu-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .menu-item i {
+        font-size: 1.2rem;
+        width: 20px;
+    }
+
+    .main-content {
+        overflow-y: auto;
+        padding-right: 1rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .stat-info h3 {
+        color: white;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .    .stat-info p {
+        color: rgba(255, 255, 255, 0.8);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .bg-gradient-success {
+        background: linear-gradient(45deg, #56ab2f 0%, #a8e6cf 100%);
+    }
+
+    .bg-gradient-warning {
+        background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .bg-gradient-info {
+        background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .bg-gradient-danger {
+        background: linear-gradient(45deg, #ff416c 0%, #ff4b2b 100%);
+    }
+
+    .bg-gradient-secondary {
+        background: linear-gradient(45deg, #434343 0%, #000000 100%);
+    }
+
+    .panels-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .panel {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+    }
+
+    .panel-header {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .panel-header h5 {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .panel-body {
+        padding: 1.5rem;
+    }
+
+    .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .activity-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(5px);
+    }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1rem;
+    }
+
+    .activity-content p {
+        color: white;
+        font-weight: 500;
+    }
+
+    .activity-content small {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .schedule-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .schedule-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+    }
+
+    .schedule-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(5px);
+    }
+
+    .schedule-time {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        min-width: 70px;
+        text-align: center;
+    }
+
+    .schedule-content h6 {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .schedule-content small {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .quick-actions-panel {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+    }
+
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+
+    .quick-action-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-decoration: none;
+        color: white;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .quick-action-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+
+    .quick-action-btn i {
         font-size: 2rem;
     }
 
-    @@keyframes
-    bounce {
+    .quick-action-btn span {
+        font-weight: 600;
+        text-align: center;
+    }
 
-        0%,
-        20%,
-        50%,
-        80%,
-        100% {
-            transform: translateY(0);
+    /* Responsive Design */
+    @@media (max-width: 1200px) {
+        .dashboard-grid {
+            grid-template-columns: 250px 1fr;
         }
-
-        40% {
-            transform: translateY(-10px);
-        }
-
-        60% {
-            transform: translateY(-5px);
+        
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         }
     }
 
-    @@media
-    (max-width: 768px) {
-        .hero-section {
-            padding: 2rem 1rem;
+    @@media (max-width: 992px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
         }
-
-        .hero-title {
-            font-size: 2rem;
+        
+        .sidebar {
+            order: 2;
         }
+        
+        .main-content {
+            order: 1;
+        }
+        
+        .panels-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .quick-actions-grid {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+    }
 
-        .quick-actions {
+    @@media (max-width: 768px) {
+        .top-bar {
+            padding: 1rem;
             flex-direction: column;
-            align-items: center;
+            gap: 1rem;
         }
+        
+        .dashboard-grid {
+            padding: 1rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .user-info {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .quick-actions-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 
-        .quick-actions .btn {
-            width: 100%;
-            max-width: 300px;
+    /* Scrollbar Styling */
+    .main-content::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .main-content::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+
+    .main-content::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+    }
+
+    .main-content::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Animasyonlar */
+    .stat-card, .panel, .menu-item, .activity-item, .schedule-item, .quick-action-btn {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
         }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Hover efektleri */
+    .stat-card:hover .stat-icon {
+        transform: scale(1.1);
+        transition: transform 0.3s ease;
+    }
+
+    .panel:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
     }
 </style>

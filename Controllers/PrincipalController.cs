@@ -590,5 +590,124 @@ namespace dershane.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        [RoleAuthorize("principal")]
+        public async Task<IActionResult> Lessons()
+        {
+            var lessons = await _context.Lessons.ToListAsync();
+
+            // Sınav sayılarını hesapla
+            var examCounts = new Dictionary<string, int>();
+            var homeworkCounts = new Dictionary<string, int>();
+
+            foreach (var lesson in lessons)
+            {
+                examCounts[lesson.Name] = await _context.ExamSystem.CountAsync(e =>
+                    e.Lesson == lesson.Name
+                );
+                homeworkCounts[lesson.Name] = await _context.Homeworks.CountAsync(h =>
+                    h.Lesson == lesson.Name
+                );
+            }
+
+            ViewBag.ExamCounts = examCounts;
+            ViewBag.HomeworkCounts = homeworkCounts;
+
+            return View(lessons);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [RoleAuthorize("principal")]
+        public async Task<IActionResult> CreateLesson(string name, string description)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                TempData["Error"] = "Ders adı boş olamaz!";
+                return RedirectToAction("Lessons");
+            }
+
+            var existingLesson = await _context.Lessons.FirstOrDefaultAsync(l => l.Name == name);
+            if (existingLesson != null)
+            {
+                TempData["Error"] = "Bu ders zaten mevcut!";
+                return RedirectToAction("Lessons");
+            }
+
+            var lesson = new Lesson { Name = name, Description = description };
+
+            _context.Lessons.Add(lesson);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Ders başarıyla eklendi!";
+            return RedirectToAction("Lessons");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [RoleAuthorize("principal")]
+        public async Task<IActionResult> UpdateLesson(int id, string name, string description)
+        {
+            var lesson = await _context.Lessons.FindAsync(id);
+            if (lesson == null)
+            {
+                TempData["Error"] = "Ders bulunamadı!";
+                return RedirectToAction("Lessons");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                TempData["Error"] = "Ders adı boş olamaz!";
+                return RedirectToAction("Lessons");
+            }
+
+            var existingLesson = await _context.Lessons.FirstOrDefaultAsync(l =>
+                l.Name == name && l.Id != id
+            );
+            if (existingLesson != null)
+            {
+                TempData["Error"] = "Bu ders adı zaten kullanılıyor!";
+                return RedirectToAction("Lessons");
+            }
+
+            lesson.Name = name;
+            lesson.Description = description;
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Ders başarıyla güncellendi!";
+            return RedirectToAction("Lessons");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [RoleAuthorize("principal")]
+        public async Task<IActionResult> DeleteLesson(int id)
+        {
+            var lesson = await _context.Lessons.FindAsync(id);
+            if (lesson == null)
+            {
+                TempData["Error"] = "Ders bulunamadı!";
+                return RedirectToAction("Lessons");
+            }
+
+            // Check if lesson is being used in exams or homeworks
+            var hasExams = await _context.ExamSystem.AnyAsync(e => e.Lesson == lesson.Name);
+            var hasHomeworks = await _context.Homeworks.AnyAsync(h => h.Lesson == lesson.Name);
+            var hasSchedules = await _context.Schedules.AnyAsync(s => s.Lesson == lesson.Name);
+
+            if (hasExams || hasHomeworks || hasSchedules)
+            {
+                TempData["Error"] = "Bu ders kullanımda olduğu için silinemez!";
+                return RedirectToAction("Lessons");
+            }
+
+            _context.Lessons.Remove(lesson);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Ders başarıyla silindi!";
+            return RedirectToAction("Lessons");
+        }
     }
 }
