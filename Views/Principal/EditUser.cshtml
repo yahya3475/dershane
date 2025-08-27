@@ -4,68 +4,513 @@
     ViewData["Title"] = "Edit User - Principal";
     var classList = ViewBag.Classes as List<string>;
 }
+@section Styles {
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: #ffffff;
+        }
 
-<div class="container mt-5">
-    <div class="card shadow-lg border-0 rounded-lg">
-        <div class="card-header bg-primary text-white">
-            <h2 class="mb-0"><i class="bi bi-person-gear"></i> Edit User</h2>
-        </div>
-        <div class="card-body">
-            <form asp-action="EditUser" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="dershaneid" />
+        .dashboard-container {
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
 
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label asp-for="firstname" class="form-label">First Name</label>
-                        <input asp-for="firstname" class="form-control" required />
-                        <span asp-validation-for="firstname" class="text-danger"></span>
+        .main-card {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            padding: 2rem;
+            border: none;
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-header-custom::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.05"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.05"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            text-shadow: none;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            color: #a5b4fc;
+            font-weight: 600;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-control,
+        .form-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            color: #ffffff;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #6366f1;
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+            color: #ffffff;
+        }
+
+        .form-select option {
+            background: #1a1a2e;
+            color: #ffffff;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+            background: linear-gradient(135deg, #5b5ff1 0%, #8049f6 100%);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            color: #ffffff;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+
+        .alert {
+            border: none;
+            border-radius: 15px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .text-danger {
+            color: #fca5a5 !important;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            font-weight: 500;
+        }
+
+        .form-text {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 0.25rem;
+        }
+
+        .icon-accent {
+            color: #a5b4fc;
+            margin-right: 0.5rem;
+        }
+
+        .user-info-card {
+            background: rgba(20, 184, 166, 0.1);
+            border: 1px solid rgba(20, 184, 166, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .user-id-display {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            color: #a5b4fc;
+            display: inline-block;
+        }
+
+        /* Form section hover effect */
+        .form-section:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Enhanced focus indicators */
+        .form-control:focus-visible,
+        .form-select:focus-visible,
+        .btn:focus-visible {
+            outline: 2px solid #6366f1;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        }
+
+        /* Animation for form sections */
+        .form-section {
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive design */
+        @@media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem 0;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .form-section {
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .main-card {
+                margin: 0 1rem;
+            }
+
+            .card-header-custom {
+                padding: 1.5rem;
+            }
+
+            .btn-primary,
+            .btn-secondary,
+            .btn-danger {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .d-md-flex {
+                flex-direction: column;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 4px; 
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.5);
+        }
+    </style>
+}
+<div class="dashboard-container">
+    <div class="container">
+        <div class="main-card">
+            <div class="card-header-custom">
+                <div class="header-content">
+                    <h1 class="page-title">
+                        <i class="bi bi-person-gear icon-accent"></i>
+                        Kullanıcı Düzenle
+                    </h1>
+                    <p class="page-subtitle">Kullanıcı bilgilerini güncelleyin ve değişiklikleri kaydedin</p>
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-                    <div class="col-md-6">
-                        <label asp-for="lastname" class="form-label">Last Name</label>
-                        <input asp-for="lastname" class="form-control" required />
-                        <span asp-validation-for="lastname" class="text-danger"></span>
+                }
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <div class="user-info-card">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="user-id-display">
+                            <i class="bi bi-hash"></i> ID: @Model.dershaneid
+                        </div>
+                        <div>
+                            <h6 class="mb-0 text-white">Düzenlenen Kullanıcı</h6>
+                            <small class="text-muted">@Model.firstname @Model.lastname</small>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="role" class="form-label">Role</label>
-                    <select asp-for="role" class="form-select" required>
-                        <option value="student">Student</option>
-                        <option value="teacher">Teacher</option>
-                        <option value="principal">Principal</option>
-                    </select>
-                    <span asp-validation-for="role" class="text-danger"></span>
-                </div>
+                <form asp-action="EditUser" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="dershaneid" />
 
-                <div class="mb-3">
-                    <label asp-for="uclass" class="form-label">Class</label>
-                    <select asp-for="uclass" class="form-select">
-                        <option value="">-- Select Class --</option>
-                        @if (classList != null && classList.Any())
-                        {
-                            foreach (var cls in classList)
-                            {
-                                <option value="@cls">@cls</option>
-                            }
-                        }
-                    </select>
-                    <span asp-validation-for="uclass" class="text-danger"></span>
-                </div>
+                    <div class="form-section">
+                        <h5 class="section-title">
+                            <i class="bi bi-person-circle"></i>
+                            Kişisel Bilgiler
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="firstname" class="form-label">
+                                    <i class="bi bi-person"></i>
+                                    Ad
+                                </label>
+                                <input asp-for="firstname" class="form-control" placeholder="Adını girin..." required />
+                                <span asp-validation-for="firstname" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="lastname" class="form-label">
+                                    <i class="bi bi-person"></i>
+                                    Soyad
+                                </label>
+                                <input asp-for="lastname" class="form-control" placeholder="Soyadını girin..." required />
+                                <span asp-validation-for="lastname" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="d-flex justify-content-between">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-save me-2"></i> Save Changes
-                    </button>
-                    <a asp-action="List" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left me-2"></i> Back to List
-                    </a>
-                </div>
-            </form>
+                    <div class="form-section">
+                        <h5 class="section-title">
+                            <i class="bi bi-shield-check"></i>
+                            Rol ve Yetki Bilgileri
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <label asp-for="role" class="form-label">
+                                <i class="bi bi-person-badge"></i>
+                                Rol
+                            </label>
+                            <select asp-for="role" class="form-select" required>
+                                <option value="">-- Rol Seçin --</option>
+                                <option value="student">👨‍🎓 Öğrenci</option>
+                                <option value="teacher">👨‍🏫 Öğretmen</option>
+                                <option value="principal">🏫 Müdür</option>
+                            </select>
+                            <div class="form-text">Kullanıcının sistemdeki rolünü belirler</div>
+                            <span asp-validation-for="role" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h5 class="section-title">
+                            <i class="bi bi-diagram-3"></i>
+                            Sınıf Bilgileri
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <label asp-for="uclass" class="form-label">
+                                <i class="bi bi-building"></i>
+                                Sınıf
+                            </label>
+                            <select asp-for="uclass" class="form-select">
+                                <option value="">-- Sınıf Seçin --</option>
+                                @if (classList != null && classList.Any())
+                                {
+                                    foreach (var cls in classList)
+                                    {
+                                        <option value="@cls">@cls</option>
+                                    }
+                                }
+                            </select>
+                            <div class="form-text">Öğrenci için zorunlu, öğretmen ve müdür için isteğe bağlı</div>
+                            <span asp-validation-for="uclass" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-2"></i>
+                                Değişiklikleri Kaydet
+                            </button>
+                            <a asp-action="List" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Listeye Dön
+                            </a>
+                        </div>
+                        <div>
+                            <a asp-action="DeleteUser" asp-route-id="@Model.dershaneid" 
+                               class="btn btn-danger"
+                               onclick="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')">
+                                <i class="bi bi-trash me-2"></i>
+                                Kullanıcıyı Sil
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        $(document).ready(function() {
+            // Role değiştiğinde sınıf alanını kontrol et
+            $('select[name="role"]').on('change', function() {
+                const selectedRole = $(this).val();
+                const classSelect = $('select[name="uclass"]');
+                const classFormText = classSelect.siblings('.form-text');
+                
+                if (selectedRole === 'student') {
+                    classSelect.prop('required', true);
+                    classFormText.text('Öğrenci için sınıf seçimi zorunludur');
+                    classFormText.removeClass('text-muted').addClass('text-warning');
+                } else {
+                    classSelect.prop('required', false);
+                    classFormText.text('Öğretmen ve müdür için isteğe bağlı');
+                    classFormText.removeClass('text-warning').addClass('text-muted');
+                }
+            });
+            
+            // Sayfa yüklendiğinde mevcut role göre kontrol et
+            $('select[name="role"]').trigger('change');
+            
+            // Form submit öncesi validasyon
+            $('form').on('submit', function(e) {
+                const role = $('select[name="role"]').val();
+                const uclass = $('select[name="uclass"]').val();
+                
+                if (role === 'student' && !uclass) {
+                    e.preventDefault();
+                    alert('Öğrenci rolü için sınıf seçimi zorunludur!');
+                    $('select[name="uclass"]').focus();
+                    return false;
+                }
+            });
+            
+            // Animasyon efektleri
+            $('.form-section').each(function(index) {
+                $(this).css('animation-delay', (index * 0.1) + 's');
+            });
+        });
+    </script>
 }

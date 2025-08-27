@@ -1,93 +1,732 @@
-@model dershane.Models.User
+@model AddUserVM
 
 @{
     ViewData["Title"] = "Add User - Principal";
     var classList = ViewBag.Classes as List<string>;
 }
 
-<div class="container mt-5">
-    <div class="card shadow-lg border-0 rounded-lg">
-        <div class="card-header bg-primary text-white">
-            <h2 class="mb-0"><i class="bi bi-person-plus-fill"></i> Add New User</h2>
-        </div>
-        <div class="card-body">
-            @if (TempData["Success"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+@section Styles {
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: #ffffff;
+        }
+
+        .dashboard-container {
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .main-card {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            padding: 2rem;
+            border: none;
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-header-custom::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.05"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.05"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            text-shadow: none;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            color: #a5b4fc;
+            font-weight: 600;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-control,
+        .form-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            color: #ffffff;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #6366f1;
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+            color: #ffffff;
+        }
+
+        .form-select option {
+            background: #1a1a2e;
+            color: #ffffff;
+        }
+
+        .input-group .btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+
+        .input-group .btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+            color: #a5b4fc;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+            background: linear-gradient(135deg, #5b5ff1 0%, #8049f6 100%);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            color: #ffffff;
+        }
+
+        .alert {
+            border: none;
+            border-radius: 15px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+        }
+
+        .alert-success .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .text-danger {
+            color: #fca5a5 !important;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            font-weight: 500;
+        }
+
+        .form-text {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 0.25rem;
+        }
+
+        .auto-id-info {
+            background: rgba(20, 184, 166, 0.2);
+            border: 1px solid rgba(20, 184, 166, 0.3);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-weight: 500;
+            color: #5eead4;
+            cursor: not-allowed;
+        }
+
+        .icon-accent {
+            color: #a5b4fc;
+            margin-right: 0.5rem;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.5);
+        }
+
+        /* Focus states for accessibility */
+        .form-control:focus,
+        .form-select:focus,
+        .btn:focus {
+            outline: 2px solid #6366f1;
+            outline-offset: 2px;
+        }
+
+        /* Animation for form sections */
+        .form-section {
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hover effects */
+        .form-control:hover,
+        .form-select:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Loading state */
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary:disabled:hover {
+            transform: none;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Responsive design */
+        @@media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem 0;
             }
 
-            <form asp-controller="Principal" asp-action="AddUser" method="post">
-                @Html.AntiForgeryToken()
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label asp-for="firstname" class="form-label">First Name</label>
-                        <input asp-for="firstname" class="form-control" required />
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .form-section {
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .main-card {
+                margin: 0 1rem;
+            }
+
+            .card-header-custom {
+                padding: 1.5rem;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .d-md-flex {
+                flex-direction: column;
+            }
+        }
+
+        /* Dark theme specific enhancements */
+        .bi {
+            color: #a5b4fc;
+        }
+
+        hr {
+            border-color: rgba(255, 255, 255, 0.1);
+            margin: 1.5rem 0;
+        }
+
+        h6 {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+
+        /* Input group styling */
+        .input-group .form-control {
+            border-right: none;
+                    }
+
+        .input-group .form-control:focus {
+            border-right: none;
+            box-shadow: none;
+        }
+
+        .input-group .form-control:focus + .btn {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        }
+
+        /* Enhanced button styles */
+        .btn-outline-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .btn-outline-secondary:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+            color: #a5b4fc;
+        }
+
+        /* Form validation styling */
+        .is-invalid {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25) !important;
+        }
+
+        .is-valid {
+            border-color: #22c55e !important;
+            box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25) !important;
+        }
+
+        /* Select dropdown styling */
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23a5b4fc' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+        }
+
+        /* Textarea styling */
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Card body styling */
+        .main-card .p-4 {
+            background: rgba(15, 15, 35, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Enhanced alert styling */
+        .alert-dismissible .btn-close {
+            background: none;
+            border: none;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .alert-dismissible .btn-close:hover {
+            opacity: 1;
+        }
+
+        /* Form section hover effect */
+        .form-section:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Icon styling */
+        .bi-person-plus-fill {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Loading spinner for form submission */
+        .btn-primary.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-primary.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @@keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Enhanced focus indicators */
+        .form-control:focus-visible,
+        .form-select:focus-visible,
+        .btn:focus-visible {
+            outline: 2px solid #6366f1;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        }
+
+        /* Smooth transitions */
+        * {
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Enhanced typography */
+        .form-label i {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        /* Custom checkbox and radio styling (if needed) */
+        .form-check-input {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-check-input:checked {
+            background-color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .form-check-input:focus {
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        }
+
+        /* Enhanced mobile responsiveness */
+        @@media (max-width: 576px) {
+            .page-title {
+                font-size: 1.75rem;
+            }
+
+            .form-section {
+                padding: 1rem;
+            }
+
+            .card-header-custom {
+                padding: 1rem;
+            }
+
+            .row > div {
+                margin-bottom: 1rem;
+            }
+        }
+
+        /* Print styles */
+        @@media print {
+            .dashboard-container {
+                background: white !important;
+                color: black !important;
+            }
+
+            .main-card {
+                background: white !important;
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+            }
+
+            .btn {
+                display: none !important;
+            }
+        }
+
+        /* High contrast mode support */
+        @@media (prefers-contrast: high) {
+            .form-control,
+            .form-select {
+                border-width: 3px;
+            }
+
+            .btn-primary {
+                background: #0000ff !important;
+            }
+
+            .text-danger {
+                color: #ff0000 !important;
+            }
+        }
+
+        /* Reduced motion support */
+        @@media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+}
+
+<div class="dashboard-container">
+    <div class="container">
+        <div class="main-card">
+            <div class="card-header-custom">
+                <div class="header-content">
+                    <h1 class="page-title">
+                        <i class="bi bi-person-plus-fill me-3"></i>
+                        Yeni Kullanıcı Ekle
+                    </h1>
+                    <p class="page-subtitle">Sisteme yeni öğrenci, öğretmen veya müdür ekleyin</p>
+                </div>
+            </div>
+
+            <div class="p-4">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                    <div class="col-md-6">
-                        <label asp-for="lastname" class="form-label">Last Name</label>
-                        <input asp-for="lastname" class="form-control" required />
-                    </div>
-                </div>
+                }
 
-                <div class="mb-3">
-                    <label asp-for="password" class="form-label">Password</label>
-                    <div class="input-group">
-                        <input asp-for="password" type="password" class="form-control" required />
-                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                    </div>
-                </div>
+                <form asp-action="AddUser" method="post">
+                    <!-- Temel Bilgiler -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-person-circle icon-accent"></i>
+                            Temel Bilgiler
+                        </h3>
 
-                <div class="mb-3">
-                    <label asp-for="role" class="form-label">Role</label>
-                    <select asp-for="role" class="form-select" required>
-                        <option value="">-- Select Role --</option>
-                        <option value="student">Student</option>
-                        <option value="teacher">Teacher</option>
-                        <option value="principal">Principal</option>
-                    </select>
-                </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="FirstName" class="form-label">
+                                        <i class="bi bi-person me-1"></i>Ad
+                                    </label>
+                                    <input asp-for="FirstName" class="form-control" placeholder="Adını giriniz" />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="LastName" class="form-label">
+                                        <i class="bi bi-person me-1"></i>Soyad
+                                    </label>
+                                    <input asp-for="LastName" class="form-control" placeholder="Soyadını giriniz" />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="mb-3">
-                    <label asp-for="uclass" class="form-label">Class</label>
-                    <select asp-for="uclass" class="form-select">
-                        <option value="">-- Select Class --</option>
-                        @if (classList != null && classList.Any())
-                        {
-                            foreach (var cls in classList)
-                            {
-                                <option value="@cls">@cls</option>
-                            }
-                        }
-                    </select>
-                </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="bi bi-hash me-1"></i>Dershane ID
+                                    </label>
+                                    <input type="text" class="form-control auto-id-info" value="Otomatik oluşturulacak"
+                                        readonly />
+                                    <small class="form-text">ID sistem tarafından otomatik olarak
+                                        oluşturulacaktır.</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Password" class="form-label">
+                                        <i class="bi bi-key me-1"></i>Şifre
+                                    </label>
+                                    <div class="input-group">
+                                        <input asp-for="Password" type="password" class="form-control"
+                                            placeholder="Şifre giriniz" />
+                                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="mb-3">
-                    <label for="newClass" class="form-label">Or Add New Class</label>
-                    <input type="text" id="newClass" name="newClass" class="form-control" placeholder="Enter new class name" />
-                </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Role" class="form-label">
+                                        <i class="bi bi-shield-check me-1"></i>Rol
+                                    </label>
+                                    <select asp-for="Role" class="form-select" id="roleSelect">
+                                        <option value="">Rol Seçiniz</option>
+                                        <option value="STUDENT">👨‍🎓 Öğrenci</option>
+                                        <option value="TEACHER">👨‍🏫 Öğretmen</option>
+                                        <option value="PRINCIPAL">👨‍💼 Müdür</option>
+                                    </select>
+                                    <span asp-validation-for="Role" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3" id="classSelection">
+                                    <label asp-for="UClass" class="form-label">Sınıf</label>
+                                    <select asp-for="UClass" class="form-select">
+                                        <option value="">Sınıf Seçiniz</option>
+                                        @if (classList != null)
+                                        {
+                                            @foreach (var className in classList)
+                                            {
+                                                <option value="@className">@className</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="UClass" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="d-flex justify-content-between">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-save me-2"></i> Save
-                    </button>
-                    <a asp-action="Index" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left me-2"></i> Back
-                    </a>
-                </div>
-            </form>
+                        <!-- İletişim Bilgileri -->
+                        <hr>
+                        <h6 class="mb-3">İletişim Bilgileri</h6>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Email" class="form-label">E-posta</label>
+                                    <input asp-for="Email" type="email" class="form-control" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="PhoneNumber" class="form-label">Telefon</label>
+                                    <input asp-for="PhoneNumber" class="form-control" />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Veli Bilgileri (Öğrenci için) -->
+                        <div id="parentInfo" style="display: none;">
+                            <hr>
+                            <h6 class="mb-3">Veli Bilgileri</h6>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="Parent" class="form-label">Veli Adı Soyadı</label>
+                                        <input asp-for="Parent" class="form-control" />
+                                        <span asp-validation-for="Parent" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="ParentPhoneNumber" class="form-label">Veli Telefonu</label>
+                                        <input asp-for="ParentPhoneNumber" class="form-control" />
+                                        <span asp-validation-for="ParentPhoneNumber" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">Adres</label>
+                            <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="List" class="btn btn-secondary me-md-2">İptal</a>
+                            <button type="submit" class="btn btn-primary">Kullanıcı Ekle</button>
+                        </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+</div>
+</div>
+</div>
 
 @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
     <script>
         document.getElementById('togglePassword').addEventListener('click', function () {
-            var passwordInput = document.getElementById('password');
+            var passwordInput = document.getElementById('Password');
             var icon = this.querySelector('i');
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
@@ -99,5 +738,6 @@
                 icon.classList.add('bi-eye');
             }
         });
+
     </script>
 }

@@ -1,4 +1,3 @@
-
 using System.ComponentModel.DataAnnotations;
 
 namespace dershane.ViewModels
@@ -7,30 +6,30 @@ namespace dershane.ViewModels
     {
         public int Id { get; set; }
         public int ExamId { get; set; }
-        
-        [Required(ErrorMessage = "Soru metni gerekli!")]
+
+        [Required(ErrorMessage = "Question text required!")]
         public string QuestionText { get; set; } = string.Empty;
-        
-        [Required(ErrorMessage = "A şıkkı gerekli!")]
+
+        [Required(ErrorMessage = "Option A required!")]
         public string OptionA { get; set; } = string.Empty;
-        
-        [Required(ErrorMessage = "B şıkkı gerekli!")]
+
+        [Required(ErrorMessage = "Option B required!")]
         public string OptionB { get; set; } = string.Empty;
-        
-        [Required(ErrorMessage = "C şıkkı gerekli!")]
+
+        [Required(ErrorMessage = "Option C required!")]
         public string OptionC { get; set; } = string.Empty;
-        
-        [Required(ErrorMessage = "D şıkkı gerekli!")]
+
+        [Required(ErrorMessage = "Option D required!")]
         public string OptionD { get; set; } = string.Empty;
-        
-        [Required(ErrorMessage = "Doğru cevap gerekli!")]
-        [RegularExpression("^[ABCD]$", ErrorMessage = "Doğru cevap A, B, C veya D olmalı!")]
+
+        [Required(ErrorMessage = "Correct answer required!")]
+        [RegularExpression("^[ABCD]$", ErrorMessage = "The correct answer must be A, B, C or D!")]
         public string CorrectAnswer { get; set; } = string.Empty;
-        
-        [Required(ErrorMessage = "Puan gerekli!")]
-        [Range(1, 100, ErrorMessage = "Puan 1-100 arasında olmalı!")]
+
+        [Required(ErrorMessage = "We need points!")]
+        [Range(1, 100, ErrorMessage = "The score must be between 1-100!")]
         public int Points { get; set; } = 10;
-        
+
         public int QuestionOrder { get; set; }
     }
 }

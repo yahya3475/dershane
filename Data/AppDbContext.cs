@@ -21,5 +21,6 @@ namespace dershane.Data
         public DbSet<ExamSystem> ExamSystem { get; set; }
         public DbSet<ExamQuestion> ExamQuestions { get; set; }
         public DbSet<StudentExamResult> StudentExamResults { get; set; }
+        public DbSet<UserInformation> user_informations { get; set; }
     }
 }

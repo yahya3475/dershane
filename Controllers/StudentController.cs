@@ -115,24 +115,12 @@ namespace dershane.Controllers
         [RoleAuthorize("student")]
         public async Task<IActionResult> SubmitHomework(int id)
         {
-            Console.WriteLine($"SubmitHomework GET action'ına girdi! ID: {id}");
-
             var homework = await _context.Homeworks.FindAsync(id);
-            Console.WriteLine($"EF Homework: {homework?.Title}");
-
             if (homework == null)
             {
-                Console.WriteLine("Homework NULL!");
-                TempData["Error"] = "Ödev bulunamadı!";
+                TempData["Error"] = "Assignment not found!";
                 return RedirectToAction("ViewHomeworks");
             }
-
-            Console.WriteLine($"Homework verileri:");
-            Console.WriteLine($"  ID: {homework.Id}");
-            Console.WriteLine($"  Title: {homework.Title}");
-            Console.WriteLine($"  Description: {homework.Description}");
-            Console.WriteLine($"  Lesson: {homework.Lesson}");
-            Console.WriteLine($"  DueDate: {homework.DueDate}");
 
             var studentId = HttpContext.Session.GetString("schoolnumber");
             var existingSubmission = await _context.HomeworkSubmissions.FirstOrDefaultAsync(s =>
@@ -141,7 +129,7 @@ namespace dershane.Controllers
 
             if (existingSubmission != null)
             {
-                TempData["Error"] = "Bu ödevi zaten teslim etmişsin lan!";
+                TempData["Error"] = "You already turned in this assignment!";
                 return RedirectToAction("ViewHomeworks");
             }
 
@@ -154,13 +142,6 @@ namespace dershane.Controllers
                 DueDate = homework.DueDate,
             };
 
-            Console.WriteLine($"Model oluşturuldu:");
-            Console.WriteLine($"  HomeworkId: {model.HomeworkId}");
-            Console.WriteLine($"  Title: {model.Title}");
-            Console.WriteLine($"  Description: {model.Description}");
-            Console.WriteLine($"  Lesson: {model.Lesson}");
-            Console.WriteLine($"  DueDate: {model.DueDate}");
-
             ViewData["DebugModel"] = model;
             ViewBag.DebugHomework = homework;
 
@@ -172,11 +153,6 @@ namespace dershane.Controllers
         [RoleAuthorize("student")]
         public async Task<IActionResult> SubmitHomework(dershane.Models.SubmitHomeworkVM model)
         {
-            Console.WriteLine("=== POST METHOD DEBUG ===");
-            Console.WriteLine($"HomeworkId: {model.HomeworkId}");
-            Console.WriteLine($"Answer: '{model.Answer}'");
-            Console.WriteLine($"Answer Length: {model.Answer?.Length ?? 0}");
-
             ModelState.Remove("Title");
             ModelState.Remove("Description");
             ModelState.Remove("Lesson");
@@ -205,8 +181,6 @@ namespace dershane.Controllers
                 return View(model);
             }
 
-            Console.WriteLine("ModelState VALID! Submission oluşturuluyor...");
-
             var studentId = HttpContext.Session.GetString("schoolnumber");
             var submission = new HomeworkSubmission
             {
@@ -219,10 +193,7 @@ namespace dershane.Controllers
             _context.HomeworkSubmissions.Add(submission);
             await _context.SaveChangesAsync();
 
-            Console.WriteLine("Submission başarıyla kaydedildi!");
-
-            TempData["Success"] =
-                "Ödev başarıyla teslim edildi! Şimdi bekle bakalım kaç alacaksın 😏";
+            TempData["Success"] = "Assignment successfully submitted!";
             return RedirectToAction("ViewHomeworks");
         }
 
@@ -238,7 +209,7 @@ namespace dershane.Controllers
 
             if (submission == null)
             {
-                TempData["Error"] = "Teslim edilen ödev bulunamadı!";
+                TempData["Error"] = "Submitted assignment not found!";
                 return RedirectToAction("ViewHomeworks");
             }
 
@@ -274,7 +245,7 @@ namespace dershane.Controllers
 
             if (studentClass == null)
             {
-                TempData["Error"] = "Sınıf bilgin bulunamadı lan!";
+                TempData["Error"] = "No class information found!";
                 return View(new StudentExamSystemVM());
             }
 
@@ -334,7 +305,7 @@ namespace dershane.Controllers
 
             if (existingResult != null && existingResult.IsCompleted)
             {
-                TempData["Error"] = "Bu sınavı zaten tamamladın! Bir daha alamazsın 😏";
+                TempData["Error"] = "You have already completed this test! You can't take it again";
                 return RedirectToAction("ViewExamSystem");
             }
 
@@ -344,13 +315,13 @@ namespace dershane.Controllers
 
             if (exam == null || !exam.IsActive)
             {
-                TempData["Error"] = "Sınav bulunamadı veya aktif değil!";
+                TempData["Error"] = "Exam not found or not active!";
                 return RedirectToAction("ViewExamSystem");
             }
 
             if (DateTime.Now < exam.ExamDate)
             {
-                TempData["Error"] = "Sınav henüz başlamadı! Sabırlı ol 😎";
+                TempData["Error"] = "The exam hasn't started yet! Be patient";
                 return RedirectToAction("ViewExamSystem");
             }
 
@@ -418,7 +389,7 @@ namespace dershane.Controllers
 
             if (examResult == null)
             {
-                TempData["Error"] = "Sınav kaydı bulunamadı!";
+                TempData["Error"] = "No exam record found!";
                 return RedirectToAction("ViewExamSystem");
             }
 
@@ -429,7 +400,7 @@ namespace dershane.Controllers
 
             if (timeElapsed.TotalMinutes > exam.Duration)
             {
-                TempData["Warning"] = "Süre doldu! Sınav otomatik olarak teslim edildi 😅";
+                TempData["Warning"] = "Time is up! Exam automatically delivered";
             }
 
             var answersJson = System.Text.Json.JsonSerializer.Serialize(model.StudentAnswers);
@@ -453,7 +424,7 @@ namespace dershane.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = $"Sınav başarıyla teslim edildi! Puanın: {totalScore} 🎉";
+            TempData["Success"] = $"Exam successfully delivered! Your score : {totalScore} 🎉";
             return RedirectToAction("ExamResult", new { examId = examResult.ExamId });
         }
 

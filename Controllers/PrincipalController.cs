@@ -33,60 +33,100 @@ namespace dershane.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult AddUser(User user)
+        [RoleAuthorize("principal")]
+        public async Task<IActionResult> AddUser(AddUserVM model)
         {
-            if (HttpContext.Session.GetString("role") != "principal")
-                return Unauthorized();
-
-            string uclass = Request.Form["uclass"];
-            string newClass = Request.Form["newClass"];
-
-            ModelState.Remove("uclass");
+            // ViewBag'i her durumda set et
+            var classList = _context.Classes.Select(c => c.UClass).Distinct().ToList();
+            ViewBag.Classes = classList;
 
             if (!ModelState.IsValid)
             {
-                ViewBag.Classes = _context.Classes.Select(c => c.UClass).Distinct().ToList();
-                return View(user);
+                Console.WriteLine("ModelState is invalid:");
+                return View(model);
             }
 
-            Random rnd = new Random();
-            string schoolNumber;
-            int attempts = 0;
+            // Dershane ID'yi otomatik üret
+            string dershaneId;
             do
             {
-                if (++attempts > 10)
-                    return BadRequest("Unique school number generate error.");
-                schoolNumber = rnd.Next(1000, 9999).ToString();
-            } while (_context.users.Any(u => u.dershaneid == schoolNumber));
+                dershaneId = GenerateDershaneId();
+            } while (await _context.users.AnyAsync(u => u.dershaneid == dershaneId));
 
-            user.dershaneid = schoolNumber;
-            user.uclass = newClass;
-
-            user.password = BCrypt.Net.BCrypt.HashPassword(user.password);
-
-            _context.users.Add(user);
-            _context.SaveChanges();
-
-            string finalClass = !string.IsNullOrWhiteSpace(uclass)
-                ? uclass.Trim()
-                : newClass?.Trim();
-
-            if (!string.IsNullOrEmpty(finalClass))
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                _context.Classes.Add(
-                    new UClass1
-                    {
-                        UClass = finalClass,
-                        Student = schoolNumber,
-                        IsTeacher = user.role == "teacher",
-                    }
-                );
-                _context.SaveChanges();
-            }
+                // Kullanıcıyı oluştur
+                var user = new User
+                {
+                    firstname = model.FirstName,
+                    lastname = model.LastName,
+                    dershaneid = dershaneId, // Otomatik üretilen ID
+                    password = BCrypt.Net.BCrypt.HashPassword(model.Password), // BCrypt ile şifrele
+                    role = model.Role.ToLower(),
+                    firstlogin = true, // İlk giriş için true yap
+                    uclass = model.UClass,
+                };
 
-            TempData["Success"] = $"User added successfully. School Number: {schoolNumber}";
-            return RedirectToAction("Index");
+                _context.users.Add(user);
+                await _context.SaveChangesAsync();
+
+                // Kullanıcı bilgilerini ekle
+                var userInfo = new UserInformation
+                {
+                    dershaneid = dershaneId, // Otomatik üretilen ID
+                    email = model.Email,
+                    phone_number = model.PhoneNumber,
+                    parent = model.Parent,
+                    parent_phone_number = model.ParentPhoneNumber,
+                    address = model.Address,
+                };
+
+                _context.user_informations.Add(userInfo);
+                await _context.SaveChangesAsync();
+
+                if (model.Role.ToLower() == "student" && !string.IsNullOrEmpty(model.UClass))
+                {
+                    var classInfo = new UClass1
+                    {
+                        Student = dershaneId, // Otomatik üretilen ID
+                        UClass = model.UClass,
+                        IsTeacher = false,
+                    };
+
+                    _context.Classes.Add(classInfo);
+                    await _context.SaveChangesAsync();
+                }
+                else if (model.Role.ToLower() == "teacher" && !string.IsNullOrEmpty(model.UClass))
+                {
+                    var teacherClassInfo = new UClass1
+                    {
+                        Student = dershaneId,
+                        UClass = model.UClass,
+                        IsTeacher = true,
+                    };
+
+                    _context.Classes.Add(teacherClassInfo);
+                    await _context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+                TempData["Success"] = $"Kullanıcı başarıyla eklendi! Dershane ID: {dershaneId}";
+                return RedirectToAction("List");
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                TempData["Error"] = "Kullanıcı eklenirken bir hata oluştu: " + ex.Message;
+                return View(model);
+            }
+        }
+
+        // Dershane ID üretme metodu ekle
+        private string GenerateDershaneId()
+        {
+            var random = new Random();
+            return random.Next(100000, 999999).ToString();
         }
 
         [HttpGet]
@@ -463,13 +503,11 @@ namespace dershane.Controllers
         {
             var model = new PrincipalReportsVM();
 
-            // Genel istatistikler
             model.TotalStudents = await _context.users.CountAsync(u => u.role == "student");
             model.TotalTeachers = await _context.users.CountAsync(u => u.role == "teacher");
             model.TotalExams = await _context.ExamSystem.CountAsync();
             model.TotalHomeworks = await _context.Homeworks.CountAsync();
 
-            // Ders bazında istatistikler
             var lessonStats = await _context
                 .Lessons.Select(l => new LessonStatisticVM
                 {
@@ -491,7 +529,6 @@ namespace dershane.Controllers
 
             model.LessonStatistics = lessonStats;
 
-            // Aylık sınav istatistikleri (son 6 ay)
             var monthlyExamStats = new List<MonthlyExamStatVM>();
             for (int i = 5; i >= 0; i--)
             {
@@ -526,7 +563,6 @@ namespace dershane.Controllers
 
             model.MonthlyExamStats = monthlyExamStats;
 
-            // En başarılı öğrenciler (top 10)
             var topStudents = await _context
                 .users.Where(u => u.role == "student")
                 .Select(u => new TopStudentVM
@@ -559,7 +595,6 @@ namespace dershane.Controllers
 
             model.TopStudents = topStudents;
 
-            // Devamsızlık raporu
             var attendanceReport = await _context
                 .Classes.Where(c => !c.IsTeacher)
                 .GroupBy(c => c.UClass)
@@ -597,7 +632,6 @@ namespace dershane.Controllers
         {
             var lessons = await _context.Lessons.ToListAsync();
 
-            // Sınav sayılarını hesapla
             var examCounts = new Dictionary<string, int>();
             var homeworkCounts = new Dictionary<string, int>();
 
@@ -624,14 +658,14 @@ namespace dershane.Controllers
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                TempData["Error"] = "Ders adı boş olamaz!";
+                TempData["Error"] = "Course name cannot be blank!";
                 return RedirectToAction("Lessons");
             }
 
             var existingLesson = await _context.Lessons.FirstOrDefaultAsync(l => l.Name == name);
             if (existingLesson != null)
             {
-                TempData["Error"] = "Bu ders zaten mevcut!";
+                TempData["Error"] = "This course is already available!";
                 return RedirectToAction("Lessons");
             }
 
@@ -640,7 +674,7 @@ namespace dershane.Controllers
             _context.Lessons.Add(lesson);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Ders başarıyla eklendi!";
+            TempData["Success"] = "Course successfully added!";
             return RedirectToAction("Lessons");
         }
 
@@ -652,13 +686,13 @@ namespace dershane.Controllers
             var lesson = await _context.Lessons.FindAsync(id);
             if (lesson == null)
             {
-                TempData["Error"] = "Ders bulunamadı!";
+                TempData["Error"] = "Course not found!";
                 return RedirectToAction("Lessons");
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                TempData["Error"] = "Ders adı boş olamaz!";
+                TempData["Error"] = "Course name cannot be blank!";
                 return RedirectToAction("Lessons");
             }
 
@@ -667,7 +701,7 @@ namespace dershane.Controllers
             );
             if (existingLesson != null)
             {
-                TempData["Error"] = "Bu ders adı zaten kullanılıyor!";
+                TempData["Error"] = "This course name is already in use!";
                 return RedirectToAction("Lessons");
             }
 
@@ -676,7 +710,7 @@ namespace dershane.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Ders başarıyla güncellendi!";
+            TempData["Success"] = "Course successfully updated!";
             return RedirectToAction("Lessons");
         }
 
@@ -688,7 +722,7 @@ namespace dershane.Controllers
             var lesson = await _context.Lessons.FindAsync(id);
             if (lesson == null)
             {
-                TempData["Error"] = "Ders bulunamadı!";
+                TempData["Error"] = "Course not found!";
                 return RedirectToAction("Lessons");
             }
 
@@ -699,14 +733,14 @@ namespace dershane.Controllers
 
             if (hasExams || hasHomeworks || hasSchedules)
             {
-                TempData["Error"] = "Bu ders kullanımda olduğu için silinemez!";
+                TempData["Error"] = "This lesson cannot be deleted because it is in use!";
                 return RedirectToAction("Lessons");
             }
 
             _context.Lessons.Remove(lesson);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Ders başarıyla silindi!";
+            TempData["Success"] = "Course successfully deleted!";
             return RedirectToAction("Lessons");
         }
     }

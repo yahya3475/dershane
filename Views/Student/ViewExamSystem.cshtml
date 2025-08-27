@@ -1,229 +1,525 @@
+
 @model dershane.ViewModels.StudentExamSystemVM
 
 @{
-    ViewData["Title"] = "Exam System";
+    ViewData["Title"] = "Sınav Sistemi";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-primary">🎯 Available Exams</h2>
-        <div class="exam-stats">
-            <span class="badge bg-success me-2">@Model.Exams.Count(e => e.IsCompleted) Completed</span>
-            <span class="badge bg-warning">@Model.Exams.Count(e => !e.IsCompleted && e.CanTake) Available</span>
-        </div>
-    </div>
-
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    @if (Model.Exams.Any())
-    {
-        <div class="row">
-            @foreach (var exam in Model.Exams)
-            {
-                var isUpcoming = exam.ExamDate > DateTime.Now;
-                var isActive = exam.ExamDate <= DateTime.Now && exam.ExamDate.AddMinutes(exam.Duration) > DateTime.Now;
-                var isExpired = exam.ExamDate.AddMinutes(exam.Duration) <= DateTime.Now;
-                
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm border-0 exam-card">
-                        <div class="card-header 
-                            @(exam.IsCompleted ? "bg-success" : 
-                              isActive ? "bg-warning" : 
-                              isUpcoming ? "bg-info" : "bg-secondary") text-white">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h6 class="card-title mb-0">📝 @exam.Title</h6>
-                                @if (exam.IsCompleted)
-                                {
-                                    <span class="badge bg-light text-dark">✅ Completed</span>
-                                }
-                                else if (isActive)
-                                {
-                                    <span class="badge bg-danger blink">🔴 LIVE</span>
-                                }
-                                else if (isUpcoming)
-                                {
-                                    <span class="badge bg-light text-dark">⏰ Upcoming</span>
-                                                                    }
-                                else
-                                {
-                                    <span class="badge bg-light text-dark">⏰ Expired</span>
-                                }
-                            </div>
-                            <small class="opacity-75">📚 @exam.Lesson</small>
-                        </div>
-                        
-                        <div class="card-body">
-                            <p class="card-text text-muted">@exam.Description</p>
-                            
-                            <div class="exam-info mb-3">
-                                <div class="row text-center">
-                                    <div class="col-4">
-                                        <div class="info-item">
-                                            <h6 class="text-primary mb-0">@exam.QuestionCount</h6>
-                                            <small class="text-muted">Questions</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="info-item">
-                                            <h6 class="text-warning mb-0">@exam.Duration</h6>
-                                            <small class="text-muted">Minutes</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="info-item">
-                                            <h6 class="text-info mb-0">@exam.TotalPoints</h6>
-                                            <small class="text-muted">Points</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="exam-schedule mb-3">
-                                <small class="text-muted">
-                                    <i class="bi bi-calendar"></i> <strong>Date:</strong> @exam.ExamDate.ToString("dd/MM/yyyy")<br>
-                                    <i class="bi bi-clock"></i> <strong>Time:</strong> @exam.ExamDate.ToString("HH:mm") - @exam.ExamDate.AddMinutes(exam.Duration).ToString("HH:mm")
-                                </small>
-                            </div>
-
-                            @if (exam.IsCompleted && exam.Score.HasValue)
-                            {
-                                var percentage = exam.TotalPoints > 0 ? (exam.Score.Value * 100.0 / exam.TotalPoints) : 0;
-                                var gradeClass = percentage >= 85 ? "success" : percentage >= 70 ? "warning" : percentage >= 50 ? "info" : "danger";
-                                
-                                <div class="alert alert-@gradeClass alert-sm">
-                                    <div class="d-flex justify-content-between">
-                                        <span><strong>Your Score:</strong></span>
-                                        <span><strong>@exam.Score / @exam.TotalPoints (@percentage.ToString("F1")%)</strong></span>
-                                    </div>
-                                </div>
-                            }
-                            else if (exam.CanTake)
-                            {
-                                <div class="alert alert-success alert-sm">
-                                    <i class="bi bi-play-circle"></i> <strong>Ready to take!</strong>
-                                </div>
-                            }
-                            else if (isUpcoming)
-                            {
-                                var timeUntilExam = exam.ExamDate - DateTime.Now;
-                                <div class="alert alert-info alert-sm">
-                                    <i class="bi bi-hourglass-split"></i> 
-                                    <strong>Starts in:</strong> @timeUntilExam.Days days, @timeUntilExam.Hours hours
-                                </div>
-                            }
-                            else if (isExpired && !exam.IsCompleted)
-                            {
-                                <div class="alert alert-danger alert-sm">
-                                    <i class="bi bi-x-circle"></i> <strong>Missed!</strong> Time expired
-                                </div>
-                            }
-                        </div>
-                        
-                        <div class="card-footer bg-transparent">
-                            @if (exam.IsCompleted)
-                            {
-                                <a asp-action="ExamResult" asp-route-examId="@exam.Id" 
-                                   class="btn btn-success w-100">
-                                    <i class="bi bi-bar-chart"></i> View Result
-                                </a>
-                            }
-                            else if (exam.CanTake)
-                            {
-                                <a asp-action="TakeExam" asp-route-examId="@exam.Id" 
-                                   class="btn btn-warning w-100 btn-pulse">
-                                    <i class="bi bi-play-fill"></i> Take Exam Now!
-                                </a>
-                            }
-                            else if (isUpcoming)
-                            {
-                                <button class="btn btn-secondary w-100" disabled>
-                                    <i class="bi bi-clock"></i> Not Started Yet
-                                </button>
-                            }
-                            else
-                            {
-                                <button class="btn btn-secondary w-100" disabled>
-                                    <i class="bi bi-x-circle"></i> Unavailable
-                                </button>
-                            }
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header Section -->
+            <div class="page-header mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="page-title">
+                            <i class="bi bi-clipboard-check me-2"></i>
+                            Sınav Sistemi
+                        </h2>
+                        <p class="page-subtitle">Mevcut sınavlarınızı görüntüleyin ve çözün</p>
+                    </div>
+                    <div class="page-actions">
+                        <div class="exam-stats">
+                            <span class="badge bg-gradient-success me-2">
+                                <i class="bi bi-check-circle"></i>
+                                @Model.Exams.Count(e => e.IsCompleted) Tamamlandı
+                            </span>
+                            <span class="badge bg-gradient-warning">
+                                <i class="bi bi-clock"></i>
+                                @Model.Exams.Count(e => !e.IsCompleted && e.CanTake) Mevcut
+                            </span>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Alert Messages -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert-modern alert-success">
+                    <div class="alert-icon">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <div class="alert-content">
+                        <p>@TempData["Success"]</p>
+                    </div>
+                    <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert-modern alert-danger">
+                    <div class="alert-icon">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+                    <div class="alert-content">
+                        <p>@TempData["Error"]</p>
+                    </div>
+                    <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            }
+
+            @if (Model.Exams.Any())
+            {
+                <!-- Exam Cards Grid -->
+                <div class="exam-grid">
+                    @foreach (var exam in Model.Exams)
+                    {
+                        var isUpcoming = exam.ExamDate > DateTime.Now;
+                        var isActive = exam.ExamDate <= DateTime.Now && exam.ExamDate.AddMinutes(exam.Duration) > DateTime.Now;
+                        var isExpired = exam.ExamDate.AddMinutes(exam.Duration) <= DateTime.Now;
+                        
+                        <div class="exam-card-modern">
+                            <!-- Card Header -->
+                            <div class="exam-card-header 
+                                @(exam.IsCompleted ? "completed" : 
+                                  isActive ? "active" : 
+                                  isUpcoming ? "upcoming" : "expired")">
+                                <div class="exam-status-badge">
+                                    @if (exam.IsCompleted)
+                                    {
+                                        <span class="status-icon completed">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                        </span>
+                                        <span class="status-text">Tamamlandı</span>
+                                    }
+                                    else if (isActive)
+                                    {
+                                        <span class="status-icon active pulse">
+                                            <i class="bi bi-play-circle-fill"></i>
+                                        </span>
+                                        <span class="status-text">CANLI</span>
+                                    }
+                                    else if (isUpcoming)
+                                    {
+                                        <span class="status-icon upcoming">
+                                            <i class="bi bi-clock-fill"></i>
+                                        </span>
+                                        <span class="status-text">Yakında</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-icon expired">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                        </span>
+                                        <span class="status-text">Süresi Doldu</span>
+                                    }
+                                </div>
+                                <div class="exam-title">
+                                    <h3>@exam.Title</h3>
+                                    <span class="exam-lesson">@exam.Lesson</span>
+                                </div>
+                            </div>
+
+                            <!-- Card Body -->
+                            <div class="exam-card-body">
+                                <p class="exam-description">@exam.Description</p>
+                                
+                                <!-- Exam Stats -->
+                                <div class="exam-stats-grid">
+                                    <div class="stat-item">
+                                        <div class="stat-icon">
+                                            <i class="bi bi-question-circle"></i>
+                                        </div>
+                                        <div class="stat-info">
+                                            <span class="stat-value">@exam.QuestionCount</span>
+                                            <span class="stat-label">Soru</span>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-icon">
+                                            <i class="bi bi-stopwatch"></i>
+                                        </div>
+                                        <div class="stat-info">
+                                            <span class="stat-value">@exam.Duration</span>
+                                            <span class="stat-label">Dakika</span>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-icon">
+                                            <i class="bi bi-star"></i>
+                                        </div>
+                                        <div class="stat-info">
+                                            <span class="stat-value">@exam.TotalPoints</span>
+                                            <span class="stat-label">Puan</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Exam Schedule -->
+                                <div class="exam-schedule">
+                                    <div class="schedule-item">
+                                        <i class="bi bi-calendar3"></i>
+                                        <span>@exam.ExamDate.ToString("dd MMMM yyyy, dddd")</span>
+                                    </div>
+                                    <div class="schedule-item">
+                                        <i class="bi bi-clock"></i>
+                                        <span>@exam.ExamDate.ToString("HH:mm") - @exam.ExamDate.AddMinutes(exam.Duration).ToString("HH:mm")</span>
+                                    </div>
+                                </div>
+
+                                <!-- Score Display -->
+                                @if (exam.IsCompleted && exam.Score.HasValue)
+                                {
+                                    var percentage = exam.TotalPoints > 0 ? (exam.Score.Value * 100.0 / exam.TotalPoints) : 0;
+                                    var gradeClass = percentage >= 85 ? "excellent" : percentage >= 70 ? "good" : percentage >= 50 ? "average" : "poor";
+                                    
+                                    <div class="score-display @gradeClass">
+                                        <div class="score-circle">
+                                            <span class="score-percentage">@percentage.ToString("F0")%</span>
+                                        </div>
+                                        <div class="score-details">
+                                            <span class="score-text">@exam.Score / @exam.TotalPoints puan</span>
+                                            <span class="score-grade">
+                                                @if (percentage >= 85) { <span>Mükemmel! 🏆</span> }
+                                                else if (percentage >= 70) { <span>İyi! 👍</span> }
+                                                else if (percentage >= 50) { <span>Orta 📚</span> }
+                                                else { <span>Geliştirilmeli 💪</span> }
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+                                else if (exam.CanTake)
+                                {
+                                    <div class="ready-indicator">
+                                        <i class="bi bi-play-circle-fill"></i>
+                                        <span>Sınava başlamaya hazırsın!</span>
+                                    </div>
+                                }
+                                else if (isUpcoming)
+                                {
+                                    var timeUntilExam = exam.ExamDate - DateTime.Now;
+                                    <div class="countdown-display">
+                                        <i class="bi bi-hourglass-split"></i>
+                                        <span>@timeUntilExam.Days gün, @timeUntilExam.Hours saat kaldı</span>
+                                    </div>
+                                }
+                                else if (isExpired && !exam.IsCompleted)
+                                {
+                                    <div class="missed-indicator">
+                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                        <span>Sınav süresi doldu</span>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Card Footer -->
+                            <div class="exam-card-footer">
+                                @if (exam.IsCompleted)
+                                {
+                                    <a asp-action="ExamResult" asp-route-examId="@exam.Id" 
+                                       class="btn btn-modern btn-success">
+                                        <i class="bi bi-bar-chart-line"></i>
+                                        Sonuçları Görüntüle
+                                    </a>
+                                }
+                                else if (exam.CanTake)
+                                {
+                                    <a asp-action="TakeExam" asp-route-examId="@exam.Id" 
+                                       class="btn btn-modern btn-primary btn-pulse">
+                                        <i class="bi bi-play-fill"></i>
+                                        Sınava Başla
+                                    </a>
+                                }
+                                else if (isUpcoming)
+                                {
+                                    <button class="btn btn-modern btn-secondary" disabled>
+                                        <i class="bi bi-clock"></i>
+                                        Henüz Başlamadı
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-modern btn-secondary" disabled>
+                                        <i class="bi bi-x-circle"></i>
+                                        Kullanılamaz
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <!-- Empty State -->
+                <div class="empty-state-modern">
+                    <div class="empty-icon">
+                        <i class="bi bi-clipboard-x"></i>
+                    </div>
+                    <h3>Henüz Sınav Yok</h3>
+                    <p>Öğretmeniniz henüz bir sınav oluşturmamış. Daha sonra tekrar kontrol edin! 📚</p>
+                </div>
             }
         </div>
-    }
-    else
-    {
-        <div class="text-center py-5">
-            <div class="empty-state">
-                <i class="bi bi-clipboard-x display-1 text-muted"></i>
-                <h4 class="text-muted mt-3">No Exams Available</h4>
-                <p class="text-muted">Your teacher hasn't created any exams yet. Check back later! 📚</p>
-            </div>
-        </div>
-    }
+    </div>
 </div>
 
 <style>
-.exam-card {
+/* Exam Grid Layout */
+.exam-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+/* Modern Exam Card */
+.exam-card-modern {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
     transition: all 0.3s ease;
+    position: relative;
 }
 
-.exam-card:hover {
+.exam-card-modern:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
-.info-item {
-    padding: 8px;
+/* Card Header */
+.exam-card-header {
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
 }
 
-.info-item h6 {
-    font-size: 1.1rem;
-    font-weight: bold;
+.exam-card-header.completed {
+    background: linear-gradient(135deg, #10b981, #059669);
 }
 
-.alert-sm {
-    padding: 8px 12px;
-    margin-bottom: 0;
+.exam-card-header.active {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.exam-card-header.upcoming {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.exam-card-header.expired {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+}
+
+.exam-status-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.exam-title h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: white;
+}
+
+.exam-lesson {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8);
+    display: block;
+}
+
+/* Card Body */
+.exam-card-body {
+    padding: 1.5rem;
+}
+
+.exam-description {
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+/* Exam Stats Grid */
+.exam-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Exam Schedule */
+.exam-schedule {
+    margin-bottom: 1.5rem;
+}
+
+.schedule-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+}
+
+.schedule-item i {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Score Display */
+.score-display {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 15px;
+    margin-bottom: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.score-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.score-percentage {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+}
+
+.score-text {
+    display: block;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 0.25rem;
+}
+
+.score-grade {
+    display: block;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Status Indicators */
+.ready-indicator,
+.countdown-display,
+.missed-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.ready-indicator {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.countdown-display {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.missed-indicator {
+    background: rgba(107, 114, 128, 0.1);
+    color: #6b7280;
+}
+
+/* Card Footer */
+.exam-card-footer {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Button Styles */
+.btn-modern {
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.btn-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .btn-pulse {
     animation: pulse 2s infinite;
 }
 
-@@keyframes pulse {
+@keyframes pulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
     }
     70% {
-        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+        box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
     }
 }
 
-.blink {
-    animation: blink 1s infinite;
-}
-
-@@keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0.5; }
+/* Responsive Design */
+@media (max-width: 768px) {
+    .exam-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .exam-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .exam-card-header {
+        padding: 1rem;
+    }
+    
+    .exam-card-body {
+        padding: 1rem;
+    }
+    
+    .exam-card-footer {
+        padding: 1rem;
+    }
 }
 </style>

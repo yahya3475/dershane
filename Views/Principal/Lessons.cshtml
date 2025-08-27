@@ -16,14 +16,15 @@
                                 <i class="bi bi-book-fill"></i>
                             </div>
                             <div class="header-text">
-                                <h2>Ders Yönetimi</h2>
-                                <p>Okul derslerini yönetin ve takip edin</p>
+                                <h2>Course Management</h2>
+                                <p>Manage and track school lessons</p>
                             </div>
                         </div>
                         <div class="header-right">
-                            <button type="button" class="btn-modern btn-primary" data-bs-toggle="modal" data-bs-target="#addLessonModal">
+                            <button type="button" class="btn-modern btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#addLessonModal">
                                 <i class="bi bi-plus-circle me-2"></i>
-                                <span>Yeni Ders Ekle</span>
+                                <span>Add New Course</span>
                             </button>
                         </div>
                     </div>
@@ -43,7 +44,7 @@
                                     <i class="bi bi-check-circle-fill"></i>
                                 </div>
                                 <div class="alert-content">
-                                    <strong>Başarılı!</strong>
+                                    <strong>Successful!</strong>
                                     <p>@TempData["Success"]</p>
                                 </div>
                                 <button type="button" class="alert-close" onclick="this.parentElement.style.display='none'">
@@ -59,7 +60,7 @@
                                     <i class="bi bi-exclamation-triangle-fill"></i>
                                 </div>
                                 <div class="alert-content">
-                                    <strong>Hata!</strong>
+                                    <strong>Error!</strong>
                                     <p>@TempData["Error"]</p>
                                 </div>
                                 <button type="button" class="alert-close" onclick="this.parentElement.style.display='none'">
@@ -83,31 +84,31 @@
                                             <th>
                                                 <div class="th-content">
                                                     <i class="bi bi-book"></i>
-                                                    <span>Ders Adı</span>
+                                                    <span>Course Name</span>
                                                 </div>
                                             </th>
                                             <th>
                                                 <div class="th-content">
                                                     <i class="bi bi-text-paragraph"></i>
-                                                    <span>Açıklama</span>
+                                                    <span>Description</span>
                                                 </div>
                                             </th>
                                             <th>
                                                 <div class="th-content">
                                                     <i class="bi bi-file-earmark-text"></i>
-                                                    <span>Sınav Sayısı</span>
+                                                    <span>Number of Exams</span>
                                                 </div>
                                             </th>
                                             <th>
                                                 <div class="th-content">
                                                     <i class="bi bi-journal-bookmark"></i>
-                                                    <span>Ödev Sayısı</span>
+                                                    <span>Number of Assignments</span>
                                                 </div>
                                             </th>
                                             <th>
                                                 <div class="th-content">
                                                     <i class="bi bi-gear"></i>
-                                                    <span>İşlemler</span>
+                                                    <span>Transactions</span>
                                                 </div>
                                             </th>
                                         </tr>
@@ -138,7 +139,8 @@
                                                     <div class="stat-badge exam-badge">
                                                         @{
                                                             var examCount = ViewBag.ExamCounts as Dictionary<string, int>;
-                                                            var examCountValue = examCount?.ContainsKey(lesson.Name) == true ? examCount[lesson.Name] : 0;
+                                                            var examCountValue = examCount?.ContainsKey(lesson.Name) == true ?
+                                                            examCount[lesson.Name] : 0;
                                                         }
                                                         <i class="bi bi-file-earmark-text"></i>
                                                         <span>@examCountValue</span>
@@ -148,7 +150,8 @@
                                                     <div class="stat-badge homework-badge">
                                                         @{
                                                             var homeworkCount = ViewBag.HomeworkCounts as Dictionary<string, int>;
-                                                            var homeworkCountValue = homeworkCount?.ContainsKey(lesson.Name) == true ? homeworkCount[lesson.Name] : 0;
+                                                            var homeworkCountValue = homeworkCount?.ContainsKey(lesson.Name) == true
+                                                            ? homeworkCount[lesson.Name] : 0;
                                                         }
                                                         <i class="bi bi-journal-bookmark"></i>
                                                         <span>@homeworkCountValue</span>
@@ -156,14 +159,13 @@
                                                 </td>
                                                 <td>
                                                     <div class="action-buttons">
-                                                        <button type="button" class="btn-action btn-edit" 
-                                                                onclick="editLesson(@lesson.Id, '@lesson.Name', '@(lesson.Description ?? "")')"
-                                                                title="Düzenle">
+                                                        <button type="button" class="btn-action btn-edit"
+                                                            onclick="editLesson(@lesson.Id, '@lesson.Name', '@(lesson.Description ?? "")')"
+                                                            title="Düzenle">
                                                             <i class="bi bi-pencil-fill"></i>
                                                         </button>
-                                                        <button type="button" class="btn-action btn-delete" 
-                                                                onclick="deleteLesson(@lesson.Id, '@lesson.Name')"
-                                                                title="Sil">
+                                                        <button type="button" class="btn-action btn-delete"
+                                                            onclick="deleteLesson(@lesson.Id, '@lesson.Name')" title="Sil">
                                                             <i class="bi bi-trash-fill"></i>
                                                         </button>
                                                     </div>
@@ -180,12 +182,11 @@
                                 <div class="empty-icon">
                                     <i class="bi bi-book"></i>
                                 </div>
-                                <h3>Henüz ders eklenmemiş</h3>
-                                <p>İlk dersinizi eklemek için yukarıdaki "Yeni Ders Ekle" butonunu kullanın.</p>
-                                <button type="button" class="btn-modern btn-primary" data-bs-toggle="modal" data-bs-target="#addLessonModal">
+                                <h3>No lessons added yet</h3>
+                                <p>Use the "Add New Course" button above to add your first course.</p> <button type="button"
+                                    class="btn-modern btn-primary" data-bs-toggle="modal" data-bs-target="#addLessonModal">
                                     <i class="bi bi-plus-circle me-2"></i>
-                                    <span>İlk Dersi Ekle</span>
-                                </button>
+                                    <span>Add First Lesson</span> </button>
                             </div>
                         }
                     </div>
@@ -205,7 +206,7 @@
                         <div class="modal-icon">
                             <i class="bi bi-plus-circle-fill"></i>
                         </div>
-                        <h5 class="modal-title">Yeni Ders Ekle</h5>
+                        <h5 class="modal-title">Add New Course</h5>
                     </div>
                     <button type="button" class="btn-close-modern" data-bs-dismiss="modal">
                         <i class="bi bi-x"></i>
@@ -214,23 +215,25 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="lessonName" class="form-label">
-                            <i class="bi bi-book me-2"></i>Ders Adı *
+                            <i class="bi bi-book me-2"></i>Course Name *
                         </label>
-                        <input type="text" class="form-control-modern" id="lessonName" name="name" required maxlength="100" placeholder="Ders adını girin...">
+                        <input type="text" class="form-control-modern" id="lessonName" name="name" required
+                            maxlength="100" placeholder="Enter the course name...">
                     </div>
                     <div class="form-group">
                         <label for="lessonDescription" class="form-label">
-                            <i class="bi bi-text-paragraph me-2"></i>Açıklama
+                            <i class="bi bi-text-paragraph me-2"></i>Description
                         </label>
-                        <textarea class="form-control-modern" id="lessonDescription" name="description" rows="4" maxlength="500" placeholder="Ders açıklamasını girin..."></textarea>
+                        <textarea class="form-control-modern" id="lessonDescription" name="description" rows="4"
+                            maxlength="500" placeholder="Enter the course description..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-modern btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle me-2"></i>İptal
+                        <i class="bi bi-x-circle me-2"></i>Cancel
                     </button>
                     <button type="submit" class="btn-modern btn-primary">
-                        <i class="bi bi-check-circle me-2"></i>Kaydet
+                        <i class="bi bi-check-circle me-2"></i>Save
                     </button>
                 </div>
             </form>
@@ -249,7 +252,7 @@
                         <div class="modal-icon edit-icon">
                             <i class="bi bi-pencil-fill"></i>
                         </div>
-                        <h5 class="modal-title">Ders Düzenle</h5>
+                        <h5 class="modal-title">Edit Lesson</h5>
                     </div>
                     <button type="button" class="btn-close-modern" data-bs-dismiss="modal">
                         <i class="bi bi-x"></i>
@@ -258,23 +261,25 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="editLessonName" class="form-label">
-                                                        <i class="bi bi-book me-2"></i>Ders Adı *
+                            <i class="bi bi-book me-2"></i>Course Name *
                         </label>
-                        <input type="text" class="form-control-modern" id="editLessonName" name="name" required maxlength="100" placeholder="Ders adını girin...">
+                        <input type="text" class="form-control-modern" id="editLessonName" name="name" required
+                            maxlength="100" placeholder="Enter the course name...">
                     </div>
                     <div class="form-group">
                         <label for="editLessonDescription" class="form-label">
-                            <i class="bi bi-text-paragraph me-2"></i>Açıklama
+                            <i class="bi bi-text-paragraph me-2"></i>Description
                         </label>
-                        <textarea class="form-control-modern" id="editLessonDescription" name="description" rows="4" maxlength="500" placeholder="Ders açıklamasını girin..."></textarea>
+                        <textarea class="form-control-modern" id="editLessonDescription" name="description" rows="4"
+                            maxlength="500" placeholder="Enter the course description..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-modern btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle me-2"></i>İptal
+                        <i class="bi bi-x-circle me-2"></i>Cancel
                     </button>
                     <button type="submit" class="btn-modern btn-primary">
-                        <i class="bi bi-check-circle me-2"></i>Güncelle
+                        <i class="bi bi-check-circle me-2"></i>Update
                     </button>
                 </div>
             </form>
@@ -293,7 +298,7 @@
                         <div class="modal-icon delete-icon">
                             <i class="bi bi-exclamation-triangle-fill"></i>
                         </div>
-                        <h5 class="modal-title">Dersi Sil</h5>
+                        <h5 class="modal-title">Delete Course</h5>
                     </div>
                     <button type="button" class="btn-close-modern" data-bs-dismiss="modal">
                         <i class="bi bi-x"></i>
@@ -305,21 +310,21 @@
                             <i class="bi bi-exclamation-triangle"></i>
                         </div>
                         <div class="warning-content">
-                            <h6>Bu işlem geri alınamaz!</h6>
-                            <p><strong id="deleteLessonName"></strong> dersini silmek istediğinizden emin misiniz?</p>
+                            <h6>This action is irreversible!</h6>
+                            <p><strong id="deleteLessonName"></strong> Are you sure you want to delete the course ?</p>
                             <div class="warning-note">
                                 <i class="bi bi-info-circle me-2"></i>
-                                <small>Bu dersle ilgili tüm sınavlar ve ödevler de silinecektir.</small>
+                                <small>All exams and assignments related to this course will also be deleted.</small>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-modern btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle me-2"></i>İptal
+                        <i class="bi bi-x-circle me-2"></i>Cancel
                     </button>
                     <button type="submit" class="btn-modern btn-danger">
-                        <i class="bi bi-trash me-2"></i>Evet, Sil
+                        <i class="bi bi-trash me-2"></i>Yes, Delete
                     </button>
                 </div>
             </form>
@@ -328,1055 +333,1068 @@
 </div>
 
 <style>
-.lessons-wrapper {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
-    padding: 0;
-}
-
-/* Page Header */
-.page-header {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border-radius: 20px;
-    padding: 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.header-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    color: white;
-    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
-}
-
-.header-text h2 {
-    color: white;
-    font-weight: 700;
-    margin: 0;
-    font-size: 2.5rem;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.header-text p {
-    color: rgba(255, 255, 255, 0.7);
-    margin: 0.5rem 0 0 0;
-    font-size: 1.1rem;
-}
-
-/* Modern Buttons */
-.btn-modern {
-    padding: 0.75rem 1.5rem;
-    border-radius: 12px;
-    border: none;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-modern::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
-}
-
-.btn-modern:hover::before {
-    left: 100%;
-}
-
-.btn-modern.btn-primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-}
-
-.btn-modern.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-    color: white;
-}
-
-.btn-modern.btn-secondary {
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.btn-modern.btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    transform: translateY(-2px);
-}
-
-.btn-modern.btn-danger {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-}
-
-.btn-modern.btn-danger:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
-    color: white;
-}
-
-/* Modern Card */
-.modern-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-}
-
-.modern-card .card-body {
-    padding: 2rem;
-}
-
-/* Modern Alerts */
-.alert-modern {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
-    border: none;
-    position: relative;
-    overflow: hidden;
-}
-
-.alert-modern::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 4px;
-    height: 100%;
-}
-
-.alert-success {
-    background: rgba(34, 197, 94, 0.1);
-    border: 1px solid rgba(34, 197, 94, 0.2);
-}
-
-.alert-success::before {
-    background: #22c55e;
-}
-
-.alert-success .alert-icon {
-    color: #22c55e;
-    font-size: 1.5rem;
-}
-
-.alert-danger {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-.alert-danger::before {
-    background: #ef4444;
-}
-
-.alert-danger .alert-icon {
-    color: #ef4444;
-    font-size: 1.5rem;
-}
-
-.alert-content {
-    flex: 1;
-}
-
-.alert-content strong {
-    color: white;
-    display: block;
-    margin-bottom: 0.25rem;
-}
-
-.alert-content p {
-    color: rgba(255, 255, 255, 0.8);
-    margin: 0;
-}
-
-.alert-close {
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0.25rem;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-}
-
-.alert-close:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-/* Modern Table */
-.table-container {
-    overflow-x: auto;
-    border-radius: 15px;
-    background: rgba(255, 255, 255, 0.02);
-}
-
-.modern-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: transparent;
-}
-
-.modern-table thead tr {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.modern-table th {
-    padding: 1.5rem 1rem;
-    border: none;
-    color: white;
-    font-weight: 600;
-    text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.th-content {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.th-content i {
-    color: #6366f1;
-    font-size: 1.1rem;
-}
-
-.table-row {
-    transition: all 0.3s ease;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.table-row:hover {
-    background: rgba(99, 102, 241, 0.1);
-    transform: translateX(5px);
-}
-
-.modern-table td {
-    padding: 1.5rem 1rem;
-    border: none;
-    color: rgba(255, 255, 255, 0.9);
-    vertical-align: middle;
-}
-
-.id-badge {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-weight: 600;
-    display: inline-block;
-    min-width: 50px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-}
-
-.lesson-name {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.lesson-icon {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #10b981, #059669);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.1rem;
-}
-
-.lesson-name strong {
-    color: white;
-    font-size: 1.1rem;
-}
-
-.description-text {
-    color: rgba(255, 255, 255, 0.7);
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.stat-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.exam-badge {
-    background: rgba(251, 191, 36, 0.2);
-    color: #fbbf24;
-    border: 1px solid rgba(251, 191, 36, 0.3);
-}
-
-.homework-badge {
-    background: rgba(139, 92, 246, 0.2);
-    color: #8b5cf6;
-    border: 1px solid rgba(139, 92, 246, 0.3);
-}
-
-.action-buttons {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.btn-action {
-    width: 40px;
-    height: 40px;
-    border: none;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 1rem;
-}
-
-.btn-edit {
-    background: rgba(59, 130, 246, 0.2);
-    color: #3b82f6;
-    border: 1px solid rgba(59, 130, 246, 0.3);
-}
-
-.btn-edit:hover {
-    background: rgba(59, 130, 246, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-}
-
-.btn-delete {
-    background: rgba(239, 68, 68, 0.2);
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.btn-delete:hover {
-    background: rgba(239, 68, 68, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-}
-
-/* Empty State */
-.empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.empty-icon {
-    font-size: 4rem;
-    color: rgba(255, 255, 255, 0.3);
-    margin-bottom: 1.5rem;
-}
-
-.empty-state h3 {
-    color: white;
-    margin-bottom: 1rem;
-    font-weight: 600;
-}
-
-.empty-state p {
-    margin-bottom: 2rem;
-    font-size: 1.1rem;
-}
-
-/* Modern Modals */
-.modern-modal {
-    background: rgba(30, 30, 46, 0.95);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.modern-modal .modal-header {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 1.5rem 2rem;
-    background: rgba(255, 255, 255, 0.02);
-}
-
-.modal-title-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.modal-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: white;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-}
-
-.edit-icon {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-}
-
-.delete-icon {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-}
-
-.modal-title {
-    color: white;
-    font-weight: 600;
-    margin: 0;
-    font-size: 1.3rem;
-}
-
-.btn-close-modern {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(255, 255, 255, 0.7);
-    transition: all 0.3s ease;
-}
-
-.btn-close-modern:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    transform: rotate(90deg);
-}
-
-.modern-modal .modal-body {
-    padding: 2rem;
-}
-
-.modern-modal .modal-footer {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 1.5rem 2rem;
-    background: rgba(255, 255, 255, 0.02);
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-}
-
-/* Form Controls */
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-label {
-    display: flex;
-    align-items: center;
-    color: white;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    font-size: 1rem;
-}
-
-.form-label i {
-    color: #6366f1;
-}
-
-.form-control-modern {
-    width: 100%;
-    padding: 1rem 1.25rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    color: white;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-}
-
-.form-control-modern::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-}
-
-.form-control-modern:focus {
-    outline: none;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    background: rgba(255, 255, 255, 0.08);
-}
-
-/* Delete Modal Specific */
-.delete-modal .modal-body {
-    padding: 2rem;
-}
-
-.delete-warning {
-    display: flex;
-    gap: 1.5rem;
-    align-items: flex-start;
-}
-
-.warning-icon {
-    width: 60px;
-    height: 60px;
-    background: rgba(239, 68, 68, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: #ef4444;
-    flex-shrink: 0;
-}
-
-.warning-content {
-    flex: 1;
-}
-
-.warning-content h6 {
-    color: white;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    font-size: 1.1rem;
-}
-
-.warning-content p {
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 1rem;
-    line-height: 1.5;
-}
-
-.warning-note {
-    background: rgba(59, 130, 246, 0.1);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 8px;
-    padding: 0.75rem;
-    display: flex;
-    align-items: center;
-    color: #3b82f6;
-}
-
-.warning-note small {
-    color: rgba(59, 130, 246, 0.8);
-}
-
-/* Responsive Design */
-@@media (max-width: 768px) {
-    .header-content {
-        flex-direction: column;
-        text-align: center;
+    .lessons-wrapper {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+        padding: 0;
     }
-    
-    .header-left {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .header-text h2 {
-        font-size: 2rem;
-    }
-    
-    .table-container {
-        font-size: 0.9rem;
-    }
-    
-    .modern-table th,
-    .modern-table td {
-        padding: 1rem 0.5rem;
-    }
-    
-    .lesson-name {
-        flex-direction: column;
-        gap: 0.5rem;
-        text-align: center;
-    }
-    
-    .action-buttons {
-        flex-direction: column;
-    }
-    
-    .modern-modal .modal-body,
-    .modern-modal .modal-header,
-    .modern-modal .modal-footer {
-        padding: 1.5rem;
-    }
-    
-    .delete-warning {
-        flex-direction: column;
-        text-align: center;
-    }
-}
 
-@@media (max-width: 576px) {
+    /* Page Header */
     .page-header {
-        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
-    
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
     .header-icon {
-        width: 60px;
-        height: 60px;
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+    }
+
+    .header-text h2 {
+        color: white;
+        font-weight: 700;
+        margin: 0;
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .header-text p {
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0.5rem 0 0 0;
+        font-size: 1.1rem;
+    }
+
+    /* Modern Buttons */
+    .btn-modern {
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        border: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .btn-modern:hover::before {
+        left: 100%;
+    }
+
+    .btn-modern.btn-primary {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-modern.btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        color: white;
+    }
+
+    .btn-modern.btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-modern.btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-modern.btn-danger {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-modern.btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        color: white;
+    }
+
+    /* Modern Card */
+    .modern-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .modern-card .card-body {
+        padding: 2rem;
+    }
+
+    /* Modern Alerts */
+    .alert-modern {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .alert-modern::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 4px;
+        height: 100%;
+    }
+
+    .alert-success {
+        background: rgba(34, 197, 94, 0.1);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .alert-success::before {
+        background: #22c55e;
+    }
+
+    .alert-success .alert-icon {
+        color: #22c55e;
         font-size: 1.5rem;
     }
-    
-    .header-text h2 {
-        font-size: 1.8rem;
+
+    .alert-danger {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
     }
-    
-    .modern-card .card-body {
-        padding: 1.5rem;
+
+    .alert-danger::before {
+        background: #ef4444;
     }
-    
-    .empty-state {
-        padding: 2rem 1rem;
+
+    .alert-danger .alert-icon {
+        color: #ef4444;
+        font-size: 1.5rem;
     }
-    
-    .empty-icon {
-        font-size: 3rem;
+
+    .alert-content {
+        flex: 1;
     }
-}
 
-/* Animations */
-@@media fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
+    .alert-content strong {
+        color: white;
+        display: block;
+        margin-bottom: 0.25rem;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    .alert-content p {
+        color: rgba(255, 255, 255, 0.8);
+        margin: 0;
     }
-}
 
-@@media slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(30px);
+    .alert-close {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
     }
-    to {
-        opacity: 1;
-        transform: translateX(0);
+
+    .alert-close:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
     }
-}
 
-@@media pulse {
-    0%, 100% {
-        transform: scale(1);
+    /* Modern Table */
+    .table-container {
+        overflow-x: auto;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.02);
     }
-    50% {
-        transform: scale(1.05);
+
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: transparent;
     }
-}
 
-.page-header {
-    animation: fadeInUp 0.6s ease-out;
-}
-
-.modern-card {
-    animation: fadeInUp 0.8s ease-out;
-}
-
-.table-row {
-    animation: slideInRight 0.4s ease-out;
-}
-
-.table-row:nth-child(even) {
-    animation-delay: 0.1s;
-}
-
-.table-row:nth-child(odd) {
-    animation-delay: 0.2s;
-}
-
-.btn-modern:hover {
-    animation: pulse 0.6s ease-in-out;
-}
-
-.modal-icon {
-    animation: pulse 2s infinite;
-}
-
-/* Loading States */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(30, 30, 46, 0.8);
-    backdrop-filter: blur(5px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-}
-
-.loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 3px solid rgba(99, 102, 241, 0.3);
-    border-top: 3px solid #6366f1;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@@media spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Tooltip Styles */
-.tooltip-modern {
-    position: relative;
-    display: inline-block;
-}
-
-.tooltip-modern::before {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(30, 30, 46, 0.95);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    z-index: 1000;
-}
-
-.tooltip-modern::after {
-    content: '';
-    position: absolute;
-    bottom: 115%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 5px solid transparent;
-    border-top-color: rgba(30, 30, 46, 0.95);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-}
-
-.tooltip-modern:hover::before,
-.tooltip-modern:hover::after {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Success/Error Message Animations */
-.alert-modern {
-    animation: slideInDown 0.5s ease-out;
-}
-
-@@media slideInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
+    .modern-table thead tr {
+        background: rgba(255, 255, 255, 0.05);
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
-/* Focus States */
-.btn-modern:focus,
-.btn-action:focus,
-.form-control-modern:focus {
-    outline: 2px solid #6366f1;
-    outline-offset: 2px;
-}
+    .modern-table th {
+        padding: 1.5rem 1rem;
+        border: none;
+        color: white;
+        font-weight: 600;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
 
-/* Print Styles */
-@@media print {
-    .lessons-wrapper {
-        background: white !important;
+    .th-content {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
-    
-    .page-header,
-    .modern-card {
-        background: white !important;
-        color: black !important;
-        border: 1px solid #ddd !important;
+
+    .th-content i {
+        color: #6366f1;
+        font-size: 1.1rem;
     }
-    
-    .btn-modern,
+
+    .table-row {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .table-row:hover {
+        background: rgba(99, 102, 241, 0.1);
+        transform: translateX(5px);
+    }
+
+    .modern-table td {
+        padding: 1.5rem 1rem;
+        border: none;
+        color: rgba(255, 255, 255, 0.9);
+        vertical-align: middle;
+    }
+
+    .id-badge {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        display: inline-block;
+        min-width: 50px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .lesson-name {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .lesson-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.1rem;
+    }
+
+    .lesson-name strong {
+        color: white;
+        font-size: 1.1rem;
+    }
+
+    .description-text {
+        color: rgba(255, 255, 255, 0.7);
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .stat-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .exam-badge {
+        background: rgba(251, 191, 36, 0.2);
+        color: #fbbf24;
+        border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    .homework-badge {
+        background: rgba(139, 92, 246, 0.2);
+        color: #8b5cf6;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
     .action-buttons {
-        display: none !important;
+        display: flex;
+        gap: 0.5rem;
     }
-    
-    .modern-table th,
-    .modern-table td {
-        color: black !important;
-        border: 1px solid #ddd !important;
+
+    .btn-action {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1rem;
     }
-}
 
-/* High Contrast Mode */
-@@media (prefers-contrast: high) {
-    .lessons-wrapper {
-        background: #000;
+    .btn-edit {
+        background: rgba(59, 130, 246, 0.2);
+        color: #3b82f6;
+        border: 1px solid rgba(59, 130, 246, 0.3);
     }
-    
-    .page-header,
-    .modern-card {
-        background: #111;
-        border: 2px solid #fff;
+
+    .btn-edit:hover {
+        background: rgba(59, 130, 246, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
     }
-    
-    .modern-table th,
-    .modern-table td {
-        border: 1px solid #fff;
+
+    .btn-delete {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
     }
-}
 
-/* Reduced Motion */
-@@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+    .btn-delete:hover {
+        background: rgba(239, 68, 68, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
     }
-}
 
-/* Dark Mode Support */
-@@media (prefers-color-scheme: dark) {
-    .lessons-wrapper {
-        background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: rgba(255, 255, 255, 0.7);
     }
-}
 
-/* Custom Scrollbar for Table Container */
-.table-container::-webkit-scrollbar {
-    height: 8px;
-}
+    .empty-icon {
+        font-size: 4rem;
+        color: rgba(255, 255, 255, 0.3);
+        margin-bottom: 1.5rem;
+    }
 
-.table-container::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
-}
+    .empty-state h3 {
+        color: white;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
 
-.table-container::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, 0.5);
-    border-radius: 4px;
-}
+    .empty-state p {
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+    }
 
-.table-container::-webkit-scrollbar-thumb:hover {
-    background: rgba(99, 102, 241, 0.7);
-}
-
-/* Selection Styles */
-::selection {
-    background: rgba(99, 102, 241, 0.3);
-    color: white;
-}
-
-::-moz-selection {
-    background: rgba(99, 102, 241, 0.3);
-    color: white;
-}
-
-/* Focus Visible */
-.btn-modern:focus-visible,
-.btn-action:focus-visible {
-    outline: 2px solid #6366f1;
-    outline-offset: 2px;
-}
-
-/* Backdrop Filter Fallback */
-@@supports not (backdrop-filter: blur(20px)) {
-    .page-header,
-    .modern-card,
+    /* Modern Modals */
     .modern-modal {
-        background: rgba(30, 30, 46, 0.9);
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
-}
+
+    .modern-modal .modal-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem 2rem;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .modal-title-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .modal-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    }
+
+    .edit-icon {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .delete-icon {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .modal-title {
+        color: white;
+        font-weight: 600;
+        margin: 0;
+        font-size: 1.3rem;
+    }
+
+    .btn-close-modern {
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.7);
+        transition: all 0.3s ease;
+    }
+
+    .btn-close-modern:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        transform: rotate(90deg);
+    }
+
+    .modern-modal .modal-body {
+        padding: 2rem;
+    }
+
+    .modern-modal .modal-footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem 2rem;
+        background: rgba(255, 255, 255, 0.02);
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+    }
+
+    /* Form Controls */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .form-label i {
+        color: #6366f1;
+    }
+
+    .form-control-modern {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        color: white;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .form-control-modern::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .form-control-modern:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Delete Modal Specific */
+    .delete-modal .modal-body {
+        padding: 2rem;
+    }
+
+    .delete-warning {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+    }
+
+    .warning-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(239, 68, 68, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #ef4444;
+        flex-shrink: 0;
+    }
+
+    .warning-content {
+        flex: 1;
+    }
+
+    .warning-content h6 {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        font-size: 1.1rem;
+    }
+
+    .warning-content p {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .warning-note {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: 8px;
+        padding: 0.75rem;
+        display: flex;
+        align-items: center;
+        color: #3b82f6;
+    }
+
+    .warning-note small {
+        color: rgba(59, 130, 246, 0.8);
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .header-left {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .header-text h2 {
+            font-size: 2rem;
+        }
+
+        .table-container {
+            font-size: 0.9rem;
+        }
+
+        .modern-table th,
+        .modern-table td {
+            padding: 1rem 0.5rem;
+        }
+
+        .lesson-name {
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .modern-modal .modal-body,
+        .modern-modal .modal-header,
+        .modern-modal .modal-footer {
+            padding: 1.5rem;
+        }
+
+        .delete-warning {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .page-header {
+            padding: 1.5rem;
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+
+        .header-text h2 {
+            font-size: 1.8rem;
+        }
+
+        .modern-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+        }
+    }
+
+    /* Animations */
+    @@media fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @@media pulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .page-header {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .modern-card {
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    .table-row {
+        animation: slideInRight 0.4s ease-out;
+    }
+
+    .table-row:nth-child(even) {
+        animation-delay: 0.1s;
+    }
+
+    .table-row:nth-child(odd) {
+        animation-delay: 0.2s;
+    }
+
+    .btn-modern:hover {
+        animation: pulse 0.6s ease-in-out;
+    }
+
+    .modal-icon {
+        animation: pulse 2s infinite;
+    }
+
+    /* Loading States */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(30, 30, 46, 0.8);
+        backdrop-filter: blur(5px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(99, 102, 241, 0.3);
+        border-top: 3px solid #6366f1;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@media spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Tooltip Styles */
+    .tooltip-modern {
+        position: relative;
+        display: inline-block;
+    }
+
+    .tooltip-modern::before {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(30, 30, 46, 0.95);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+    }
+
+    .tooltip-modern::after {
+        content: '';
+        position: absolute;
+        bottom: 115%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: rgba(30, 30, 46, 0.95);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .tooltip-modern:hover::before,
+    .tooltip-modern:hover::after {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Success/Error Message Animations */
+    .alert-modern {
+        animation: slideInDown 0.5s ease-out;
+    }
+
+    @@media slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Focus States */
+    .btn-modern:focus,
+    .btn-action:focus,
+    .form-control-modern:focus {
+        outline: 2px solid #6366f1;
+        outline-offset: 2px;
+    }
+
+    /* Print Styles */
+    @@media print {
+        .lessons-wrapper {
+            background: white !important;
+        }
+
+        .page-header,
+        .modern-card {
+            background: white !important;
+            color: black !important;
+            border: 1px solid #ddd !important;
+        }
+
+        .btn-modern,
+        .action-buttons {
+            display: none !important;
+        }
+
+        .modern-table th,
+        .modern-table td {
+            color: black !important;
+            border: 1px solid #ddd !important;
+        }
+    }
+
+    /* High Contrast Mode */
+    @@media (prefers-contrast: high) {
+        .lessons-wrapper {
+            background: #000;
+        }
+
+        .page-header,
+        .modern-card {
+            background: #111;
+            border: 2px solid #fff;
+        }
+
+        .modern-table th,
+        .modern-table td {
+            border: 1px solid #fff;
+        }
+    }
+
+    /* Reduced Motion */
+    @@media (prefers-reduced-motion: reduce) {
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+
+    /* Dark Mode Support */
+    @@media (prefers-color-scheme: dark) {
+        .lessons-wrapper {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+        }
+    }
+
+    /* Custom Scrollbar for Table Container */
+    .table-container::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .table-container::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb {
+        background: rgba(99, 102, 241, 0.5);
+        border-radius: 4px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb:hover {
+        background: rgba(99, 102, 241, 0.7);
+    }
+
+    /* Selection Styles */
+    ::selection {
+        background: rgba(99, 102, 241, 0.3);
+        color: white;
+    }
+
+    ::-moz-selection {
+        background: rgba(99, 102, 241, 0.3);
+        color: white;
+    }
+
+    /* Focus Visible */
+    .btn-modern:focus-visible,
+    .btn-action:focus-visible {
+        outline: 2px solid #6366f1;
+        outline-offset: 2px;
+    }
+
+    /* Backdrop Filter Fallback */
+    @@supports not (backdrop-filter: blur(20px)) {
+
+        .page-header,
+        .modern-card,
+        .modern-modal {
+            background: rgba(30, 30, 46, 0.9);
+        }
+    }
 </style>
 
 <script>
-// Lesson Management Functions
-function editLesson(id, name, description) {
-    document.getElementById('editLessonId').value = id;
-    document.getElementById('editLessonName').value = name;
-    document.getElementById('editLessonDescription').value = description || '';
-    
-    const modal = new bootstrap.Modal(document.getElementById('editLessonModal'));
-    modal.show();
-}
+    // Lesson Management Functions
+    function editLesson(id, name, description) {
+        document.getElementById('editLessonId').value = id;
+        document.getElementById('editLessonName').value = name;
+        document.getElementById('editLessonDescription').value = description || '';
 
-function deleteLesson(id, name) {
-    document.getElementById('deleteLessonId').value = id;
-    document.getElementById('deleteLessonName').textContent = name;
-    
-    const modal = new bootstrap.Modal(document.getElementById('deleteLessonModal'));
-    modal.show();
-}
+        const modal = new bootstrap.Modal(document.getElementById('editLessonModal'));
+        modal.show();
+    }
 
-// Form Validation
-document.addEventListener('DOMContentLoaded', function() {
-    // Add lesson form validation
-    const addForm = document.querySelector('#addLessonModal form');
-    if (addForm) {
-        addForm.addEventListener('submit', function(e) {
-            const nameInput = document.getElementById('lessonName');
-            if (!nameInput.value.trim()) {
-                e.preventDefault();
-                showAlert('Ders adı boş olamaz!', 'danger');
-                nameInput.focus();
-                return false;
-            }
-            
-            if (nameInput.value.trim().length < 2) {
-                e.preventDefault();
-                showAlert('Ders adı en az 2 karakter olmalıdır!', 'danger');
-                nameInput.focus();
-                return false;
-            }
-            
-            showLoadingOverlay();
-        });
+    function deleteLesson(id, name) {
+        document.getElementById('deleteLessonId').value = id;
+        document.getElementById('deleteLessonName').textContent = name;
+
+        const modal = new bootstrap.Modal(document.getElementById('deleteLessonModal'));
+        modal.show();
     }
-    
-    // Edit lesson form validation
-    const editForm = document.querySelector('#editLessonModal form');
-    if (editForm) {
-        editForm.addEventListener('submit', function(e) {
-            const nameInput = document.getElementById('editLessonName');
-            if (!nameInput.value.trim()) {
-                e.preventDefault();
-                showAlert('Ders adı boş olamaz!', 'danger');
-                nameInput.focus();
-                return false;
-            }
-            
-            if (nameInput.value.trim().length < 2) {
-                e.preventDefault();
-                showAlert('Ders adı en az 2 karakter olmalıdır!', 'danger');
-                nameInput.focus();
-                return false;
-            }
-            
-            showLoadingOverlay();
-        });
-    }
-    
-    // Delete form
-    const deleteForm = document.querySelector('#deleteLessonModal form');
-    if (deleteForm) {
-        deleteForm.addEventListener('submit', function(e) {
-            showLoadingOverlay();
-        });
-    }
-    
-    // Auto-hide alerts
-    setTimeout(function() {
-        const alerts = document.querySelectorAll('.alert-modern');
-        alerts.forEach(function(alert) {
-            alert.style.animation = 'slideOutUp 0.5s ease-in';
-            setTimeout(function() {
-                alert.remove();
-            }, 500);
-        });
-    }, 5000);
-    
-    // Add tooltips to action buttons
-    const actionButtons = document.querySelectorAll('.btn-action');
-    actionButtons.forEach(function(button) {
-        button.classList.add('tooltip-modern');
-    });
-    
-    // Character counter for textareas
-    const textareas = document.querySelectorAll('textarea[maxlength]');
-    textareas.forEach(function(textarea) {
-        const maxLength = textarea.getAttribute('maxlength');
-        const counter = document.createElement('small');
-        counter.className = 'character-counter';
-        counter.style.color = 'rgba(255, 255, 255, 0.6)';
-        counter.style.float = 'right';
-        counter.style.marginTop = '0.5rem';
-        
-        function updateCounter() {
-            const remaining = maxLength - textarea.value.length;
-            counter.textContent = `${remaining} karakter kaldı`;
-            
-            if (remaining < 50) {
-                counter.style.color = '#fbbf24';
-            } else if (remaining < 20) {
-                counter.style.color = '#ef4444';
-            } else {
-                counter.style.color = 'rgba(255, 255, 255, 0.6)';
-            }
+
+    // Form Validation
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add lesson form validation
+        const addForm = document.querySelector('#addLessonModal form');
+        if (addForm) {
+            addForm.addEventListener('submit', function (e) {
+                const nameInput = document.getElementById('lessonName');
+                if (!nameInput.value.trim()) {
+                    e.preventDefault();
+                    showAlert('Ders adı boş olamaz!', 'danger');
+                    nameInput.focus();
+                    return false;
+                }
+
+                if (nameInput.value.trim().length < 2) {
+                    e.preventDefault();
+                    showAlert('Ders adı en az 2 karakter olmalıdır!', 'danger');
+                    nameInput.focus();
+                    return false;
+                }
+
+                showLoadingOverlay();
+            });
         }
-        
-        textarea.addEventListener('input', updateCounter);
-        textarea.parentNode.appendChild(counter);
-        updateCounter();
-    });
-});
 
-// Utility Functions
-function showAlert(message, type = 'info') {
-    const alertContainer = document.createElement('div');
-    alertContainer.className = `alert-modern alert-${type}`;
-    alertContainer.innerHTML = `
+        // Edit lesson form validation
+        const editForm = document.querySelector('#editLessonModal form');
+        if (editForm) {
+            editForm.addEventListener('submit', function (e) {
+                const nameInput = document.getElementById('editLessonName');
+                if (!nameInput.value.trim()) {
+                    e.preventDefault();
+                    showAlert('Ders adı boş olamaz!', 'danger');
+                    nameInput.focus();
+                    return false;
+                }
+
+                if (nameInput.value.trim().length < 2) {
+                    e.preventDefault();
+                    showAlert('Ders adı en az 2 karakter olmalıdır!', 'danger');
+                    nameInput.focus();
+                    return false;
+                }
+
+                showLoadingOverlay();
+            });
+        }
+
+        // Delete form
+        const deleteForm = document.querySelector('#deleteLessonModal form');
+        if (deleteForm) {
+            deleteForm.addEventListener('submit', function (e) {
+                showLoadingOverlay();
+            });
+        }
+
+        // Auto-hide alerts
+        setTimeout(function () {
+            const alerts = document.querySelectorAll('.alert-modern');
+            alerts.forEach(function (alert) {
+                alert.style.animation = 'slideOutUp 0.5s ease-in';
+                setTimeout(function () {
+                    alert.remove();
+                }, 500);
+            });
+        }, 5000);
+
+        // Add tooltips to action buttons
+        const actionButtons = document.querySelectorAll('.btn-action');
+        actionButtons.forEach(function (button) {
+            button.classList.add('tooltip-modern');
+        });
+
+        // Character counter for textareas
+        const textareas = document.querySelectorAll('textarea[maxlength]');
+        textareas.forEach(function (textarea) {
+            const maxLength = textarea.getAttribute('maxlength');
+            const counter = document.createElement('small');
+            counter.className = 'character-counter';
+            counter.style.color = 'rgba(255, 255, 255, 0.6)';
+            counter.style.float = 'right';
+            counter.style.marginTop = '0.5rem';
+
+            function updateCounter() {
+                const remaining = maxLength - textarea.value.length;
+                counter.textContent = `${remaining} karakter kaldı`;
+
+                if (remaining < 50) {
+                    counter.style.color = '#fbbf24';
+                } else if (remaining < 20) {
+                    counter.style.color = '#ef4444';
+                } else {
+                    counter.style.color = 'rgba(255, 255, 255, 0.6)';
+                }
+            }
+
+            textarea.addEventListener('input', updateCounter);
+            textarea.parentNode.appendChild(counter);
+            updateCounter();
+        });
+    });
+
+    // Utility Functions
+    function showAlert(message, type = 'info') {
+        const alertContainer = document.createElement('div');
+        alertContainer.className = `alert-modern alert-${type}`;
+        alertContainer.innerHTML = `
         <div class="alert-icon">
             <i class="bi bi-${type === 'success' ? 'check-circle-fill' : type === 'danger' ? 'exclamation-triangle-fill' : 'info-circle-fill'}"></i>
         </div>
@@ -1387,220 +1405,220 @@ function showAlert(message, type = 'info') {
             <i class="bi bi-x"></i>
         </button>
     `;
-    
-    document.body.insertBefore(alertContainer, document.body.firstChild);
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        if (alertContainer.parentNode) {
-            alertContainer.style.animation = 'slideOutUp 0.5s ease-in';
-            setTimeout(() => {
-                alertContainer.remove();
-            }, 500);
-        }
-    }, 5000);
-}
 
-function showLoadingOverlay() {
-    const overlay = document.createElement('div');
-    overlay.className = 'loading-overlay';
-    overlay.innerHTML = `
+        document.body.insertBefore(alertContainer, document.body.firstChild);
+
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (alertContainer.parentNode) {
+                alertContainer.style.animation = 'slideOutUp 0.5s ease-in';
+                setTimeout(() => {
+                    alertContainer.remove();
+                }, 500);
+            }
+        }, 5000);
+    }
+
+    function showLoadingOverlay() {
+        const overlay = document.createElement('div');
+        overlay.className = 'loading-overlay';
+        overlay.innerHTML = `
         <div class="loading-spinner"></div>
     `;
-    document.body.appendChild(overlay);
-    
-    // Remove overlay after 10 seconds (fallback)
-    setTimeout(() => {
-        if (overlay.parentNode) {
+        document.body.appendChild(overlay);
+
+        // Remove overlay after 10 seconds (fallback)
+        setTimeout(() => {
+            if (overlay.parentNode) {
+                overlay.remove();
+            }
+        }, 10000);
+    }
+
+    function hideLoadingOverlay() {
+        const overlay = document.querySelector('.loading-overlay');
+        if (overlay) {
             overlay.remove();
         }
-    }, 10000);
-}
-
-function hideLoadingOverlay() {
-    const overlay = document.querySelector('.loading-overlay');
-    if (overlay) {
-        overlay.remove();
     }
-}
 
-// Search and Filter Functions
-function initializeSearch() {
-    const searchInput = document.createElement('input');
-    searchInput.type = 'text';
-    searchInput.className = 'form-control-modern';
-    searchInput.placeholder = 'Ders ara...';
-    searchInput.style.maxWidth = '300px';
-    
-    const searchContainer = document.createElement('div');
-    searchContainer.className = 'search-container';
-    searchContainer.style.marginBottom = '1.5rem';
-    searchContainer.appendChild(searchInput);
-    
-    const tableContainer = document.querySelector('.table-container');
-    if (tableContainer) {
-        tableContainer.parentNode.insertBefore(searchContainer, tableContainer);
-        
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const rows = document.querySelectorAll('.table-row');
-            
-            rows.forEach(row => {
-                const lessonName = row.querySelector('.lesson-name strong').textContent.toLowerCase();
-                const description = row.querySelector('.description-text').textContent.toLowerCase();
-                
-                if (lessonName.includes(searchTerm) || description.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        });
-    }
-}
+    // Search and Filter Functions
+    function initializeSearch() {
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.className = 'form-control-modern';
+        searchInput.placeholder = 'Ders ara...';
+        searchInput.style.maxWidth = '300px';
 
-// Keyboard Shortcuts
-document.addEventListener('keydown', function(e) {
-    // Ctrl/Cmd + N for new lesson
-    if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-        e.preventDefault();
-        const addButton = document.querySelector('[data-bs-target="#addLessonModal"]');
-        if (addButton) {
-            addButton.click();
-        }
-    }
-    
-    // Escape to close modals
-    if (e.key === 'Escape') {
-        const modals = document.querySelectorAll('.modal.show');
-        modals.forEach(modal => {
-            const modalInstance = bootstrap.Modal.getInstance(modal);
-            if (modalInstance) {
-                modalInstance.hide();
-            }
-        });
-    }
-});
+        const searchContainer = document.createElement('div');
+        searchContainer.className = 'search-container';
+        searchContainer.style.marginBottom = '1.5rem';
+        searchContainer.appendChild(searchInput);
 
-// Form Auto-save (for edit modal)
-function initializeAutoSave() {
-    const editForm = document.querySelector('#editLessonModal form');
-    if (editForm) {
-        const inputs = editForm.querySelectorAll('input, textarea');
-        inputs.forEach(input => {
-            input.addEventListener('input', function() {
-                const formData = new FormData(editForm);
-                const data = Object.fromEntries(formData);
-                localStorage.setItem('editLessonDraft', JSON.stringify(data));
-            });
-        });
-        
-        // Restore draft on modal show
-        const editModal = document.getElementById('editLessonModal');
-        editModal.addEventListener('show.bs.modal', function() {
-            const draft = localStorage.getItem('editLessonDraft');
-            if (draft) {
-                const data = JSON.parse(draft);
-                Object.keys(data).forEach(key => {
-                    const input = editForm.querySelector(`[name="${key}"]`);
-                    if (input && input.type !== 'hidden') {
-                        input.value = data[key];
+        const tableContainer = document.querySelector('.table-container');
+        if (tableContainer) {
+            tableContainer.parentNode.insertBefore(searchContainer, tableContainer);
+
+            searchInput.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('.table-row');
+
+                rows.forEach(row => {
+                    const lessonName = row.querySelector('.lesson-name strong').textContent.toLowerCase();
+                    const description = row.querySelector('.description-text').textContent.toLowerCase();
+
+                    if (lessonName.includes(searchTerm) || description.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
                     }
                 });
-            }
-        });
-        
-        // Clear draft on successful submit
-        editForm.addEventListener('submit', function() {
-            localStorage.removeItem('editLessonDraft');
-        });
-    }
-}
-
-// Statistics Update
-function updateStatistics() {
-    const rows = document.querySelectorAll('.table-row');
-    const totalLessons = rows.length;
-    
-    let totalExams = 0;
-    let totalHomeworks = 0;
-    
-    rows.forEach(row => {
-        const examBadge = row.querySelector('.exam-badge');
-        const homeworkBadge = row.querySelector('.homework-badge');
-        
-        if (examBadge) {
-            totalExams += parseInt(examBadge.textContent) || 0;
+            });
         }
-        
-        if (homeworkBadge) {
-            totalHomeworks += parseInt(homeworkBadge.textContent) || 0;
+    }
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', function (e) {
+        // Ctrl/Cmd + N for new lesson
+        if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+            e.preventDefault();
+            const addButton = document.querySelector('[data-bs-target="#addLessonModal"]');
+            if (addButton) {
+                addButton.click();
+            }
+        }
+
+        // Escape to close modals
+        if (e.key === 'Escape') {
+            const modals = document.querySelectorAll('.modal.show');
+            modals.forEach(modal => {
+                const modalInstance = bootstrap.Modal.getInstance(modal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            });
         }
     });
-    
-    // Update header statistics if exists
-    const headerText = document.querySelector('.header-text p');
-    if (headerText) {
-        headerText.textContent = `Toplam ${totalLessons} ders, ${totalExams} sınav, ${totalHomeworks} ödev`;
-    }
-}
 
-// Bulk Operations
-function initializeBulkOperations() {
-    // Add checkboxes to table rows
-    const tableHeader = document.querySelector('.modern-table thead tr');
-    if (tableHeader) {
-        const checkboxHeader = document.createElement('th');
-        checkboxHeader.innerHTML = `
+    // Form Auto-save (for edit modal)
+    function initializeAutoSave() {
+        const editForm = document.querySelector('#editLessonModal form');
+        if (editForm) {
+            const inputs = editForm.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('input', function () {
+                    const formData = new FormData(editForm);
+                    const data = Object.fromEntries(formData);
+                    localStorage.setItem('editLessonDraft', JSON.stringify(data));
+                });
+            });
+
+            // Restore draft on modal show
+            const editModal = document.getElementById('editLessonModal');
+            editModal.addEventListener('show.bs.modal', function () {
+                const draft = localStorage.getItem('editLessonDraft');
+                if (draft) {
+                    const data = JSON.parse(draft);
+                    Object.keys(data).forEach(key => {
+                        const input = editForm.querySelector(`[name="${key}"]`);
+                        if (input && input.type !== 'hidden') {
+                            input.value = data[key];
+                        }
+                    });
+                }
+            });
+
+            // Clear draft on successful submit
+            editForm.addEventListener('submit', function () {
+                localStorage.removeItem('editLessonDraft');
+            });
+        }
+    }
+
+    // Statistics Update
+    function updateStatistics() {
+        const rows = document.querySelectorAll('.table-row');
+        const totalLessons = rows.length;
+
+        let totalExams = 0;
+        let totalHomeworks = 0;
+
+        rows.forEach(row => {
+            const examBadge = row.querySelector('.exam-badge');
+            const homeworkBadge = row.querySelector('.homework-badge');
+
+            if (examBadge) {
+                totalExams += parseInt(examBadge.textContent) || 0;
+            }
+
+            if (homeworkBadge) {
+                totalHomeworks += parseInt(homeworkBadge.textContent) || 0;
+            }
+        });
+
+        // Update header statistics if exists
+        const headerText = document.querySelector('.header-text p');
+        if (headerText) {
+            headerText.textContent = `Toplam ${totalLessons} ders, ${totalExams} sınav, ${totalHomeworks} ödev`;
+        }
+    }
+
+    // Bulk Operations
+    function initializeBulkOperations() {
+        // Add checkboxes to table rows
+        const tableHeader = document.querySelector('.modern-table thead tr');
+        if (tableHeader) {
+            const checkboxHeader = document.createElement('th');
+            checkboxHeader.innerHTML = `
             <input type="checkbox" id="selectAll" class="form-check-input">
         `;
-        tableHeader.insertBefore(checkboxHeader, tableHeader.firstChild);
-        
-        const rows = document.querySelectorAll('.table-row');
-        rows.forEach((row, index) => {
-            const checkboxCell = document.createElement('td');
-            checkboxCell.innerHTML = `
+            tableHeader.insertBefore(checkboxHeader, tableHeader.firstChild);
+
+            const rows = document.querySelectorAll('.table-row');
+            rows.forEach((row, index) => {
+                const checkboxCell = document.createElement('td');
+                checkboxCell.innerHTML = `
                 <input type="checkbox" class="form-check-input row-checkbox" value="${index}">
             `;
-            row.insertBefore(checkboxCell, row.firstChild);
-        });
-        
-        // Select all functionality
-        document.getElementById('selectAll').addEventListener('change', function() {
-            const checkboxes = document.querySelectorAll('.row-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
+                row.insertBefore(checkboxCell, row.firstChild);
             });
-            updateBulkActions();
-        });
-        
-        // Individual checkbox change
-        document.querySelectorAll('.row-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', updateBulkActions);
-        });
-    }
-}
 
-function updateBulkActions() {
-    const selectedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
-    const bulkActionsContainer = document.querySelector('.bulk-actions');
-    
-    if (selectedCheckboxes.length > 0) {
-        if (!bulkActionsContainer) {
-            createBulkActionsBar();
-        }
-        document.querySelector('.bulk-actions .selected-count').textContent = selectedCheckboxes.length;
-    } else {
-        if (bulkActionsContainer) {
-            bulkActionsContainer.remove();
+            // Select all functionality
+            document.getElementById('selectAll').addEventListener('change', function () {
+                const checkboxes = document.querySelectorAll('.row-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                updateBulkActions();
+            });
+
+            // Individual checkbox change
+            document.querySelectorAll('.row-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', updateBulkActions);
+            });
         }
     }
-}
 
-function createBulkActionsBar() {
-    const bulkActions = document.createElement('div');
-    bulkActions.className = 'bulk-actions';
-    bulkActions.style.cssText = `
+    function updateBulkActions() {
+        const selectedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+        const bulkActionsContainer = document.querySelector('.bulk-actions');
+
+        if (selectedCheckboxes.length > 0) {
+            if (!bulkActionsContainer) {
+                createBulkActionsBar();
+            }
+            document.querySelector('.bulk-actions .selected-count').textContent = selectedCheckboxes.length;
+        } else {
+            if (bulkActionsContainer) {
+                bulkActionsContainer.remove();
+            }
+        }
+    }
+
+    function createBulkActionsBar() {
+        const bulkActions = document.createElement('div');
+        bulkActions.className = 'bulk-actions';
+        bulkActions.style.cssText = `
         position: fixed;
         bottom: 2rem;
         left: 50%;
@@ -1616,8 +1634,8 @@ function createBulkActionsBar() {
         z-index: 1000;
         animation: slideInUp 0.3s ease-out;
     `;
-    
-    bulkActions.innerHTML = `
+
+        bulkActions.innerHTML = `
         <span class="text-white">
             <span class="selected-count">0</span> ders seçildi
         </span>
@@ -1628,69 +1646,69 @@ function createBulkActionsBar() {
             <i class="bi bi-x"></i> Seçimi Temizle
         </button>
     `;
-    
-    document.body.appendChild(bulkActions);
-}
 
-function bulkDelete() {
-    const selectedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
-    if (selectedCheckboxes.length === 0) return;
-    
-    if (confirm(`${selectedCheckboxes.length} dersi silmek istediğinizden emin misiniz?`)) {
-        // Here you would implement the bulk delete logic
-        showAlert(`${selectedCheckboxes.length} ders silindi.`, 'success');
-        clearSelection();
+        document.body.appendChild(bulkActions);
     }
-}
 
-function clearSelection() {
-    document.querySelectorAll('.row-checkbox').forEach(checkbox => {
-        checkbox.checked = false;
-    });
-    document.getElementById('selectAll').checked = false;
-    updateBulkActions();
-}
+    function bulkDelete() {
+        const selectedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+        if (selectedCheckboxes.length === 0) return;
 
-// Export Functions
-function exportToCSV() {
-    const rows = document.querySelectorAll('.table-row');
-    let csv = 'ID,Ders Adı,Açıklama,Sınav Sayısı,Ödev Sayısı\n';
-    
-    rows.forEach(row => {
-        const id = row.querySelector('.id-badge').textContent;
-        const name = row.querySelector('.lesson-name strong').textContent;
-        const description = row.querySelector('.description-text').textContent;
-        const examCount = row.querySelector('.exam-badge')?.textContent || '0';
-        const homeworkCount = row.querySelector('.homework-badge')?.textContent || '0';
-        
-        csv += `"${id}","${name}","${description}","${examCount}","${homeworkCount}"\n`;
-    });
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'dersler.csv';
-    a.click();
-    window.URL.revokeObjectURL(url);
-}
+        if (confirm(`${selectedCheckboxes.length} dersi silmek istediğinizden emin misiniz?`)) {
+            // Here you would implement the bulk delete logic
+            showAlert(`${selectedCheckboxes.length} ders silindi.`, 'success');
+            clearSelection();
+        }
+    }
 
-function exportToPDF() {
-    window.print();
-}
+    function clearSelection() {
+        document.querySelectorAll('.row-checkbox').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        document.getElementById('selectAll').checked = false;
+        updateBulkActions();
+    }
 
-// Initialize all features when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    updateStatistics();
-    initializeSearch();
-    initializeAutoSave();
-    
-    // Add export buttons to header
-    const headerRight = document.querySelector('.header-content .d-flex');
-    if (headerRight) {
-        const exportDropdown = document.createElement('div');
-        exportDropdown.className = 'dropdown';
-        exportDropdown.innerHTML = `
+    // Export Functions
+    function exportToCSV() {
+        const rows = document.querySelectorAll('.table-row');
+        let csv = 'ID,Ders Adı,Açıklama,Sınav Sayısı,Ödev Sayısı\n';
+
+        rows.forEach(row => {
+            const id = row.querySelector('.id-badge').textContent;
+            const name = row.querySelector('.lesson-name strong').textContent;
+            const description = row.querySelector('.description-text').textContent;
+            const examCount = row.querySelector('.exam-badge')?.textContent || '0';
+            const homeworkCount = row.querySelector('.homework-badge')?.textContent || '0';
+
+            csv += `"${id}","${name}","${description}","${examCount}","${homeworkCount}"\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'dersler.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+
+    function exportToPDF() {
+        window.print();
+    }
+
+    // Initialize all features when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function () {
+        updateStatistics();
+        initializeSearch();
+        initializeAutoSave();
+
+        // Add export buttons to header
+        const headerRight = document.querySelector('.header-content .d-flex');
+        if (headerRight) {
+            const exportDropdown = document.createElement('div');
+            exportDropdown.className = 'dropdown';
+            exportDropdown.innerHTML = `
             <button class="btn btn-modern btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                 <i class="bi bi-download"></i> Dışa Aktar
             </button>
@@ -1703,87 +1721,87 @@ document.addEventListener('DOMContentLoaded', function() {
                 </a></li>
             </ul>
         `;
-        headerRight.appendChild(exportDropdown);
-            }
-    
-    // Initialize bulk operations if needed
-    // initializeBulkOperations();
-    
-    // Add keyboard navigation
-    document.addEventListener('keydown', function(e) {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-        
-        switch(e.key) {
-            case 'ArrowUp':
-                e.preventDefault();
-                navigateTable('up');
-                break;
-            case 'ArrowDown':
-                e.preventDefault();
-                navigateTable('down');
-                break;
-            case 'Enter':
-                e.preventDefault();
-                const focusedRow = document.querySelector('.table-row.focused');
-                if (focusedRow) {
-                    const editButton = focusedRow.querySelector('.btn-edit');
-                    if (editButton) editButton.click();
-                }
-                break;
+            headerRight.appendChild(exportDropdown);
         }
-    });
-    
-    // Add focus styles for keyboard navigation
-    const style = document.createElement('style');
-    style.textContent = `
+
+        // Initialize bulk operations if needed
+        // initializeBulkOperations();
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function (e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            switch (e.key) {
+                case 'ArrowUp':
+                    e.preventDefault();
+                    navigateTable('up');
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    navigateTable('down');
+                    break;
+                case 'Enter':
+                    e.preventDefault();
+                    const focusedRow = document.querySelector('.table-row.focused');
+                    if (focusedRow) {
+                        const editButton = focusedRow.querySelector('.btn-edit');
+                        if (editButton) editButton.click();
+                    }
+                    break;
+            }
+        });
+
+        // Add focus styles for keyboard navigation
+        const style = document.createElement('style');
+        style.textContent = `
         .table-row.focused {
             background: rgba(99, 102, 241, 0.2) !important;
             border: 2px solid #6366f1 !important;
         }
     `;
-    document.head.appendChild(style);
-});
-
-// Keyboard Navigation Functions
-let currentFocusIndex = -1;
-
-function navigateTable(direction) {
-    const rows = document.querySelectorAll('.table-row:not([style*="display: none"])');
-    
-    // Remove current focus
-    document.querySelectorAll('.table-row.focused').forEach(row => {
-        row.classList.remove('focused');
+        document.head.appendChild(style);
     });
-    
-    if (direction === 'up') {
-        currentFocusIndex = Math.max(0, currentFocusIndex - 1);
-    } else if (direction === 'down') {
-        currentFocusIndex = Math.min(rows.length - 1, currentFocusIndex + 1);
-    }
-    
-    if (rows[currentFocusIndex]) {
-        rows[currentFocusIndex].classList.add('focused');
-        rows[currentFocusIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-}
 
-// Advanced Search Functions
-function initializeAdvancedSearch() {
-    const searchContainer = document.querySelector('.search-container');
-    if (!searchContainer) return;
-    
-    const advancedToggle = document.createElement('button');
-    advancedToggle.type = 'button';
-    advancedToggle.className = 'btn btn-modern btn-outline-secondary ms-2';
-    advancedToggle.innerHTML = '<i class="bi bi-funnel"></i> Gelişmiş';
-    advancedToggle.onclick = toggleAdvancedSearch;
-    
-    searchContainer.appendChild(advancedToggle);
-    
-    const advancedPanel = document.createElement('div');
-    advancedPanel.id = 'advancedSearchPanel';
-    advancedPanel.className = 'advanced-search-panel';
-    advancedPanel.style.cssText = `
+    // Keyboard Navigation Functions
+    let currentFocusIndex = -1;
+
+    function navigateTable(direction) {
+        const rows = document.querySelectorAll('.table-row:not([style*="display: none"])');
+
+        // Remove current focus
+        document.querySelectorAll('.table-row.focused').forEach(row => {
+            row.classList.remove('focused');
+        });
+
+        if (direction === 'up') {
+            currentFocusIndex = Math.max(0, currentFocusIndex - 1);
+        } else if (direction === 'down') {
+            currentFocusIndex = Math.min(rows.length - 1, currentFocusIndex + 1);
+        }
+
+        if (rows[currentFocusIndex]) {
+            rows[currentFocusIndex].classList.add('focused');
+            rows[currentFocusIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    // Advanced Search Functions
+    function initializeAdvancedSearch() {
+        const searchContainer = document.querySelector('.search-container');
+        if (!searchContainer) return;
+
+        const advancedToggle = document.createElement('button');
+        advancedToggle.type = 'button';
+        advancedToggle.className = 'btn btn-modern btn-outline-secondary ms-2';
+        advancedToggle.innerHTML = '<i class="bi bi-funnel"></i> Gelişmiş';
+        advancedToggle.onclick = toggleAdvancedSearch;
+
+        searchContainer.appendChild(advancedToggle);
+
+        const advancedPanel = document.createElement('div');
+        advancedPanel.id = 'advancedSearchPanel';
+        advancedPanel.className = 'advanced-search-panel';
+        advancedPanel.style.cssText = `
         display: none;
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
@@ -1793,8 +1811,8 @@ function initializeAdvancedSearch() {
         margin-top: 1rem;
         animation: fadeInUp 0.3s ease-out;
     `;
-    
-    advancedPanel.innerHTML = `
+
+        advancedPanel.innerHTML = `
         <div class="row g-3">
             <div class="col-md-4">
                 <label class="form-label text-white">Minimum Sınav Sayısı</label>
@@ -1825,176 +1843,176 @@ function initializeAdvancedSearch() {
             </div>
         </div>
     `;
-    
-    searchContainer.appendChild(advancedPanel);
-}
 
-function toggleAdvancedSearch() {
-    const panel = document.getElementById('advancedSearchPanel');
-    if (panel.style.display === 'none') {
-        panel.style.display = 'block';
-    } else {
-        panel.style.display = 'none';
+        searchContainer.appendChild(advancedPanel);
     }
-}
 
-function applyAdvancedSearch() {
-    const minExams = parseInt(document.getElementById('minExams').value) || 0;
-    const minHomeworks = parseInt(document.getElementById('minHomeworks').value) || 0;
-    const sortBy = document.getElementById('sortBy').value;
-    
-    let rows = Array.from(document.querySelectorAll('.table-row'));
-    
-    // Filter rows
-    rows.forEach(row => {
-        const examCount = parseInt(row.querySelector('.exam-badge')?.textContent) || 0;
-        const homeworkCount = parseInt(row.querySelector('.homework-badge')?.textContent) || 0;
-        
-        if (examCount >= minExams && homeworkCount >= minHomeworks) {
-            row.style.display = '';
+    function toggleAdvancedSearch() {
+        const panel = document.getElementById('advancedSearchPanel');
+        if (panel.style.display === 'none') {
+            panel.style.display = 'block';
         } else {
-            row.style.display = 'none';
+            panel.style.display = 'none';
         }
-    });
-    
-    // Sort visible rows
-    const visibleRows = rows.filter(row => row.style.display !== 'none');
-    const tbody = document.querySelector('.modern-table tbody');
-    
-    visibleRows.sort((a, b) => {
-        let aValue, bValue;
-        
-        switch(sortBy) {
-            case 'name':
-                aValue = a.querySelector('.lesson-name strong').textContent.toLowerCase();
-                bValue = b.querySelector('.lesson-name strong').textContent.toLowerCase();
-                return aValue.localeCompare(bValue);
-            case 'exams':
-                aValue = parseInt(a.querySelector('.exam-badge')?.textContent) || 0;
-                bValue = parseInt(b.querySelector('.exam-badge')?.textContent) || 0;
-                return bValue - aValue;
-            case 'homeworks':
-                aValue = parseInt(a.querySelector('.homework-badge')?.textContent) || 0;
-                bValue = parseInt(b.querySelector('.homework-badge')?.textContent) || 0;
-                return bValue - aValue;
-            case 'id':
-                aValue = parseInt(a.querySelector('.id-badge').textContent);
-                bValue = parseInt(b.querySelector('.id-badge').textContent);
-                return aValue - bValue;
-            default:
-                return 0;
-        }
-    });
-    
-    // Reorder DOM elements
-    visibleRows.forEach(row => tbody.appendChild(row));
-    
-    showAlert(`${visibleRows.length} ders filtrelendi ve sıralandı.`, 'success');
-}
+    }
 
-function clearAdvancedSearch() {
-    document.getElementById('minExams').value = '';
-    document.getElementById('minHomeworks').value = '';
-    document.getElementById('sortBy').value = 'name';
-    
-    // Show all rows
-    document.querySelectorAll('.table-row').forEach(row => {
-        row.style.display = '';
-    });
-    
-    showAlert('Filtreler temizlendi.', 'info');
-}
+    function applyAdvancedSearch() {
+        const minExams = parseInt(document.getElementById('minExams').value) || 0;
+        const minHomeworks = parseInt(document.getElementById('minHomeworks').value) || 0;
+        const sortBy = document.getElementById('sortBy').value;
 
-// Data Validation Functions
-function validateLessonData(name, description) {
-    const errors = [];
-    
-    if (!name || name.trim().length < 2) {
-        errors.push('Ders adı en az 2 karakter olmalıdır.');
-    }
-    
-    if (name && name.length > 100) {
-        errors.push('Ders adı 100 karakterden uzun olamaz.');
-    }
-    
-    if (description && description.length > 500) {
-        errors.push('Açıklama 500 karakterden uzun olamaz.');
-    }
-    
-    // Check for duplicate names
-    const existingNames = Array.from(document.querySelectorAll('.lesson-name strong'))
-        .map(el => el.textContent.toLowerCase());
-    
-    if (existingNames.includes(name.toLowerCase())) {
-        errors.push('Bu ders adı zaten kullanılıyor.');
-    }
-    
-    return errors;
-}
+        let rows = Array.from(document.querySelectorAll('.table-row'));
 
-// Performance Monitoring
-function initializePerformanceMonitoring() {
-    const observer = new PerformanceObserver((list) => {
-        for (const entry of list.getEntries()) {
-            if (entry.entryType === 'navigation') {
-                console.log('Page Load Time:', entry.loadEventEnd - entry.loadEventStart, 'ms');
+        // Filter rows
+        rows.forEach(row => {
+            const examCount = parseInt(row.querySelector('.exam-badge')?.textContent) || 0;
+            const homeworkCount = parseInt(row.querySelector('.homework-badge')?.textContent) || 0;
+
+            if (examCount >= minExams && homeworkCount >= minHomeworks) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
             }
+        });
+
+        // Sort visible rows
+        const visibleRows = rows.filter(row => row.style.display !== 'none');
+        const tbody = document.querySelector('.modern-table tbody');
+
+        visibleRows.sort((a, b) => {
+            let aValue, bValue;
+
+            switch (sortBy) {
+                case 'name':
+                    aValue = a.querySelector('.lesson-name strong').textContent.toLowerCase();
+                    bValue = b.querySelector('.lesson-name strong').textContent.toLowerCase();
+                    return aValue.localeCompare(bValue);
+                case 'exams':
+                    aValue = parseInt(a.querySelector('.exam-badge')?.textContent) || 0;
+                    bValue = parseInt(b.querySelector('.exam-badge')?.textContent) || 0;
+                    return bValue - aValue;
+                case 'homeworks':
+                    aValue = parseInt(a.querySelector('.homework-badge')?.textContent) || 0;
+                    bValue = parseInt(b.querySelector('.homework-badge')?.textContent) || 0;
+                    return bValue - aValue;
+                case 'id':
+                    aValue = parseInt(a.querySelector('.id-badge').textContent);
+                    bValue = parseInt(b.querySelector('.id-badge').textContent);
+                    return aValue - bValue;
+                default:
+                    return 0;
+            }
+        });
+
+        // Reorder DOM elements
+        visibleRows.forEach(row => tbody.appendChild(row));
+
+        showAlert(`${visibleRows.length} ders filtrelendi ve sıralandı.`, 'success');
+    }
+
+    function clearAdvancedSearch() {
+        document.getElementById('minExams').value = '';
+        document.getElementById('minHomeworks').value = '';
+        document.getElementById('sortBy').value = 'name';
+
+        // Show all rows
+        document.querySelectorAll('.table-row').forEach(row => {
+            row.style.display = '';
+        });
+
+        showAlert('Filtreler temizlendi.', 'info');
+    }
+
+    // Data Validation Functions
+    function validateLessonData(name, description) {
+        const errors = [];
+
+        if (!name || name.trim().length < 2) {
+            errors.push('Ders adı en az 2 karakter olmalıdır.');
         }
-    });
-    
-    observer.observe({ entryTypes: ['navigation'] });
-    
-    // Monitor table rendering performance
-    const tableContainer = document.querySelector('.table-container');
-    if (tableContainer) {
-        const resizeObserver = new ResizeObserver(entries => {
-            for (let entry of entries) {
-                if (entry.contentRect.width < 768) {
-                    tableContainer.classList.add('mobile-view');
-                } else {
-                    tableContainer.classList.remove('mobile-view');
+
+        if (name && name.length > 100) {
+            errors.push('Ders adı 100 karakterden uzun olamaz.');
+        }
+
+        if (description && description.length > 500) {
+            errors.push('Açıklama 500 karakterden uzun olamaz.');
+        }
+
+        // Check for duplicate names
+        const existingNames = Array.from(document.querySelectorAll('.lesson-name strong'))
+            .map(el => el.textContent.toLowerCase());
+
+        if (existingNames.includes(name.toLowerCase())) {
+            errors.push('Bu ders adı zaten kullanılıyor.');
+        }
+
+        return errors;
+    }
+
+    // Performance Monitoring
+    function initializePerformanceMonitoring() {
+        const observer = new PerformanceObserver((list) => {
+            for (const entry of list.getEntries()) {
+                if (entry.entryType === 'navigation') {
+                    console.log('Page Load Time:', entry.loadEventEnd - entry.loadEventStart, 'ms');
                 }
             }
         });
-        
-        resizeObserver.observe(tableContainer);
-    }
-}
 
-// Accessibility Enhancements
-function initializeAccessibility() {
-    // Add ARIA labels
-    document.querySelectorAll('.btn-action').forEach((button, index) => {
-        const action = button.classList.contains('btn-edit') ? 'düzenle' : 'sil';
-        const lessonName = button.closest('.table-row').querySelector('.lesson-name strong').textContent;
-        button.setAttribute('aria-label', `${lessonName} dersini ${action}`);
-    });
-    
-    // Add table headers for screen readers
-    const table = document.querySelector('.modern-table');
-    if (table) {
-        table.setAttribute('role', 'table');
-        table.setAttribute('aria-label', 'Dersler tablosu');
-        
-        const headers = table.querySelectorAll('th');
-        headers.forEach((header, index) => {
-            header.setAttribute('scope', 'col');
-            header.setAttribute('id', `header-${index}`);
-        });
-        
-        const cells = table.querySelectorAll('td');
-        cells.forEach((cell, index) => {
-            const headerIndex = index % headers.length;
-            cell.setAttribute('headers', `header-${headerIndex}`);
-        });
+        observer.observe({ entryTypes: ['navigation'] });
+
+        // Monitor table rendering performance
+        const tableContainer = document.querySelector('.table-container');
+        if (tableContainer) {
+            const resizeObserver = new ResizeObserver(entries => {
+                for (let entry of entries) {
+                    if (entry.contentRect.width < 768) {
+                        tableContainer.classList.add('mobile-view');
+                    } else {
+                        tableContainer.classList.remove('mobile-view');
+                    }
+                }
+            });
+
+            resizeObserver.observe(tableContainer);
+        }
     }
-    
-    // Add skip links
-    const skipLink = document.createElement('a');
-    skipLink.href = '#main-content';
-    skipLink.textContent = 'Ana içeriğe geç';
-    skipLink.className = 'skip-link';
-    skipLink.style.cssText = `
+
+    // Accessibility Enhancements
+    function initializeAccessibility() {
+        // Add ARIA labels
+        document.querySelectorAll('.btn-action').forEach((button, index) => {
+            const action = button.classList.contains('btn-edit') ? 'düzenle' : 'sil';
+            const lessonName = button.closest('.table-row').querySelector('.lesson-name strong').textContent;
+            button.setAttribute('aria-label', `${lessonName} dersini ${action}`);
+        });
+
+        // Add table headers for screen readers
+        const table = document.querySelector('.modern-table');
+        if (table) {
+            table.setAttribute('role', 'table');
+            table.setAttribute('aria-label', 'Dersler tablosu');
+
+            const headers = table.querySelectorAll('th');
+            headers.forEach((header, index) => {
+                header.setAttribute('scope', 'col');
+                header.setAttribute('id', `header-${index}`);
+            });
+
+            const cells = table.querySelectorAll('td');
+            cells.forEach((cell, index) => {
+                const headerIndex = index % headers.length;
+                cell.setAttribute('headers', `header-${headerIndex}`);
+            });
+        }
+
+        // Add skip links
+        const skipLink = document.createElement('a');
+        skipLink.href = '#main-content';
+        skipLink.textContent = 'Ana içeriğe geç';
+        skipLink.className = 'skip-link';
+        skipLink.style.cssText = `
         position: absolute;
         top: -40px;
         left: 6px;
@@ -2006,44 +2024,44 @@ function initializeAccessibility() {
         z-index: 10000;
         transition: top 0.3s;
     `;
-    
-    skipLink.addEventListener('focus', function() {
-        this.style.top = '6px';
-    });
-    
-    skipLink.addEventListener('blur', function() {
-        this.style.top = '-40px';
-    });
-    
-    document.body.insertBefore(skipLink, document.body.firstChild);
-    
-    // Add main content ID if not exists
-    const mainContent = document.querySelector('.container-fluid');
-    if (mainContent && !mainContent.id) {
-        mainContent.id = 'main-content';
+
+        skipLink.addEventListener('focus', function () {
+            this.style.top = '6px';
+        });
+
+        skipLink.addEventListener('blur', function () {
+            this.style.top = '-40px';
+        });
+
+        document.body.insertBefore(skipLink, document.body.firstChild);
+
+        // Add main content ID if not exists
+        const mainContent = document.querySelector('.container-fluid');
+        if (mainContent && !mainContent.id) {
+            mainContent.id = 'main-content';
+        }
     }
-}
 
-// Error Handling and Logging
-function initializeErrorHandling() {
-    window.addEventListener('error', function(e) {
-        console.error('JavaScript Error:', e.error);
-        showAlert('Bir hata oluştu. Lütfen sayfayı yenileyin.', 'danger');
-    });
-    
-    window.addEventListener('unhandledrejection', function(e) {
-        console.error('Unhandled Promise Rejection:', e.reason);
-        showAlert('Bir işlem tamamlanamadı. Lütfen tekrar deneyin.', 'warning');
-    });
-}
+    // Error Handling and Logging
+    function initializeErrorHandling() {
+        window.addEventListener('error', function (e) {
+            console.error('JavaScript Error:', e.error);
+            showAlert('Bir hata oluştu. Lütfen sayfayı yenileyin.', 'danger');
+        });
 
-// Auto-refresh functionality
-function initializeAutoRefresh() {
-    let autoRefreshInterval;
-    
-    const autoRefreshToggle = document.createElement('div');
-    autoRefreshToggle.className = 'auto-refresh-toggle';
-    autoRefreshToggle.style.cssText = `
+        window.addEventListener('unhandledrejection', function (e) {
+            console.error('Unhandled Promise Rejection:', e.reason);
+            showAlert('Bir işlem tamamlanamadı. Lütfen tekrar deneyin.', 'warning');
+        });
+    }
+
+    // Auto-refresh functionality
+    function initializeAutoRefresh() {
+        let autoRefreshInterval;
+
+        const autoRefreshToggle = document.createElement('div');
+        autoRefreshToggle.className = 'auto-refresh-toggle';
+        autoRefreshToggle.style.cssText = `
         position: fixed;
         top: 100px;
         right: 20px;
@@ -2055,8 +2073,8 @@ function initializeAutoRefresh() {
         z-index: 1000;
         display: none;
     `;
-    
-    autoRefreshToggle.innerHTML = `
+
+        autoRefreshToggle.innerHTML = `
         <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" id="autoRefreshSwitch">
             <label class="form-check-label text-white" for="autoRefreshSwitch">
@@ -2064,39 +2082,39 @@ function initializeAutoRefresh() {
             </label>
         </div>
     `;
-    
-    document.body.appendChild(autoRefreshToggle);
-    
-    // Show/hide toggle on scroll
-    let scrollTimeout;
-    window.addEventListener('scroll', function() {
-        autoRefreshToggle.style.display = 'block';
-        
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => {
-            autoRefreshToggle.style.display = 'none';
-        }, 3000);
-    });
-    
-    document.getElementById('autoRefreshSwitch').addEventListener('change', function() {
-        if (this.checked) {
-            autoRefreshInterval = setInterval(() => {
-                location.reload();
-            }, 30000);
-            showAlert('Otomatik yenileme etkinleştirildi (30 saniye)', 'info');
-        } else {
-            clearInterval(autoRefreshInterval);
-            showAlert('Otomatik yenileme devre dışı bırakıldı', 'info');
-        }
-    });
-}
 
-// Theme Management
-function initializeThemeManagement() {
-    const themeToggle = document.createElement('button');
-    themeToggle.className = 'btn btn-modern btn-outline-secondary theme-toggle';
-    themeToggle.innerHTML = '<i class="bi bi-moon"></i>';
-    themeToggle.style.cssText = `
+        document.body.appendChild(autoRefreshToggle);
+
+        // Show/hide toggle on scroll
+        let scrollTimeout;
+        window.addEventListener('scroll', function () {
+            autoRefreshToggle.style.display = 'block';
+
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                autoRefreshToggle.style.display = 'none';
+            }, 3000);
+        });
+
+        document.getElementById('autoRefreshSwitch').addEventListener('change', function () {
+            if (this.checked) {
+                autoRefreshInterval = setInterval(() => {
+                    location.reload();
+                }, 30000);
+                showAlert('Otomatik yenileme etkinleştirildi (30 saniye)', 'info');
+            } else {
+                clearInterval(autoRefreshInterval);
+                showAlert('Otomatik yenileme devre dışı bırakıldı', 'info');
+            }
+        });
+    }
+
+    // Theme Management
+    function initializeThemeManagement() {
+        const themeToggle = document.createElement('button');
+        themeToggle.className = 'btn btn-modern btn-outline-secondary theme-toggle';
+        themeToggle.innerHTML = '<i class="bi bi-moon"></i>';
+        themeToggle.style.cssText = `
         position: fixed;
         bottom: 20px;
         right: 20px;
@@ -2108,108 +2126,108 @@ function initializeThemeManagement() {
         align-items: center;
         justify-content: center;
     `;
-    
-    document.body.appendChild(themeToggle);
-    
-    // Load saved theme
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    document.body.setAttribute('data-theme', savedTheme);
-    updateThemeIcon(savedTheme);
-    
-    themeToggle.addEventListener('click', function() {
-        const currentTheme = document.body.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        
-        document.body.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        updateThemeIcon(newTheme);
-        
-        showAlert(`${newTheme === 'dark' ? 'Karanlık' : 'Aydınlık'} tema etkinleştirildi`, 'info');
-    });
-    
-    function updateThemeIcon(theme) {
-        const icon = themeToggle.querySelector('i');
-        icon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon';
-    }
-}
 
-// Data Persistence
-function initializeDataPersistence() {
-    // Save table state
-    function saveTableState() {
-        const state = {
-            searchTerm: document.querySelector('.search-container input')?.value || '',
-            sortBy: document.getElementById('sortBy')?.value || 'name',
-            timestamp: Date.now()
-        };
-        
-        localStorage.setItem('lessonsTableState', JSON.stringify(state));
+        document.body.appendChild(themeToggle);
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.body.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener('click', function () {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+
+            showAlert(`${newTheme === 'dark' ? 'Karanlık' : 'Aydınlık'} tema etkinleştirildi`, 'info');
+        });
+
+        function updateThemeIcon(theme) {
+            const icon = themeToggle.querySelector('i');
+            icon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon';
+        }
     }
-    
-    // Restore table state
-    function restoreTableState() {
-        const savedState = localStorage.getItem('lessonsTableState');
-        if (savedState) {
-            const state = JSON.parse(savedState);
-            
-            // Only restore if saved within last hour
-            if (Date.now() - state.timestamp < 3600000) {
-                const searchInput = document.querySelector('.search-container input');
-                if (searchInput && state.searchTerm) {
-                    searchInput.value = state.searchTerm;
-                    searchInput.dispatchEvent(new Event('input'));
-                }
-                
-                const sortSelect = document.getElementById('sortBy');
-                if (sortSelect && state.sortBy) {
-                    sortSelect.value = state.sortBy;
+
+    // Data Persistence
+    function initializeDataPersistence() {
+        // Save table state
+        function saveTableState() {
+            const state = {
+                searchTerm: document.querySelector('.search-container input')?.value || '',
+                sortBy: document.getElementById('sortBy')?.value || 'name',
+                timestamp: Date.now()
+            };
+
+            localStorage.setItem('lessonsTableState', JSON.stringify(state));
+        }
+
+        // Restore table state
+        function restoreTableState() {
+            const savedState = localStorage.getItem('lessonsTableState');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+
+                // Only restore if saved within last hour
+                if (Date.now() - state.timestamp < 3600000) {
+                    const searchInput = document.querySelector('.search-container input');
+                    if (searchInput && state.searchTerm) {
+                        searchInput.value = state.searchTerm;
+                        searchInput.dispatchEvent(new Event('input'));
+                    }
+
+                    const sortSelect = document.getElementById('sortBy');
+                    if (sortSelect && state.sortBy) {
+                        sortSelect.value = state.sortBy;
+                    }
                 }
             }
         }
-    }
-    
-    // Save state on changes
-    document.addEventListener('input', saveTableState);
-    document.addEventListener('change', saveTableState);
-    
-    // Restore state on load
-    setTimeout(restoreTableState, 100);
-}
 
-// Initialize all features
-document.addEventListener('DOMContentLoaded', function() {
-    try {
-        initializeAccessibility();
-        initializeErrorHandling();
-        initializePerformanceMonitoring();
-        initializeAutoRefresh();
-        initializeThemeManagement();
-        initializeDataPersistence();
-        initializeAdvancedSearch();
-        
-        console.log('All features initialized successfully');
-    } catch (error) {
-        console.error('Error initializing features:', error);
-        showAlert('Bazı özellikler yüklenemedi. Sayfa yeniden yüklenecek.', 'warning');
-        setTimeout(() => location.reload(), 3000);
-    }
-});
+        // Save state on changes
+        document.addEventListener('input', saveTableState);
+        document.addEventListener('change', saveTableState);
 
-// Service Worker Registration (for offline support)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js')
-            .then(function(registration) {
-                console.log('ServiceWorker registration successful');
-            })
-            .catch(function(err) {
-                console.log('ServiceWorker registration failed: ', err);
-            });
+        // Restore state on load
+        setTimeout(restoreTableState, 100);
+    }
+
+    // Initialize all features
+    document.addEventListener('DOMContentLoaded', function () {
+        try {
+            initializeAccessibility();
+            initializeErrorHandling();
+            initializePerformanceMonitoring();
+            initializeAutoRefresh();
+            initializeThemeManagement();
+            initializeDataPersistence();
+            initializeAdvancedSearch();
+
+            console.log('All features initialized successfully');
+        } catch (error) {
+            console.error('Error initializing features:', error);
+            showAlert('Bazı özellikler yüklenemedi. Sayfa yeniden yüklenecek.', 'warning');
+            setTimeout(() => location.reload(), 3000);
+        }
     });
-}
 
-// Print Styles
-const printStyles = `
+    // Service Worker Registration (for offline support)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('/sw.js')
+                .then(function (registration) {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(function (err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+        });
+    }
+
+    // Print Styles
+    const printStyles = `
     @@media print {
         .btn, .dropdown, .auto-refresh-toggle, .theme-toggle, .bulk-actions {
             display: none !important;
@@ -2252,27 +2270,27 @@ const printStyles = `
     }
 `;
 
-// Add print styles to document
-const printStyleSheet = document.createElement('style');
-printStyleSheet.textContent = printStyles;
-document.head.appendChild(printStyleSheet);
+    // Add print styles to document
+    const printStyleSheet = document.createElement('style');
+    printStyleSheet.textContent = printStyles;
+    document.head.appendChild(printStyleSheet);
 
-// Cleanup function for page unload
-window.addEventListener('beforeunload', function() {
-    // Clear any running intervals
-    if (typeof autoRefreshInterval !== 'undefined') {
-        clearInterval(autoRefreshInterval);
-    }
-    
-    // Save current state
-    const searchInput = document.querySelector('.search-container input');
-    if (searchInput) {
-        localStorage.setItem('lastSearchTerm', searchInput.value);
-    }
-});
+    // Cleanup function for page unload
+    window.addEventListener('beforeunload', function () {
+        // Clear any running intervals
+        if (typeof autoRefreshInterval !== 'undefined') {
+            clearInterval(autoRefreshInterval);
+        }
 
-// Add custom CSS for enhanced features
-const enhancedStyles = `
+        // Save current state
+        const searchInput = document.querySelector('.search-container input');
+        if (searchInput) {
+            localStorage.setItem('lastSearchTerm', searchInput.value);
+        }
+    });
+
+    // Add custom CSS for enhanced features
+    const enhancedStyles = `
     /* Theme Support */
     [data-theme="light"] {
         --bg-primary: #f8fafc;
@@ -2381,10 +2399,10 @@ const enhancedStyles = `
 }
 `;
 
-// Add enhanced styles to document
-const enhancedStyleSheet = document.createElement('style');
-enhancedStyleSheet.textContent = enhancedStyles;
-document.head.appendChild(enhancedStyleSheet);
+    // Add enhanced styles to document
+    const enhancedStyleSheet = document.createElement('style');
+    enhancedStyleSheet.textContent = enhancedStyles;
+    document.head.appendChild(enhancedStyleSheet);
 
 </script>
 

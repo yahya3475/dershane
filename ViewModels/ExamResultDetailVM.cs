@@ -1,4 +1,3 @@
-
 namespace dershane.ViewModels
 {
     public class ExamResultDetailVM
@@ -12,14 +11,18 @@ namespace dershane.ViewModels
         public DateTime? EndTime { get; set; }
         public string? Answers { get; set; }
         public int TotalPoints { get; set; }
-        
+
         // Computed properties
         public double Percentage => TotalPoints > 0 ? (Score * 100.0 / TotalPoints) : 0;
-        public string Grade => Percentage >= 85 ? "A" : 
-                              Percentage >= 70 ? "B" : 
-                              Percentage >= 50 ? "C" : "F";
-        public string Status => Percentage >= 85 ? "Excellent" : 
-                               Percentage >= 70 ? "Good" : 
-                               Percentage >= 50 ? "Average" : "Poor";
+        public string Grade =>
+            Percentage >= 85 ? "A"
+            : Percentage >= 70 ? "B"
+            : Percentage >= 50 ? "C"
+            : "F";
+        public string Status =>
+            Percentage >= 85 ? "Excellent"
+            : Percentage >= 70 ? "Good"
+            : Percentage >= 50 ? "Average"
+            : "Poor";
     }
 }

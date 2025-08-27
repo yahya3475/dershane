@@ -1,165 +1,577 @@
+
 @model StudentExamResult
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card shadow-lg">
-                <div class="card-header bg-primary text-white text-center">
-                    <h3 class="mb-0">🎯 Exam Result</h3>
-                </div>
-                <div class="card-body">
-                    <!-- Score Display -->
-                    <div class="text-center mb-4">
-                        @{
-                            var totalPoints = Model.Exam.Questions.Sum(q => q.Points);
-                            var percentage = totalPoints > 0 ? (Model.Score * 100.0 / totalPoints) : 0;
-                            var gradeClass = percentage >= 85 ? "success" : percentage >= 70 ? "warning" : percentage >= 50 ? "info" : "danger";
-                            var gradeEmoji = percentage >= 85 ? "🏆" : percentage >= 70 ? "😊" : percentage >= 50 ? "😐" : "😢";
-                        }
-                        
-                        <div class="score-display p-4 bg-@gradeClass bg-opacity-10 rounded">
-                            <h1 class="display-4 text-@gradeClass">@gradeEmoji @Model.Score / @totalPoints</h1>
-                            <h4 class="text-@gradeClass">@percentage.ToString("F1")%</h4>
-                        </div>
+@{
+    ViewData["Title"] = "Sınav Sonucu";
+    var totalPoints = Model.Exam.Questions.Sum(q => q.Points);
+    var percentage = totalPoints > 0 ? (Model.Score * 100.0 / totalPoints) : 0;
+    var gradeClass = percentage >= 85 ? "excellent" : percentage >= 70 ? "good" : percentage >= 50 ? "average" : "poor";
+    var gradeEmoji = percentage >= 85 ? "🏆" : percentage >= 70 ? "👍" : percentage >= 50 ? "📚" : "💪";
+    var gradeText = percentage >= 85 ? "Mükemmel!" : percentage >= 70 ? "İyi!" : percentage >= 50 ? "Orta" : "Geliştirilmeli";
+}
+
+@section Styles {
+    <style>
+        /* Modern Exam Result Styles */
+        body {
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d3748 100%);
+            color: #ffffff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .page-actions .btn {
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-modern {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-modern:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .btn-modern.btn-secondary {
+            background: rgba(108, 117, 125, 0.2);
+            border-color: rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-modern.btn-outline-primary {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: #6366f1;
+        }
+
+        .btn-modern.btn-outline-primary:hover {
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+        }
+
+        /* Result Card */
+        .result-card-modern {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .result-header {
+            padding: 3rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .result-header.excellent::before {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .result-header.good::before {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .result-header.average::before {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .result-header.poor::before {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .score-circle-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .score-percentage {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1;
+        }
+
+        .score-emoji {
+            font-size: 1.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .score-details {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .score-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .score-points {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1rem;
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .grade-badge.excellent {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .grade-badge.good {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .grade-badge.average {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .grade-badge.poor {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card-modern {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card-modern:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: rgba(99, 102, 241, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6366f1;
+            font-size: 1.25rem;
+        }
+
+        .stat-content h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: #ffffff;
+        }
+
+        .stat-content p {
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        /* Exam Details Card */
+        .exam-details-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .card-header-modern {
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem 2rem;
+        }
+
+        .card-header-modern h5 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .card-body-modern {
+            padding: 2rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item i {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(99, 102, 241, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6366f1;
+            font-size: 1rem;
+        }
+
+        .detail-item div {
+            flex: 1;
+        }
+
+        .detail-item strong {
+            display: block;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-item span {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        /* Questions Review */
+        .questions-review-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .review-stats {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .review-stats .badge {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+        }
+
+        .question-card-modern {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .question-card-modern:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .question-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .question-points {
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .question-content {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .question-answer {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .answer-label {
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .answer-text {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
+        }
+
+        .correct-answer {
+            color: #10b981;
+        }
+
+        .incorrect-answer {
+            color: #ef4444;
+        }
+
+        .question-feedback {
+            font-size: 0.875rem;
+            padding: 0.75rem;
+            border-radius: 12px;
+            margin-top: 0.5rem;
+        }
+
+        .feedback-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .feedback-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+    </style>
+}
+
+<div class="container py-5">
+    <div class="page-header text-center mb-5">
+        <h1 class="page-title">Sınav Sonuçlarınız</h1>
+        <p class="page-subtitle">Sınavınızın detaylı analizini aşağıda bulabilirsiniz</p>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="result-card-modern">
+                <div class="result-header @gradeClass">
+                    <div class="score-circle-large">
+                        <div class="score-percentage">@percentage.ToString("F1")%</div>
+                        <div class="score-emoji">@gradeEmoji</div>
                     </div>
-
-                    <!-- Exam Info -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <strong>📚 Exam:</strong> @Model.Exam.Title<br>
-                            <strong>📖 Lesson:</strong> @Model.Exam.Lesson<br>
-                            <strong>⏰ Started:</strong> @Model.StartTime.ToString("dd/MM/yyyy HH:mm")
-                        </div>
-                        <div class="col-md-6">
-                            <strong>✅ Completed:</strong> @Model.EndTime?.ToString("dd/MM/yyyy HH:mm")<br>
-                            <strong>⏱️ Duration:</strong> @((Model.EndTime - Model.StartTime)?.TotalMinutes.ToString("F0")) minutes<br>
-                            <strong>❓ Questions:</strong> @Model.Exam.Questions.Count
-                        </div>
-                    </div>
-
-                    <!-- Questions Review -->
-                    @{
-                        var studentAnswers = new Dictionary<int, string>();
-                        if (!string.IsNullOrEmpty(Model.Answers))
-                        {
-                            try
-                            {
-                                studentAnswers = System.Text.Json.JsonSerializer.Deserialize<Dictionary<int, string>>(Model.Answers);
-                            }
-                            catch
-                            {
-                                // JSON parse hatası varsa boş bırak
-                            }
-                        }
-                    }
-
-                    <div class="question-review">
-                        <h5 class="text-primary mb-3">📝 Question Review</h5>
-                        
-                        @{
-                            var questionNumber = 1;
-                        }
-                        @foreach (var question in Model.Exam.Questions.OrderBy(q => q.QuestionOrder))
-                        {
-                            var studentAnswer = studentAnswers.ContainsKey(question.Id) ? studentAnswers[question.Id] : "";
-                            var isCorrect = studentAnswer == question.CorrectAnswer;
-                            
-                            <div class="card mb-3 border-@(isCorrect ? "success" : "danger")">
-                                <div class="card-header bg-@(isCorrect ? "success" : "danger") bg-opacity-10">
-                                    <div class="d-flex justify-content-between">
-                                        <span><strong>Question @questionNumber</strong></span>
-                                        <span class="badge bg-@(isCorrect ? "success" : "danger")">
-                                            @(isCorrect ? "✅ Correct" : "❌ Wrong") 
-                                            (@question.Points pts)
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <p class="mb-3"><strong>@question.QuestionText</strong></p>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="option-item @GetOptionClass("A", question.CorrectAnswer, studentAnswer, isCorrect)">
-                                                <strong>A)</strong> @question.OptionA
-                                                @if (studentAnswer == "A") { <span class="badge bg-primary ms-2">Your Answer</span> }
-                                                @if (question.CorrectAnswer == "A") { <span class="badge bg-success ms-2">Correct</span> }
-                                            </div>
-                                            <div class="option-item @GetOptionClass("B", question.CorrectAnswer, studentAnswer, isCorrect)">
-                                                <strong>B)</strong> @question.OptionB
-                                                @if (studentAnswer == "B") { <span class="badge bg-primary ms-2">Your Answer</span> }
-                                                @if (question.CorrectAnswer == "B") { <span class="badge bg-success ms-2">Correct</span> }
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="option-item @GetOptionClass("C", question.CorrectAnswer, studentAnswer, isCorrect)">
-                                                <strong>C)</strong> @question.OptionC
-                                                @if (studentAnswer == "C") { <span class="badge bg-primary ms-2">Your Answer</span> }
-                                                @if (question.CorrectAnswer == "C") { <span class="badge bg-success ms-2">Correct</span> }
-                                            </div>
-                                            <div class="option-item @GetOptionClass("D", question.CorrectAnswer, studentAnswer, isCorrect)">
-                                                <strong>D)</strong> @question.OptionD
-                                                @if (studentAnswer == "D") { <span class="badge bg-primary ms-2">Your Answer</span> }
-                                                @if (question.CorrectAnswer == "D") { <span class="badge bg-success ms-2">Correct</span> }
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            questionNumber++;
-                        }
-                    </div>
-
-                    <div class="text-center mt-4">
-                        <a asp-action="ViewExamSystem" class="btn btn-primary btn-lg">
-                            <i class="bi bi-arrow-left"></i> Back to Exams
-                        </a>
-                        <button onclick="window.print()" class="btn btn-outline-secondary btn-lg">
-                            <i class="bi bi-printer"></i> Print Result
-                        </button>
+                    <div class="score-details">
+                        <h2 class="score-title">@gradeText</h2>
+                        <p class="score-points">@Model.Score.ToString("F1") / @totalPoints Puan</p>
+                        <span class="grade-badge @gradeClass">@gradeText</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="stats-grid">
+                <div class="stat-card-modern">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h4>@Model.Exam.DurationMinutes dk</h4>
+                        <p>Sınav Süresi</p>
+                    </div>
+                </div>
+                <div class="stat-card-modern">
+                    <div class="stat-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h4>@Model.Exam.Questions.Count</h4>
+                        <p>Soru Sayısı</p>
+                    </div>
+                </div>
+                <div class="stat-card-modern">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h4>@Model.Score.ToString("F1")</h4>
+                        <p>Puan</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="exam-details-card">
+                <div class="card-header-modern">
+                    <h5>Sınav Detayları</h5>
+                </div>
+                <div class="card-body-modern">
+                    <div class="detail-item">
+                        <i class="fas fa-book"></i>
+                        <div>
+                            <strong>Sınav Adı</strong>
+                            <span>@Model.Exam.Name</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-calendar"></i>
+                        <div>
+                            <strong>Tarih</strong>
+                            <span>@Model.Exam.Date.ToString("dd.MM.yyyy")</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-user"></i>
+                        <div>
+                            <strong>Öğrenci</strong>
+                            <span>@Model.Student.FullName</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-tag"></i>
+                        <div>
+                            <strong>Sınıf</strong>
+                            <span>@Model.Student.Class.Name</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="questions-review-card">
+                <div class="card-header-modern">
+                    <h5>Soru İncelemesi</h5>
+                    <div class="review-stats">
+                        <span class="badge bg-success">Doğru: @Model.Exam.Questions.Count(q => q.IsCorrect)</span>
+                        <span class="badge bg-danger">Yanlış: @Model.Exam.Questions.Count(q => !q.IsCorrect)</span>
+                    </div>
+                </div>
+                <div class="card-body-modern">
+                    @foreach (var question in Model.Exam.Questions)
+                    {
+                        <div class="question-card-modern">
+                            <div class="question-header">
+                                <div class="question-title">@question.Text</div>
+                                <div class="question-points">@question.Points Puan</div>
+                            </div>
+                            <div class="question-content">
+                                <div class="answer-label">Sizin Cevabınız:</div>
+                                <div class="answer-text @(question.IsCorrect ? "correct-answer" : "incorrect-answer")">
+                                    @question.UserAnswer
+                                </div>
+                                @if (!question.IsCorrect)
+                                {
+                                    <div class="answer-label">Doğru Cevap:</div>
+                                    <div class="answer-text correct-answer">
+                                        @question.CorrectAnswer
+                                    </div>
+                                }
+                            </div>
+                            @if (!string.IsNullOrEmpty(question.Feedback))
+                            {
+                                <div class="question-feedback @(question.IsCorrect ? "feedback-success" : "feedback-error")">
+                                    @question.Feedback
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="@Url.Action("Index", "Student")" class="btn btn-modern btn-outline-primary">
+                <i class="fas fa-home"></i> Ana Sayfaya Dön
+            </a>
+            <a href="@Url.Action("Index", "Exam")" class="btn btn-modern btn-secondary">
+                <i class="fas fa-redo"></i> Başka Sınav Al
+            </a>
+        </div>
+    </div>
 </div>
-
-@functions {
-    string GetOptionClass(string option, string correctAnswer, string studentAnswer, bool isCorrect)
-    {
-        if (correctAnswer == option)
-            return "correct-answer";
-        if (studentAnswer == option && !isCorrect)
-            return "wrong-answer";
-        return "";
-    }
-}
-
-<style>
-.correct-answer {
-    background-color: #007a1d;
-    border-left: 4px solid #28a745;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 5px;
-}
-
-.wrong-answer {
-    background-color: #700009;
-    border-left: 4px solid #dc3545;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 5px;
-}
-
-.option-item {
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 5px;
-    border: 1px solid #e9ecef;
-}
-
-@@media print {
-    .btn { display: none !important; }
-    .card { border: 1px solid #000 !important; }
-}
-</style>

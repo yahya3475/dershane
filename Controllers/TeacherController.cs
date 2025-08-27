@@ -347,11 +347,11 @@ namespace dershane.Controllers
                 }
 
                 _context.SaveChanges();
-                return Json(new { success = true, message = "Yoklama başarıyla kaydedildi." });
+                return Json(new { success = true, message = "Roll call successfully recorded." });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Hata: " + ex.Message });
+                return Json(new { success = false, message = "Error: " + ex.Message });
             }
         }
 
@@ -484,7 +484,7 @@ namespace dershane.Controllers
 
             if (teacherClass == null)
             {
-                TempData["Error"] = "Sınıf bilgin bulunamadı lan!";
+                TempData["Error"] = "No class information found!";
                 return RedirectToAction("Index");
             }
 
@@ -503,7 +503,7 @@ namespace dershane.Controllers
             _context.Homeworks.Add(homework);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Ödev başarıyla oluşturuldu! Öğrenciler ağlayacak şimdi 😈";
+            TempData["Success"] = "Assignment successfully created!";
             return RedirectToAction("ViewHomeworks");
         }
 
@@ -539,7 +539,7 @@ namespace dershane.Controllers
             var homework = await _context.Homeworks.FindAsync(homeworkId);
             if (homework == null)
             {
-                TempData["Error"] = "Ödev bulunamadı lan!";
+                TempData["Error"] = "Assignment not found";
                 return RedirectToAction("ViewHomeworks");
             }
 
@@ -572,7 +572,7 @@ namespace dershane.Controllers
             var submission = await _context.HomeworkSubmissions.FindAsync(submissionId);
             if (submission == null)
             {
-                TempData["Error"] = "Teslim bulunamadı lan!";
+                TempData["Error"] = "Delivery not found!";
                 return RedirectToAction("ViewHomeworks");
             }
 
@@ -582,7 +582,7 @@ namespace dershane.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Ödev başarıyla notlandı! Öğrenci şimdi ağlayacak 😈";
+            TempData["Success"] = "Homework successfully graded!";
             return RedirectToAction("ViewSubmissions", new { homeworkId = submission.HomeworkId });
         }
 
@@ -624,7 +624,7 @@ namespace dershane.Controllers
 
             if (teacherClass == null)
             {
-                TempData["Error"] = "Sınıf bilgin bulunamadı lan!";
+                TempData["Error"] = "Your class information was not found!";
                 return RedirectToAction("Index");
             }
 
@@ -668,7 +668,7 @@ namespace dershane.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Sınav başarıyla oluşturuldu! Öğrenciler ter dökecek şimdi 😈";
+            TempData["Success"] = "The exam was successfully created!";
             return RedirectToAction("ViewExamSystem");
         }
 
@@ -724,7 +724,7 @@ namespace dershane.Controllers
 
             if (teacherClass == null)
             {
-                TempData["Error"] = "Sınıf bilginiz bulunamadı!";
+                TempData["Error"] = "Your class information was not found!";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -818,7 +818,7 @@ namespace dershane.Controllers
 
             if (exam == null)
             {
-                TempData["Error"] = "Sınav bulunamadı lan!";
+                TempData["Error"] = "Exam not found!";
                 return RedirectToAction("ViewExamSystem");
             }
 
@@ -830,13 +830,13 @@ namespace dershane.Controllers
 
             if (exam.UClass != teacherClass)
             {
-                TempData["Error"] = "Bu sınavı silme yetkin yok!";
+                TempData["Error"] = "You don't have the authority to delete this exam!";
                 return RedirectToAction("ViewExamSystem");
             }
 
             if (exam.StudentResults.Any(r => r.IsCompleted))
             {
-                TempData["Error"] = "Bu sınava öğrenciler girmiş! Artık silemezsin! 😈";
+                TempData["Error"] = "Students have taken this exam, cannot delete!";
                 return RedirectToAction("ViewExamSystem");
             }
 
@@ -850,11 +850,11 @@ namespace dershane.Controllers
 
                 await _context.SaveChangesAsync();
 
-                TempData["Success"] = "Sınav başarıyla silindi! Öğrenciler rahat nefes aldı 😅";
+                TempData["Success"] = "Exam successfully deleted!";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Sınav silinirken hata oluştu: " + ex.Message;
+                TempData["Error"] = "Error deleting exam: " + ex.Message;
             }
 
             return RedirectToAction("ViewExamSystem");
@@ -870,7 +870,7 @@ namespace dershane.Controllers
 
             if (exam == null)
             {
-                TempData["Error"] = "Sınav bulunamadı!";
+                TempData["Error"] = "Exam not found!";
                 return RedirectToAction("ViewExamSystem");
             }
 
@@ -882,13 +882,13 @@ namespace dershane.Controllers
 
             if (exam.UClass != teacherClass)
             {
-                TempData["Error"] = "Bu sınavı düzenleme yetkin yok!";
+                TempData["Error"] = "You have no authority to organise this exam!";
                 return RedirectToAction("ViewExamSystem");
             }
 
             if (exam.ExamDate <= DateTime.Now)
             {
-                TempData["Error"] = "Başlamış veya bitmiş sınavı düzenleyemezsin!";
+                TempData["Error"] = "You cannot edit an exam that has started or finished!";
                 return RedirectToAction("ViewExamSystem");
             }
 
@@ -948,13 +948,13 @@ namespace dershane.Controllers
 
             if (exam == null)
             {
-                TempData["Error"] = "Sınav bulunamadı!";
+                TempData["Error"] = "No exam found!";
                 return RedirectToAction("ViewExamSystem");
             }
 
             if (exam.ExamDate <= DateTime.Now)
             {
-                TempData["Error"] = "Başlamış sınavı düzenleyemezsin!";
+                TempData["Error"] = "You can't edit a test that's already started!";
                 return RedirectToAction("ViewExamSystem");
             }
 
@@ -988,12 +988,12 @@ namespace dershane.Controllers
 
                 await _context.SaveChangesAsync();
 
-                TempData["Success"] = "Sınav başarıyla güncellendi! Öğrenciler yine ağlayacak 😈";
+                TempData["Success"] = "The exam has been successfully updated!";
                 return RedirectToAction("ViewExamSystem");
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Sınav güncellenirken hata oluştu: " + ex.Message;
+                TempData["Error"] = "There was an error updating the exam: " + ex.Message;
                 model.Lessons = _context
                     .Lessons.Select(l => new SelectListItem { Value = l.Name, Text = l.Name })
                     .ToList();
@@ -1013,7 +1013,7 @@ namespace dershane.Controllers
 
             if (exam == null)
             {
-                TempData["Error"] = "Sınav bulunamadı!";
+                TempData["Error"] = "Exam not found!";
                 return RedirectToAction("ViewExamSystem");
             }
 
@@ -1025,7 +1025,7 @@ namespace dershane.Controllers
 
             if (exam.UClass != teacherClass)
             {
-                TempData["Error"] = "Bu sınavın sonuçlarını görme yetkin yok!";
+                TempData["Error"] = "You are not authorised to see the results of this exam!";
                 return RedirectToAction("ViewExamSystem");
             }
 

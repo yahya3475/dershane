@@ -3,55 +3,662 @@
     ViewData["Title"] = "Edit Class - Principal";
 }
 
-<div class="container mt-5">
-    <div class="card shadow-lg border-0 rounded-lg">
-        <div class="card-header bg-primary text-white">
-            <h2 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Class</h2>
-        </div>
-        <div class="card-body">
-            <form asp-action="EditClass" method="post">
-                @Html.AntiForgeryToken()
-                <div asp-validation-summary="All" class="text-danger"></div>
-                <input type="hidden" asp-for="ClassName" />
+@section Styles {
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: #ffffff;
+        }
 
-                <div class="mb-3">
-                    <label asp-for="NewClassName" class="form-label">Class Name</label>
-                    <input asp-for="NewClassName" class="form-control" required />
-                    <span asp-validation-for="NewClassName" class="text-danger"></span>
+        .dashboard-container {
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .main-card {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card-header-custom {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            padding: 2rem;
+            border: none;
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-header-custom::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.05"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.05"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            text-shadow: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-container {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            color: #a5b4fc;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: block;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            padding: 0.875rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #6366f1;
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+            color: #ffffff;
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-select option {
+            background: #1a1a2e;
+            color: #ffffff;
+        }
+
+        .students-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .students-title {
+            color: #a5b4fc;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .students-list {
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .student-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            padding: 1rem;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .student-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .student-info {
+            flex: 1;
+        }
+
+        .student-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .student-id {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .empty-students {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .empty-students-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 0.875rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+            background: linear-gradient(135deg, #5b5ff1 0%, #8049f6 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 0.875rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .validation-summary {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: #fca5a5;
+        }
+
+        .text-danger {
+            color: #fca5a5 !important;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .teacher-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 10px;
+            margin-top: 0.5rem;
+        }
+
+        .teacher-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .teacher-details {
+            color: #6ee7b7;
+            font-weight: 500;
+        }
+
+        /* Responsive design */
+        @@media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem 0;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .card-header-custom {
+                padding: 1.5rem;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 100%;
+            }
+
+            .students-list {
+                max-height: 200px;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255,
+            EditClass.cshtml
+Apply
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Animation @@media */
+        @@media fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@media slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .main-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .form-group {
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        .form-group:nth-child(2) { animation-delay: 0.1s; }
+        .form-group:nth-child(3) { animation-delay: 0.2s; }
+        .form-group:nth-child(4) { animation-delay: 0.3s; }
+
+        /* Loading state */
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+
+        @@media spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+}
+
+<div class="dashboard-container">
+    <div class="container-fluid">
+        <div class="main-card">
+            <div class="card-header-custom">
+                <div class="header-content">
+                    <h2 class="page-title">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Sınıf Düzenle
+                    </h2>
+                    <p class="page-subtitle">@Model?.ClassName sınıfının bilgilerini güncelleyin</p>
                 </div>
+            </div>
 
-                <div class="mb-3">
-                    <label asp-for="TeacherId" class="form-label">Teacher</label>
-                    <select asp-for="TeacherId" class="form-select">
-                        <option value="">-- Select Teacher --</option>
-                        @foreach (var teacher in ViewBag.AllTeachers ?? Enumerable.Empty<User>())
+            <div class="form-container">
+                <form asp-action="EditClass" method="post" id="editClassForm">
+                    @Html.AntiForgeryToken()
+                    
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="validation-summary">
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                        </div>
+                    }
+
+                    <input type="hidden" asp-for="ClassName" />
+
+                    <div class="form-group">
+                        <label asp-for="NewClassName" class="form-label">
+                            <i class="bi bi-tag me-2"></i>Sınıf Adı
+                        </label>
+                        <input asp-for="NewClassName" class="form-control" 
+                               placeholder="Örn: 9-A, 10-B, 11-C" 
+                               required 
+                               maxlength="50" />
+                        <span asp-validation-for="NewClassName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="TeacherId" class="form-label">
+                            <i class="bi bi-person-badge me-2"></i>Sınıf Öğretmeni
+                        </label>
+                        <select asp-for="TeacherId" class="form-select" id="teacherSelect">
+                            <option value="">-- Öğretmen Seçin --</option>
+                            @foreach (var teacher in ViewBag.AllTeachers ?? Enumerable.Empty<User>())
+                            {
+                                <option value="@teacher.dershaneid" 
+                                        selected="@(Model?.Teacher != null && Model.Teacher.dershaneid == teacher.dershaneid)">
+                                    @teacher.firstname @teacher.lastname
+                                </option>
+                            }
+                        </select>
+                        
+                        @if (Model?.Teacher != null)
                         {
-                            <option value="@teacher.dershaneid" selected="@(Model?.Teacher != null && Model.Teacher.dershaneid == teacher.dershaneid)">
-                                @teacher.firstname @teacher.lastname
-                            </option>
+                            <div class="teacher-info">
+                                <div class="teacher-avatar">
+                                    @(Model.Teacher.firstname.Substring(0, 1) + Model.Teacher.lastname.Substring(0, 1))
+                                </div>
+                                <div class="teacher-details">
+                                    <strong>@Model.Teacher.firstname @Model.Teacher.lastname</strong>
+                                    <br>
+                                    <small>Mevcut Sınıf Öğretmeni</small>
+                                </div>
+                            </div>
                         }
-                    </select>
-                </div>
+                    </div>
 
-                <div class="mb-3">
-                    <h4>Students</h4>
-                    <ul class="list-group">
-                        @foreach (var student in Model?.Students ?? Enumerable.Empty<User>())
-                        {
-                            <li class="list-group-item">@student.firstname @student.lastname</li>
-                        }
-                    </ul>
-                </div>
+                    <div class="form-group">
+                        <div class="students-section">
+                            <h4 class="students-title">
+                                <i class="bi bi-people-fill"></i>
+                                Sınıf Öğrencileri
+                                <span class="badge bg-primary ms-2">@(Model?.Students?.Count() ?? 0)</span>
+                            </h4>
+                            
+                            @if (Model?.Students?.Any() == true)
+                            {
+                                <div class="students-list">
+                                    @foreach (var student in Model.Students)
+                                    {
+                                        <div class="student-item">
+                                            <div class="student-avatar">
+                                                @(student.firstname.Substring(0, 1) + student.lastname.Substring(0, 1))
+                                            </div>
+                                            <div class="student-info">
+                                                <div class="student-name">@student.firstname @student.lastname</div>
+                                                <div class="student-id">Öğrenci No: @student.dershaneid</div>
+                                            </div>
+                                            <div class="student-status">
+                                                <i class="bi bi-check-circle text-success"></i>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="empty-students">
+                                    <div class="empty-students-icon">
+                                        <i class="bi bi-person-plus"></i>
+                                    </div>
+                                    <p>Bu sınıfta henüz öğrenci bulunmuyor.</p>
+                                    <small>Öğrenciler sınıf atama işlemi ile eklenebilir.</small>
+                                </div>
+                            }
+                        </div>
+                    </div>
 
-                <div class="d-flex justify-content-between">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-save me-2"></i>Save Changes
-                    </button>
-                    <a asp-action="Classes" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left me-2"></i>Back to Classes
-                    </a>
-                </div>
-            </form>
+                    <div class="form-actions">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary" id="saveBtn">
+                                <i class="bi bi-save me-2"></i>Değişiklikleri Kaydet
+                            </button>
+                            <a asp-action="ViewClassDetails" asp-route-className="@Model?.ClassName" 
+                               class="btn btn-outline-info">
+                                <i class="bi bi-eye me-2"></i>Detayları Görüntüle
+                            </a>
+                        </div>
+                        <a asp-action="Classes" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Sınıflar Listesine Dön
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('editClassForm');
+            const saveBtn = document.getElementById('saveBtn');
+            const teacherSelect = document.getElementById('teacherSelect');
+
+            // Form validation
+            form.addEventListener('submit', function(e) {
+                const className = document.querySelector('input[name="NewClassName"]').value.trim();
+                
+                if (!className) {
+                    e.preventDefault();
+                    showAlert('Sınıf adı boş olamaz!', 'error');
+                    return false;
+                }
+
+                if (className.length < 2) {
+                    e.preventDefault();
+                    showAlert('Sınıf adı en az 2 karakter olmalıdır!', 'error');
+                    return false;
+                }
+
+                // Show loading state
+                saveBtn.classList.add('btn-loading');
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<span class="me-2"></span>Kaydediliyor...';
+            });
+
+            // Teacher selection change handler
+            teacherSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                if (selectedOption.value) {
+                    showAlert(`${selectedOption.text} öğretmeni seçildi.`, 'info');
+                }
+            });
+
+            // Auto-save draft functionality
+            const inputs = form.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    saveDraft();
+                });
+            });
+
+            function saveDraft() {
+                const formData = new FormData(form);
+                const draft = {};
+                for (let [key, value] of formData.entries()) {
+                    draft[key] = value;
+                }
+                localStorage.setItem('editClassDraft', JSON.stringify(draft));
+            }
+
+            function loadDraft() {
+                const draft = localStorage.getItem('editClassDraft');
+                if (draft) {
+                    const data = JSON.parse(draft);
+                    Object.keys(data).forEach(key => {
+                        const input = form.querySelector(`[name="${key}"]`);
+                        if (input && input.type !== 'hidden') {
+                            input.value = data[key];
+                        }
+                    });
+                }
+            }
+
+            // Clear draft on successful submit
+            form.addEventListener('submit', function() {
+                localStorage.removeItem('editClassDraft');
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+S to save
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    form.submit();
+                }
+
+                // Escape to go back
+                if (e.key === 'Escape') {
+                    window.location.href = '@Url.Action("Classes")';
+                }
+            });
+
+            // Character counter for class name
+            const classNameInput = document.querySelector('input[name="NewClassName"]');
+            if (classNameInput) {
+                const maxLength = classNameInput.getAttribute('maxlength') || 50;
+                const counter = document.createElement('small');
+                counter.className = 'character-counter';
+                counter.style.color = 'rgba(255, 255, 255, 0.6)';
+                counter.style.float = 'right';
+                counter.style.marginTop = '0.5rem';
+
+                function updateCounter() {
+                    const remaining = maxLength - classNameInput.value.length;
+                    counter.textContent = `${remaining} karakter kaldı`;
+
+                    if (remaining < 10) {
+                        counter.style.color = '#ef4444';
+                    } else if (remaining < 20) {
+                        counter.style.color = '#fbbf24';
+                    } else {
+                        counter.style.color = 'rgba(255, 255, 255, 0.6)';
+                    }
+                }
+
+                classNameInput.addEventListener('input', updateCounter);
+                classNameInput.parentNode.appendChild(counter);
+                updateCounter();
+            }
+
+            // Animate student items on load
+            const studentItems = document.querySelectorAll('.student-item');
+            studentItems.forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateX(0)';
+                }, index * 100);
+            });
+            // Load draft on page load
+            loadDraft();
+        });
+        </script>
+

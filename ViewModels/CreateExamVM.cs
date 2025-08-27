@@ -8,19 +8,19 @@ namespace dershane.ViewModels
     {
         public int Id { get; set; }
         
-        [Required(ErrorMessage = "Sınav başlığı gerekli!")]
+        [Required(ErrorMessage = "Exam title required!")]
         public string Title { get; set; } = string.Empty;
         
         public string Description { get; set; } = string.Empty;
         
-        [Required(ErrorMessage = "Ders seçimi gerekli!")]
+        [Required(ErrorMessage = "Course selection required!")]
         public string Lesson { get; set; } = string.Empty;
         
-        [Required(ErrorMessage = "Sınav tarihi gerekli!")]
+        [Required(ErrorMessage = "Exam date required!")]
         public DateTime ExamDate { get; set; } = DateTime.Now.AddDays(1);
         
-        [Required(ErrorMessage = "Süre gerekli!")]
-        [Range(10, 300, ErrorMessage = "Süre 10-300 dakika arasında olmalı!")]
+        [Required(ErrorMessage = "Time required!")]
+        [Range(10, 300, ErrorMessage = "Duration should be between 10-300 minutes!")]
         public int Duration { get; set; } = 60;
         
         public List<ExamQuestionVM> Questions { get; set; } = new List<ExamQuestionVM>();
