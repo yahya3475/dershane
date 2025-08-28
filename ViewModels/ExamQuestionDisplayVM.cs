@@ -10,6 +10,7 @@ namespace dershane.ViewModels
         public string OptionC { get; set; }
         public string OptionD { get; set; }
         public int QuestionOrder { get; set; }
+        public int Points { get; set; }
         public string SelectedAnswer { get; set; }
     }
 }

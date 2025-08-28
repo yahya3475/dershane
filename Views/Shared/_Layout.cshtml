@@ -91,26 +91,29 @@
                             }
                             else if (userRole == "principal")
                             {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link modern-nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                        <i class="bi bi-gear"></i>
-                                        <span>Yönetim</span>
+                                <li class="nav-item">
+                                    <a class="nav-link modern-nav-link" asp-controller="Principal" asp-action="List">
+                                        <i class="bi bi-person-lines-fill"></i>
+                                        <span>Kullanıcılar</span>
                                     </a>
-                                    <ul class="dropdown-menu modern-dropdown">
-                                        <li><a class="dropdown-item" asp-controller="Principal" asp-action="List">
-                                            <i class="bi bi-person-lines-fill"></i> Kullanıcılar
-                                        </a></li>
-                                        <li><a class="dropdown-item" asp-controller="Principal" asp-action="Classes">
-                                            <i class="bi bi-diagram-3"></i> Sınıflar
-                                        </a></li>
-                                        <li><a class="dropdown-item" asp-controller="Principal" asp-action="Lessons">
-                                            <i class="bi bi-book"></i> Dersler
-                                        </a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" asp-controller="Principal" asp-action="Reports">
-                                            <i class="bi bi-bar-chart"></i> Raporlar
-                                        </a></li>
-                                    </ul>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link modern-nav-link" asp-controller="Principal" asp-action="Classes">
+                                        <i class="bi bi-diagram-3"></i>
+                                        <span>Sınıflar</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link modern-nav-link" asp-controller="Principal" asp-action="Lessons">
+                                        <i class="bi bi-book"></i>
+                                        <span>Dersler</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link modern-nav-link" asp-controller="Principal" asp-action="Reports">
+                                        <i class="bi bi-bar-chart"></i>
+                                        <span>Raporlar</span>
+                                    </a>
                                 </li>
                             }
                         }
@@ -128,8 +131,8 @@
                         }
                         else
                         {
-                            <li class="nav-item dropdown user-dropdown">
-                                <a class="nav-link modern-nav-link dropdown-toggle user-profile" href="#" role="button" data-bs-toggle="dropdown">
+                            <li class="nav-item">
+                                <span class="nav-link modern-nav-link user-info-display">
                                     <div class="user-avatar">
                                         @if (userRole == "student")
                                         {
@@ -148,26 +151,25 @@
                                         <span class="user-name">@userName</span>
                                         <span class="user-role">@(userRole == "student" ? "Öğrenci" : userRole == "teacher" ? "Öğretmen" : "Müdür")</span>
                                     </div>
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link modern-nav-link" asp-controller="Home" asp-action="Profile">
+                                    <i class="bi bi-person"></i>
+                                    <span>Profil</span>
                                 </a>
-                                <ul class="dropdown-menu modern-dropdown user-menu">
-                                    <li class="dropdown-header">
-                                        <div class="user-details">
-                                            <strong>@userName</strong>
-                                            <small>@schoolNumber</small>
-                                        </div>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" asp-controller="Home" asp-action="Profile">
-                                        <i class="bi bi-person"></i> Profil
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="#">
-                                        <i class="bi bi-gear"></i> Ayarlar
-                                    </a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item logout-item" asp-controller="Auth" asp-action="Logout">
-                                        <i class="bi bi-box-arrow-right"></i> Çıkış Yap
-                                    </a></li>
-                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link modern-nav-link" href="#">
+                                    <i class="bi bi-gear"></i>
+                                    <span>Ayarlar</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link modern-nav-link logout-nav-link" asp-controller="Auth" asp-action="Logout">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    <span>Çıkış Yap</span>
+                                </a>
                             </li>
                         }
                     </ul>
@@ -403,7 +405,11 @@
     }
 
     /* Dropdown Menus */
-    .modern-dropdown {
+    .dropdown {
+        position: static !important; /* Override Bootstrap's position: relative */
+    }
+    
+    .dropdown-menu.modern-dropdown {
         background: rgba(30, 30, 46, 0.95) !important;
         backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -411,6 +417,17 @@
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
         padding: 0.5rem 0;
         margin-top: 0.5rem;
+        z-index: 9999 !important; /* Ensure dropdowns appear above ALL elements */
+        position: absolute !important; /* Take it out of the normal flow */
+        min-width: 200px; /* Ensure enough width */
+        transform: none !important; /* Prevent any transforms that might affect positioning */
+        left: auto !important; /* Let it position naturally */
+        right: auto !important; /* Let it position naturally */
+    }
+    
+    /* Ensure the navbar doesn't clip dropdowns */
+    .navbar-collapse {
+        overflow: visible !important;
     }
 
     .modern-dropdown .dropdown-item {

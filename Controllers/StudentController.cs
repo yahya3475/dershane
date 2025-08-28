@@ -360,6 +360,7 @@ namespace dershane.Controllers
                         OptionC = q.OptionC,
                         OptionD = q.OptionD,
                         QuestionOrder = q.QuestionOrder,
+                        Points = q.Points,
                     })
                     .ToList(),
             };

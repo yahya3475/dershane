@@ -1,206 +1,220 @@
 @model CreateExamVM
+@{
+    ViewData["Title"] = "Sınav Oluştur";
+}
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card shadow-lg">
-                <div class="card-header bg-success text-white">
-                    <h3 class="mb-0">🎯 Create New Exam - Make Students Sweat!</h3>
-                </div>
-                <div class="card-body">
-                    <form asp-action="CreateExam" method="post" id="examForm">
-                        @Html.AntiForgeryToken()
-                        
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Exam Title</label>
-                                <input asp-for="Title" class="form-control" placeholder="Örn: Matematik Ara Sınavı" />
-                                <span asp-validation-for="Title" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Lesson</label>
-                                <select asp-for="Lesson" asp-items="Model.Lessons" class="form-select" id="lessonSelect">
-                                    <option value="">Select Lesson</option>
-                                </select>
-                                <span asp-validation-for="Lesson" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">Description</label>
-                            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Sınav açıklaması..."></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
-                        </div>
-
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Exam Date</label>
-                                <input asp-for="ExamDate" type="datetime-local" class="form-control" />
-                                <span asp-validation-for="ExamDate" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Duration (minutes)</label>
-                                <input asp-for="Duration" type="number" class="form-control" min="1" max="300" />
-                                <span asp-validation-for="Duration" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <hr class="my-4">
-                        <h4 class="text-primary">📝 Questions</h4>
-                        
-                        <!-- AI Question Generator Section -->
-                        <div class="card mb-4 border-info">
-                            <div class="card-header bg-info text-white">
-                                <h5 class="mb-0">🤖 AI Question Generator</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <label class="form-label">Topic/Subject for AI Questions</label>
-                                        <input type="text" id="aiTopic" class="form-control" placeholder="Örn: Matematik - Türev, Tarih - Osmanlı İmparatorluğu, Fizik - Hareket" />
-                                        <small class="text-muted">Enter the specific topic you want AI to generate questions about</small>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="form-label">Question Count</label>
-                                        <input type="number" id="aiQuestionCount" class="form-control" min="1" max="10" value="3" />
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="form-label">Difficulty</label>
-                                        <select id="aiDifficulty" class="form-select">
-                                            <option value="easy">Easy</option>
-                                            <option value="medium" selected>Medium</option>
-                                            <option value="hard">Hard</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="mt-3">
-                                    <button type="button" class="btn btn-info" onclick="generateAIQuestions()" id="generateBtn">
-                                        <i class="bi bi-robot"></i> Generate AI Questions
-                                    </button>
-                                    <div id="aiLoadingSpinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                </div>
-                                <div id="aiErrorMessage" class="alert alert-danger mt-3 d-none"></div>
-                            </div>
-                        </div>
-                        
-                        <div id="questionsContainer">
-                            @for (int i = 0; i < Model.Questions.Count; i++)
-                            {
-                                <div class="question-block border rounded p-3 mb-3 bg-dark">
-                                    <h6 class="text-success">Question @(i + 1)</h6>
-                                    
-                                    <div class="mb-3">
-                                        <label class="form-label">Question Text</label>
-                                        <textarea asp-for="Questions[i].QuestionText" class="form-control" rows="2"></textarea>
-                                        <span asp-validation-for="Questions[i].QuestionText" class="text-danger"></span>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-md-6 mb-2">
-                                            <label class="form-label">Option A</label>
-                                            <input asp-for="Questions[i].OptionA" class="form-control" />
-                                        </div>
-                                        <div class="col-md-6 mb-2">
-                                            <label class="form-label">Option B</label>
-                                            <input asp-for="Questions[i].OptionB" class="form-control" />
-                                        </div>
-                                        <div class="col-md-6 mb-2">
-                                            <label class="form-label">Option C</label>
-                                            <input asp-for="Questions[i].OptionC" class="form-control" />
-                                        </div>
-                                        <div class="col-md-6 mb-2">
-                                            <label class="form-label">Option D</label>
-                                            <input asp-for="Questions[i].OptionD" class="form-control" />
-                                        </div>
-                                    </div>
-
-                                    <div class="row mt-2">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Correct Answer</label>
-                                            <select asp-for="Questions[i].CorrectAnswer" class="form-select">
-                                                <option value="">Select</option>
-                                                <option value="A">A</option>
-                                                <option value="B">B</option>
-                                                <option value="C">C</option>
-                                                <option value="D">D</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Points</label>
-                                            <input asp-for="Questions[i].Points" type="number" class="form-control" min="1" max="100" value="5" />
-                                        </div>
-                                    </div>
-                                    
-                                    <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeQuestion(this)">
-                                        <i class="bi bi-trash"></i> Remove Question
-                                    </button>
-                                </div>
-                            }
-                        </div>
-
-                        <div class="text-center mb-4">
-                            <button type="button" class="btn btn-outline-primary" onclick="addQuestion()">
-                                <i class="bi bi-plus-circle"></i> Add Manual Question
-                            </button>
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success btn-lg">
-                                <i class="bi bi-check-lg"></i> Create Exam - Let's Make Them Sweat! 😈
-                            </button>
-                            <a asp-action="ViewExamSystem" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left"></i> Back to Exams
-                            </a>
-                        </div>
-                    </form>
+<div class="exam-builder container-xxl py-4">
+    <!-- Hero Başlık -->
+    <div class="card hero-card shadow-lg border-0 mb-4">
+        <div class="card-body d-flex flex-column flex-lg-row align-items-center justify-content-between gap-3 p-4 p-lg-5">
+            <div class="d-flex align-items-center gap-3">
+                <div class="hero-icon">📝</div>
+                <div>
+                    <h1 class="hero-title mb-1">Sınav Oluştur</h1>
+                    <p class="hero-subtitle mb-0">Ders, tarih ve süreyi belirleyin; soruları ekleyin veya yapay zeka ile üretin.</p>
                 </div>
             </div>
+            <div class="text-center text-lg-end">
+                <div class="badge bg-primary-subtle text-primary-emphasis rounded-pill px-3 py-2 fw-semibold">
+                    <i class="bi bi-clipboard-data me-2"></i>Yeni Sınav Tanımla
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sınav Formu -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4 p-lg-5">
+            <form asp-action="CreateExam" method="post" id="examForm">
+                @Html.AntiForgeryToken()
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Sınav Başlığı</label>
+                        <input asp-for="Title" class="form-control" placeholder="Örn: Matematik Ara Sınavı" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Ders</label>
+                        <select asp-for="Lesson" asp-items="Model.Lessons" class="form-select" id="lessonSelect">
+                            <option value="">Ders Seçin</option>
+                        </select>
+                        <span asp-validation-for="Lesson" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Açıklama</label>
+                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Sınav açıklaması..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Sınav Tarihi</label>
+                        <input asp-for="ExamDate" type="datetime-local" class="form-control" />
+                        <span asp-validation-for="ExamDate" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Süre (dakika)</label>
+                        <input asp-for="Duration" type="number" class="form-control" min="1" max="300" />
+                        <span asp-validation-for="Duration" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h4 class="section-title mb-0"><i class="bi bi-journal-text me-2 text-primary"></i>Sorular</h4>
+                </div>
+
+                <!-- Yapay Zeka ile Soru Üret -->
+                <div class="card mb-4 ai-card border-info">
+                    <div class="card-header bg-info text-white d-flex align-items-center">
+                        <i class="bi bi-robot me-2"></i>
+                        <h5 class="mb-0">Yapay Zeka ile Soru Üret</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-lg-8">
+                                <label class="form-label">Konu / Başlık</label>
+                                <input type="text" id="aiTopic" class="form-control" placeholder="Örn: Matematik - Türev, Tarih - Osmanlı, Fizik - Hareket" />
+                                <small class="text-muted">Yapay zekanın soru üreteceği spesifik konuyu yazın</small>
+                            </div>
+                            <div class="col-6 col-lg-2">
+                                <label class="form-label">Soru Sayısı</label>
+                                <input type="number" id="aiQuestionCount" class="form-control" min="1" max="10" value="3" />
+                            </div>
+                            <div class="col-6 col-lg-2">
+                                <label class="form-label">Zorluk</label>
+                                <select id="aiDifficulty" class="form-select">
+                                    <option value="easy">Kolay</option>
+                                    <option value="medium" selected>Orta</option>
+                                    <option value="hard">Zor</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-info" onclick="generateAIQuestions()" id="generateBtn">
+                                <i class="bi bi-stars"></i> Soruları Üret
+                            </button>
+                            <div id="aiLoadingSpinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status">
+                                <span class="visually-hidden">Yükleniyor...</span>
+                            </div>
+                        </div>
+                        <div id="aiErrorMessage" class="alert alert-danger mt-3 d-none"></div>
+                    </div>
+                </div>
+
+                <div id="questionsContainer">
+                    @for (int i = 0; i < Model.Questions.Count; i++)
+                    {
+                        <div class="question-block border rounded p-3 mb-3 bg-dark">
+                            <h6 class="text-success mb-3">Soru @(i + 1)</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Soru Metni</label>
+                                <textarea asp-for="Questions[i].QuestionText" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Questions[i].QuestionText" class="text-danger"></span>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Seçenek A</label>
+                                    <input asp-for="Questions[i].OptionA" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Seçenek B</label>
+                                    <input asp-for="Questions[i].OptionB" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Seçenek C</label>
+                                    <input asp-for="Questions[i].OptionC" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Seçenek D</label>
+                                    <input asp-for="Questions[i].OptionD" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mt-1">
+                                <div class="col-md-6">
+                                    <label class="form-label">Doğru Cevap</label>
+                                    <select asp-for="Questions[i].CorrectAnswer" class="form-select">
+                                        <option value="">Seçin</option>
+                                        <option value="A">A</option>
+                                        <option value="B">B</option>
+                                        <option value="C">C</option>
+                                        <option value="D">D</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Puan</label>
+                                    <input asp-for="Questions[i].Points" type="number" class="form-control" min="1" max="100" value="5" />
+                                </div>
+                            </div>
+
+                            <div class="mt-3 d-flex justify-content-end">
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeQuestion(this)">
+                                    <i class="bi bi-trash"></i> Soruyu Sil
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="text-center mb-4">
+                    <button type="button" class="btn btn-outline-primary" onclick="addQuestion()">
+                        <i class="bi bi-plus-circle"></i> Manuel Soru Ekle
+                    </button>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-check-lg"></i> Sınavı Oluştur
+                    </button>
+                    <a asp-action="ViewExamSystem" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Sınavlara Dön
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 <script>
-let questionCount = @Model.Questions.Count;
-
 function addQuestion() {
     const container = document.getElementById('questionsContainer');
-    const currentIndex = document.querySelectorAll('.question-block').length; // Mevcut soru sayısını al
-    
+    const currentIndex = document.querySelectorAll('.question-block').length;
+
     const questionHtml = `
         <div class="question-block border rounded p-3 mb-3 bg-dark">
-            <h6 class="text-success">Question ${currentIndex + 1}</h6>
-            
+            <h6 class="text-success mb-3">Soru ${currentIndex + 1}</h6>
             <div class="mb-3">
-                <label class="form-label">Question Text</label>
+                <label class="form-label">Soru Metni</label>
                 <textarea name="Questions[${currentIndex}].QuestionText" class="form-control" rows="2"></textarea>
             </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-2">
-                    <label class="form-label">Option A</label>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Seçenek A</label>
                     <input name="Questions[${currentIndex}].OptionA" class="form-control" />
                 </div>
-                <div class="col-md-6 mb-2">
-                    <label class="form-label">Option B</label>
+                <div class="col-md-6">
+                    <label class="form-label">Seçenek B</label>
                     <input name="Questions[${currentIndex}].OptionB" class="form-control" />
                 </div>
-                <div class="col-md-6 mb-2">
-                    <label class="form-label">Option C</label>
+                <div class="col-md-6">
+                    <label class="form-label">Seçenek C</label>
                     <input name="Questions[${currentIndex}].OptionC" class="form-control" />
                 </div>
-                <div class="col-md-6 mb-2">
-                    <label class="form-label">Option D</label>
+                <div class="col-md-6">
+                    <label class="form-label">Seçenek D</label>
                     <input name="Questions[${currentIndex}].OptionD" class="form-control" />
                 </div>
             </div>
-
-            <div class="row mt-2">
+            <div class="row g-3 mt-1">
                 <div class="col-md-6">
-                    <label class="form-label">Correct Answer</label>
+                    <label class="form-label">Doğru Cevap</label>
                     <select name="Questions[${currentIndex}].CorrectAnswer" class="form-select">
-                        <option value="">Select</option>
+                        <option value="">Seçin</option>
                         <option value="A">A</option>
                         <option value="B">B</option>
                         <option value="C">C</option>
@@ -208,48 +222,44 @@ function addQuestion() {
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Points</label>
+                    <label class="form-label">Puan</label>
                     <input name="Questions[${currentIndex}].Points" type="number" class="form-control" min="1" max="100" value="5" />
                 </div>
             </div>
-            
-            <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeQuestion(this)">
-                <i class="bi bi-trash"></i> Remove Question
-            </button>
+            <div class="mt-3 d-flex justify-content-end">
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeQuestion(this)">
+                    <i class="bi bi-trash"></i> Soruyu Sil
+                </button>
+            </div>
         </div>
     `;
-    
+
     container.insertAdjacentHTML('beforeend', questionHtml);
 }
 
 function removeQuestion(button) {
     button.closest('.question-block').remove();
-    reindexQuestions(); // Silme işleminden sonra yeniden indeksle
+    reindexQuestions();
 }
 
-// Soru indekslerini yeniden düzenle - EN ÖNEMLİ FONKSİYON
 function reindexQuestions() {
     const questionBlocks = document.querySelectorAll('.question-block');
-    
+
     questionBlocks.forEach((block, index) => {
-        // Başlığı güncelle
         const title = block.querySelector('h6');
-        if (title.textContent.includes('AI Generated')) {
-            title.textContent = `🤖 AI Generated Question ${index + 1}`;
+        if (title.textContent.includes('AI')) {
+            title.textContent = `🤖 Yapay Zeka Sorusu ${index + 1}`;
         } else {
-            title.textContent = `Question ${index + 1}`;
+            title.textContent = `Soru ${index + 1}`;
         }
-        
-        // Input name'lerini güncelle - BU KISIM ÇOK ÖNEMLİ
+
         const inputs = block.querySelectorAll('input, textarea, select');
         inputs.forEach(input => {
             const name = input.getAttribute('name');
             if (name && name.includes('Questions[')) {
-                // Eski indeksi yeni indeks ile değiştir
                 const newName = name.replace(/Questions\[\d+\]/, `Questions[${index}]`);
                 input.setAttribute('name', newName);
-                
-                // Ayrıca id varsa onu da güncelle
+
                 const id = input.getAttribute('id');
                 if (id && id.includes('Questions_')) {
                     const newId = id.replace(/Questions_\d+_/, `Questions_${index}_`);
@@ -262,41 +272,38 @@ function reindexQuestions() {
 
 function addAIGeneratedQuestion(question) {
     const container = document.getElementById('questionsContainer');
-    const currentIndex = document.querySelectorAll('.question-block').length; // Mevcut soru sayısını al
-    
+    const currentIndex = document.querySelectorAll('.question-block').length;
+
     const questionHtml = `
         <div class="question-block border rounded p-3 mb-3 bg-dark border-info">
-            <h6 class="text-info">🤖 AI Generated Question ${currentIndex + 1}</h6>
-            
+            <h6 class="text-info mb-3">🤖 Yapay Zeka Sorusu ${currentIndex + 1}</h6>
             <div class="mb-3">
-                <label class="form-label">Question Text</label>
+                <label class="form-label">Soru Metni</label>
                 <textarea name="Questions[${currentIndex}].QuestionText" class="form-control" rows="2">${question.questionText}</textarea>
             </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-2">
-                    <label class="form-label">Option A</label>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Seçenek A</label>
                     <input name="Questions[${currentIndex}].OptionA" class="form-control" value="${question.optionA}" />
                 </div>
-                <div class="col-md-6 mb-2">
-                    <label class="form-label">Option B</label>
+                <div class="col-md-6">
+                    <label class="form-label">Seçenek B</label>
                     <input name="Questions[${currentIndex}].OptionB" class="form-control" value="${question.optionB}" />
                 </div>
-                <div class="col-md-6 mb-2">
-                    <label class="form-label">Option C</label>
+                <div class="col-md-6">
+                    <label class="form-label">Seçenek C</label>
                     <input name="Questions[${currentIndex}].OptionC" class="form-control" value="${question.optionC}" />
                 </div>
-                <div class="col-md-6 mb-2">
-                    <label class="form-label">Option D</label>
+                <div class="col-md-6">
+                    <label class="form-label">Seçenek D</label>
                     <input name="Questions[${currentIndex}].OptionD" class="form-control" value="${question.optionD}" />
                 </div>
             </div>
-
-            <div class="row mt-2">
+            <div class="row g-3 mt-1">
                 <div class="col-md-6">
-                    <label class="form-label">Correct Answer</label>
+                    <label class="form-label">Doğru Cevap</label>
                     <select name="Questions[${currentIndex}].CorrectAnswer" class="form-select">
-                        <option value="">Select</option>
+                        <option value="">Seçin</option>
                         <option value="A" ${question.correctAnswer === 'A' ? 'selected' : ''}>A</option>
                         <option value="B" ${question.correctAnswer === 'B' ? 'selected' : ''}>B</option>
                         <option value="C" ${question.correctAnswer === 'C' ? 'selected' : ''}>C</option>
@@ -304,17 +311,18 @@ function addAIGeneratedQuestion(question) {
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Points</label>
+                    <label class="form-label">Puan</label>
                     <input name="Questions[${currentIndex}].Points" type="number" class="form-control" min="1" max="100" value="${question.points || 5}" />
                 </div>
             </div>
-            
-            <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeQuestion(this)">
-                <i class="bi bi-trash"></i> Remove Question
-            </button>
+            <div class="mt-3 d-flex justify-content-end">
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeQuestion(this)">
+                    <i class="bi bi-trash"></i> Soruyu Sil
+                </button>
+            </div>
         </div>
     `;
-    
+
     container.insertAdjacentHTML('beforeend', questionHtml);
 }
 
@@ -323,26 +331,24 @@ async function generateAIQuestions() {
     const count = document.getElementById('aiQuestionCount').value;
     const difficulty = document.getElementById('aiDifficulty').value;
     const lesson = document.querySelector('select[name="Lesson"]').value;
-    
+
     if (!topic) {
-        showAIError('Please enter a topic for AI question generation!');
+        showAIError('Yapay zeka için bir konu girin.');
         return;
     }
-    
     if (!lesson) {
-        showAIError('Please select a lesson first!');
+        showAIError('Önce bir ders seçmelisiniz!');
         return;
     }
-    
+
     const generateBtn = document.getElementById('generateBtn');
     const spinner = document.getElementById('aiLoadingSpinner');
     const errorDiv = document.getElementById('aiErrorMessage');
-    
-    // Show loading state
+
     generateBtn.disabled = true;
     spinner.classList.remove('d-none');
     errorDiv.classList.add('d-none');
-    
+
     try {
         const response = await fetch('/Teacher/GenerateAIQuestions', {
             method: 'POST',
@@ -357,171 +363,144 @@ async function generateAIQuestions() {
                 difficulty: difficulty
             })
         });
-        
+
         if (!response.ok) {
-            throw new Error('Failed to generate questions');
+            throw new Error('Soru üretme isteği başarısız.');
         }
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
-            // Add generated questions to the form
-            data.questions.forEach(question => {
-                addAIGeneratedQuestion(question);
-            });
-            
-            // Clear the topic input
+            data.questions.forEach(q => addAIGeneratedQuestion(q));
             document.getElementById('aiTopic').value = '';
-            
-            // Show success message
-            showAISuccess(`Successfully generated ${data.questions.length} questions! 🎉`);
-            
-            // Reindex all questions after adding AI questions
+            showAISuccess(`${data.questions.length} soru eklendi! 🎉`);
             reindexQuestions();
         } else {
-            showAIError(data.message || 'Failed to generate questions');
+            showAIError(data.message || 'Soru üretme başarısız.');
         }
-        
     } catch (error) {
-        console.error('Error generating AI questions:', error);
-        showAIError('An error occurred while generating questions. Please try again.');
+        showAIError('Soru üretilirken hata oluştu. Lütfen tekrar deneyin.');
     } finally {
-        // Hide loading state
         generateBtn.disabled = false;
         spinner.classList.add('d-none');
     }
 }
 
-// Form submit edilmeden HEMEN önce indeksleri kontrol et - BU ÇOK ÖNEMLİ
-document.getElementById('examForm').addEventListener('submit', function(e) {
-    console.log('Form submitting, reindexing questions...');
+document.getElementById('examForm').addEventListener('submit', function (e) {
     reindexQuestions();
-    
-    // Debug için - hangi sorular gönderiliyor kontrol et
-    const formData = new FormData(this);
-    for (let [key, value] of formData.entries()) {
-        if (key.includes('Questions[')) {
-            console.log(key + ': ' + value);
-        }
-    }
 });
 
 function showAIError(message) {
     const errorDiv = document.getElementById('aiErrorMessage');
     errorDiv.textContent = message;
     errorDiv.classList.remove('d-none');
-    
-    // Hide after 5 seconds
-    setTimeout(() => {
-        errorDiv.classList.add('d-none');
-    }, 5000);
+    setTimeout(() => errorDiv.classList.add('d-none'), 5000);
 }
 
-
 function showAISuccess(message) {
-    // Create a temporary success alert
     const successDiv = document.createElement('div');
     successDiv.className = 'alert alert-success mt-3';
     successDiv.textContent = message;
-    
-    const aiCard = document.querySelector('.card.border-info .card-body');
+    const aiCard = document.querySelector('.ai-card .card-body');
     aiCard.appendChild(successDiv);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-        successDiv.remove();
-    }, 3000);
+    setTimeout(() => successDiv.remove(), 3000);
 }
 
-// Sayfa yüklendiğinde mevcut soruları yeniden indeksle
-document.addEventListener('DOMContentLoaded', function() {
+// Sayfa yüklendiğinde mevcut soruları indeksle
+document.addEventListener('DOMContentLoaded', function () {
     reindexQuestions();
-    console.log('Page loaded, questions reindexed');
 });
-
-// Debug fonksiyonu - hangi sorular var kontrol et
-function debugQuestions() {
-    const questionBlocks = document.querySelectorAll('.question-block');
-    console.log(`Total questions: ${questionBlocks.length}`);
-    
-    questionBlocks.forEach((block, index) => {
-        const inputs = block.querySelectorAll('input, textarea, select');
-        console.log(`Question ${index}:`);
-        inputs.forEach(input => {
-            const name = input.getAttribute('name');
-            const value = input.value;
-            if (name && name.includes('Questions[')) {
-                console.log(`  ${name}: ${value}`);
-            }
-        });
-    });
-}
-
-// Soru ekleme butonuna tıklandığında debug
-document.querySelector('button[onclick="addQuestion()"]').addEventListener('click', function() {
-    setTimeout(() => {
-        console.log('After adding question:');
-        debugQuestions();
-    }, 100);
-});
-
 </script>
 
 @section Scripts {
     <script>
-        // Ek validasyon ve form kontrolleri
-        $(document).ready(function() {
-            // Form validation
-            $('#examForm').on('submit', function(e) {
+        $(document).ready(function () {
+            $('#examForm').on('submit', function (e) {
                 const questionBlocks = document.querySelectorAll('.question-block');
-                
                 if (questionBlocks.length === 0) {
                     e.preventDefault();
                     alert('En az bir soru eklemelisiniz!');
                     return false;
                 }
-                
-                // Her sorunun dolu olup olmadığını kontrol et
-                let hasEmptyQuestion = false;
-                questionBlocks.forEach((block, index) => {
+                let hasEmpty = false;
+                questionBlocks.forEach((block) => {
                     const questionText = block.querySelector('textarea[name*="QuestionText"]').value.trim();
                     const optionA = block.querySelector('input[name*="OptionA"]').value.trim();
                     const optionB = block.querySelector('input[name*="OptionB"]').value.trim();
                     const optionC = block.querySelector('input[name*="OptionC"]').value.trim();
                     const optionD = block.querySelector('input[name*="OptionD"]').value.trim();
                     const correctAnswer = block.querySelector('select[name*="CorrectAnswer"]').value;
-                    
                     if (!questionText || !optionA || !optionB || !optionC || !optionD || !correctAnswer) {
-                        hasEmptyQuestion = true;
-                        console.log(`Question ${index + 1} has empty fields`);
+                        hasEmpty = true;
                     }
                 });
-                
-                if (hasEmptyQuestion) {
+                if (hasEmpty) {
                     e.preventDefault();
                     alert('Lütfen tüm soru alanlarını doldurun!');
                     return false;
                 }
-                
-                // Son bir kez reindex yap
                 reindexQuestions();
-                console.log('Final reindex before submit');
-                
                 return true;
             });
-            
-            // Lesson seçimi değiştiğinde AI topic'i temizle
-            $('select[name="Lesson"]').on('change', function() {
+
+            $('select[name="Lesson"]').on('change', function () {
                 $('#aiTopic').val('');
             });
-            
-            // AI topic input'una enter basıldığında generate et
-            $('#aiTopic').on('keypress', function(e) {
-                if (e.which === 13) { // Enter key
+
+            $('#aiTopic').on('keypress', function (e) {
+                if (e.which === 13) {
                     e.preventDefault();
                     generateAIQuestions();
                 }
             });
         });
     </script>
+}
+
+@section Styles {
+    <style>
+        .exam-builder .card {
+            background: rgba(30, 30, 46, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 16px;
+            color: rgba(255, 255, 255, 0.95);
+        }
+        .hero-card { background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(30,30,46,0.9)); }
+        .hero-icon {
+            width: 64px; height: 64px; display: grid; place-items: center; font-size: 2rem;
+            border-radius: 14px; background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.2));
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .hero-title { font-weight: 800; letter-spacing: .3px; }
+        .hero-subtitle { color: rgba(255, 255, 255, 0.75); }
+
+        .section-title { font-weight: 700; }
+
+        .ai-card .card-header { border-bottom: 0; }
+        .question-block {
+            border: 1px solid rgba(255,255,255,.08) !important;
+            background: rgba(17, 17, 27, 0.6) !important;
+            border-radius: 12px;
+        }
+        .form-control, .form-select {
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.1);
+            color: #fff;
+        }
+        .form-control::placeholder { color: rgba(255,255,255,.6); }
+        .form-control:focus, .form-select:focus {
+            border-color: rgba(99,102,241,.4);
+            box-shadow: 0 0 0 .2rem rgba(99,102,241,.15);
+        }
+
+        .btn.btn-primary { background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); border: none; }
+        .btn.btn-primary:hover { filter: brightness(1.05); }
+
+        .table-gradient th { background: linear-gradient(90deg, rgba(99,102,241,.25), rgba(139,92,246,.2)); border: 0; }
+
+        @@media (max-width: 576px) {
+            .hero-title { font-size: 1.6rem; }
+            .hero-icon { width: 52px; height: 52px; font-size: 1.6rem; }
+        }
+    </style>
 }
