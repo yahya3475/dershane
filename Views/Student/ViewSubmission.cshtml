@@ -1,77 +1,324 @@
 @model dershane.ViewModels.ViewSubmissionVM
 
 @{
-    ViewData["Title"] = "View Submission";
+    ViewData["Title"] = "Ödev Teslimi";
 }
 
-<div class="container mt-5">
-    <div class="card shadow-lg border-0 rounded-lg">
-        <div class="card-header bg-info text-white">
-            <h2 class="mb-0"><i class="bi bi-file-text me-2"></i>Homework Submission Details</h2>
+<style>
+    .submission-page {
+        background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    .page-header {
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .page-title {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .page-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+        margin: 0;
+    }
+    
+    .submission-card {
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    
+    .submission-header {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+    }
+    
+    .submission-header h2 {
+        color: white;
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    
+    .submission-body {
+        padding: 2rem;
+    }
+    
+    .homework-title {
+        color: #3b82f6;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .homework-description {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 1.5rem;
+    }
+    
+    .answer-section {
+        margin-bottom: 2rem;
+    }
+    
+    .answer-section h5 {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+    
+    .answer-container {
+        background: rgba(17, 24, 39, 0.8);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 10px;
+        padding: 1.5rem;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.6;
+    }
+    
+    .grade-badge {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+    }
+    
+    .grade-badge.graded {
+        background: rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #10b981;
+    }
+    
+    .grade-badge.not-graded {
+        background: rgba(245, 158, 11, 0.2);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        color: #f59e0b;
+    }
+    
+    .grade-badge i {
+        margin-right: 0.5rem;
+        font-size: 1.2rem;
+    }
+    
+    .teacher-comment {
+        margin-bottom: 2rem;
+    }
+    
+    .teacher-comment h5 {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+    
+    .comment-container {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        border-radius: 10px;
+        padding: 1.5rem;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.6;
+    }
+    
+    .comment-container i {
+        color: #f59e0b;
+        margin-right: 0.5rem;
+    }
+    
+    .info-card {
+        background: rgba(31, 41, 55, 0.5);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 15px;
+        padding: 1.5rem;
+        height: 100%;
+    }
+    
+    .info-card h6 {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .info-card hr {
+        border-color: rgba(55, 65, 81, 0.5);
+        margin: 1rem 0;
+    }
+    
+    .info-item {
+        margin-bottom: 0.75rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .info-item strong {
+        color: white;
+        font-weight: 600;
+        margin-right: 0.5rem;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+    
+    .status-badge.on-time {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+    
+    .status-badge.late {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+    }
+    
+    .btn-back {
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-back:hover {
+        background: rgba(55, 65, 81, 0.8);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+    
+    .btn-back i {
+        margin-right: 0.5rem;
+    }
+    
+    @@media (max-width: 768px) {
+        .submission-body {
+            padding: 1.5rem;
+        }
+        
+        .info-card {
+            margin-top: 1.5rem;
+        }
+    }
+</style>
+
+<div class="submission-page">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-file-text me-3"></i>Ödev Teslimi
+            </h1>
+            <p class="page-subtitle">Teslim ettiğiniz ödevin detaylarını görüntüleyin</p>
         </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-8">
-                    <h4 class="text-primary">@Model.Title</h4>
-                    <p class="text-muted mb-3">@Model.Description</p>
-                    
-                    <div class="mb-4">
-                        <h5>Your Answer:</h5>
-                        <div class="border rounded p-3 bg-dark">
-                            @Model.Answer
-                        </div>
-                    </div>
-                    
-                    @if (Model.Grade.HasValue)
-                    {
-                        <div class="alert alert-success">
-                            <h5><i class="bi bi-star-fill me-2"></i>Your Grade: @Model.Grade/100</h5>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="alert alert-warning">
-                            <i class="bi bi-clock me-2"></i>Not graded yet
-                        </div>
-                    }
-                    
-                    @if (!string.IsNullOrEmpty(Model.TeacherComment))
-                    {
-                        <div class="mb-4">
-                            <h5>Teacher's Comment:</h5>
-                            <div class="border rounded p-3 bg-warning bg-opacity-10">
-                                <i class="bi bi-chat-quote me-2"></i>@Model.TeacherComment
+        
+        <div class="submission-card">
+            <div class="submission-header">
+                <h2><i class="bi bi-file-text me-2"></i>Ödev Teslim Detayları</h2>
+            </div>
+            <div class="submission-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="homework-title">@Model.Title</h4>
+                        <p class="homework-description">@Model.Description</p>
+                        
+                        <div class="answer-section">
+                            <h5><i class="bi bi-pencil me-2"></i>Cevabınız:</h5>
+                            <div class="answer-container">
+                                @Model.Answer
                             </div>
                         </div>
-                    }
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title">Assignment Information</h6>
+                        
+                        @if (Model.IsGraded)
+                        {
+                            <div class="grade-badge graded">
+                                <i class="bi bi-star-fill"></i>
+                                <span>Notunuz: @Model.Grade/100</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="grade-badge not-graded">
+                                <i class="bi bi-clock"></i>
+                                <span>Henüz değerlendirilmedi</span>
+                            </div>
+                        }
+                        
+                        @if (!string.IsNullOrEmpty(Model.TeacherComment))
+                        {
+                            <div class="teacher-comment">
+                                <h5><i class="bi bi-chat-left-text me-2"></i>Öğretmen Yorumu:</h5>
+                                <div class="comment-container">
+                                    <i class="bi bi-chat-quote"></i>@Model.TeacherComment
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="info-card">
+                            <h6><i class="bi bi-info-circle me-2"></i>Ödev Bilgileri</h6>
                             <hr>
-                            <p><strong>Subject:</strong> @Model.Lesson</p>
-                            <p><strong>Due Date:</strong> @Model.DueDate.ToString("dd.MM.yyyy HH:mm")</p>
-                            <p><strong>Submission Date:</strong> @Model.SubmissionDate.ToString("dd.MM.yyyy HH:mm")</p>
+                            <div class="info-item">
+                                <strong>Ders:</strong> @Model.Lesson
+                            </div>
+                            <div class="info-item">
+                                <strong>Son Teslim Tarihi:</strong> @Model.DueDate.ToString("dd.MM.yyyy HH:mm")
+                            </div>
+                            <div class="info-item">
+                                <strong>Teslim Tarihi:</strong> @Model.SubmissionDate.ToString("dd.MM.yyyy HH:mm")
+                            </div>
                             
                             @if (Model.SubmissionDate > Model.DueDate)
                             {
-                                <span class="badge bg-danger">Late Submission</span>
+                                <div class="status-badge late">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>Geç Teslim
+                                </div>
                             }
                             else
                             {
-                                <span class="badge bg-success">On Time</span>
+                                <div class="status-badge on-time">
+                                    <i class="bi bi-check-circle me-1"></i>Zamanında Teslim
+                                </div>
                             }
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="mt-4">
-                <a asp-action="ViewHomeworks" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left me-2"></i>Back to Assignments
-                </a>
+                
+                <div class="mt-4">
+                    <a asp-action="ViewHomeworks" class="btn-back">
+                        <i class="bi bi-arrow-left"></i>Ödevlere Geri Dön
+                    </a>
+                </div>
             </div>
         </div>
     </div>

@@ -651,6 +651,173 @@ namespace dershane.Controllers
             return View(lessons);
         }
 
+        [HttpGet]
+        [RoleAuthorize("principal")]
+        public async Task<IActionResult> CreateClass()
+        {
+            var model = new CreateClassViewModel();
+
+            // Get available teachers (not assigned to any class)
+            var assignedTeacherIds = await _context
+                .Classes.Where(c => c.IsTeacher)
+                .Select(c => c.Student)
+                .Distinct()
+                .ToListAsync();
+
+            model.AvailableTeachers = await _context
+                .users.Where(u => u.role == "teacher" && !assignedTeacherIds.Contains(u.dershaneid))
+                .ToListAsync();
+
+            // Get available students (not assigned to any class)
+            var assignedStudentIds = await _context
+                .Classes.Where(c => !c.IsTeacher)
+                .Select(c => c.Student)
+                .Distinct()
+                .ToListAsync();
+
+            model.AvailableStudents = await _context
+                .users.Where(u => u.role == "student" && !assignedStudentIds.Contains(u.dershaneid))
+                .ToListAsync();
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [RoleAuthorize("principal")]
+        public async Task<IActionResult> CreateClass(CreateClassViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                // Reload available teachers and students
+                var assignedTeacherIds = await _context
+                    .Classes.Where(c => c.IsTeacher)
+                    .Select(c => c.Student)
+                    .Distinct()
+                    .ToListAsync();
+
+                model.AvailableTeachers = await _context
+                    .users.Where(u =>
+                        u.role == "teacher" && !assignedTeacherIds.Contains(u.dershaneid)
+                    )
+                    .ToListAsync();
+
+                var assignedStudentIds = await _context
+                    .Classes.Where(c => !c.IsTeacher)
+                    .Select(c => c.Student)
+                    .Distinct()
+                    .ToListAsync();
+
+                model.AvailableStudents = await _context
+                    .users.Where(u =>
+                        u.role == "student" && !assignedStudentIds.Contains(u.dershaneid)
+                    )
+                    .ToListAsync();
+
+                return View(model);
+            }
+
+            try
+            {
+                // Check if class name already exists
+                var existingClass = await _context.Classes.FirstOrDefaultAsync(c =>
+                    c.UClass == model.ClassName
+                );
+
+                if (existingClass != null)
+                {
+                    ModelState.AddModelError("ClassName", "A class with this name already exists");
+
+                    // Reload data
+                    var assignedTeacherIds = await _context
+                        .Classes.Where(c => c.IsTeacher)
+                        .Select(c => c.Student)
+                        .Distinct()
+                        .ToListAsync();
+
+                    model.AvailableTeachers = await _context
+                        .users.Where(u =>
+                            u.role == "teacher" && !assignedTeacherIds.Contains(u.dershaneid)
+                        )
+                        .ToListAsync();
+
+                    var assignedStudentIds = await _context
+                        .Classes.Where(c => !c.IsTeacher)
+                        .Select(c => c.Student)
+                        .Distinct()
+                        .ToListAsync();
+
+                    model.AvailableStudents = await _context
+                        .users.Where(u =>
+                            u.role == "student" && !assignedStudentIds.Contains(u.dershaneid)
+                        )
+                        .ToListAsync();
+
+                    return View(model);
+                }
+
+                // Add teacher to class if selected
+                if (!string.IsNullOrEmpty(model.TeacherId))
+                {
+                    var teacherClass = new UClass1
+                    {
+                        UClass = model.ClassName,
+                        Student = model.TeacherId,
+                        IsTeacher = true,
+                    };
+                    _context.Classes.Add(teacherClass);
+                }
+
+                // Add selected students to class
+                foreach (var studentId in model.SelectedStudentIds)
+                {
+                    var studentClass = new UClass1
+                    {
+                        UClass = model.ClassName,
+                        Student = studentId,
+                        IsTeacher = false,
+                    };
+                    _context.Classes.Add(studentClass);
+                }
+
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Class created successfully!";
+                return RedirectToAction("Classes");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error creating class: " + ex.Message;
+
+                // Reload data
+                var assignedTeacherIds = await _context
+                    .Classes.Where(c => c.IsTeacher)
+                    .Select(c => c.Student)
+                    .Distinct()
+                    .ToListAsync();
+
+                model.AvailableTeachers = await _context
+                    .users.Where(u =>
+                        u.role == "teacher" && !assignedTeacherIds.Contains(u.dershaneid)
+                    )
+                    .ToListAsync();
+
+                var assignedStudentIds = await _context
+                    .Classes.Where(c => !c.IsTeacher)
+                    .Select(c => c.Student)
+                    .Distinct()
+                    .ToListAsync();
+
+                model.AvailableStudents = await _context
+                    .users.Where(u =>
+                        u.role == "student" && !assignedStudentIds.Contains(u.dershaneid)
+                    )
+                    .ToListAsync();
+
+                return View(model);
+            }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [RoleAuthorize("principal")]

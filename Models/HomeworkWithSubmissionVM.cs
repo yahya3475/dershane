@@ -13,5 +13,6 @@ namespace dershane.Models
         public string? TeacherComment { get; set; }
         public string? SubmissionContent { get; set; }
         public string? SubmissionFilePath { get; set; }
+        public bool IsGraded { get; set; }
     }
 }

@@ -1,7 +1,8 @@
+@model dershane.ViewModels.DashboardVM
 @{
     ViewData["Title"] = "Dashboard";
-    var role = ViewBag.role?.ToString().ToUpper();
-    var username = ViewBag.username?.ToString();
+    var role = Model.Role;
+    var username = Model.UserName;
 }
 
 <div class="dashboard-wrapper">
@@ -113,7 +114,7 @@
                                 <i class="bi bi-trophy-fill"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>@ViewBag.AverageGrade</h3>
+                                <h3>@Math.Round(Model.StudentStats.AverageGrade, 0)</h3>
                                 <p>Ortalama Not</p>
                             </div>
                         </div>
@@ -122,7 +123,7 @@
                                 <i class="bi bi-calendar-check-fill"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>@ViewBag.AttendanceRate%</h3>
+                                <h3>@Math.Round(Model.StudentStats.AttendanceRate, 0)%</h3>
                                 <p>Devam Oranı</p>
                             </div>
                         </div>
@@ -131,7 +132,7 @@
                                 <i class="bi bi-journal-bookmark-fill"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>@ViewBag.PendingHomeworks</h3>
+                                <h3>@Model.StudentStats.PendingHomeworks</h3>
                                 <p>Bekleyen Ödev</p>
                             </div>
                         </div>
@@ -140,8 +141,8 @@
                                 <i class="bi bi-clock-fill"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>@ViewBag.TodayClasses</h3>
-                                <p>Bugünkü Ders</p>
+                                <h3>@Model.StudentStats.TotalExams</h3>
+                                <p>Toplam Sınav</p>
                             </div>
                         </div>
                         break;
@@ -151,7 +152,7 @@
                                 <i class="bi bi-people-fill"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>@ViewBag.StudentCount</h3>
+                                <h3>@Model.TeacherStats.TotalStudents</h3>
                                 <p>Öğrenci Sayısı</p>
                             </div>
                         </div>
@@ -160,7 +161,7 @@
                                 <i class="bi bi-clipboard-check-fill"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>@ViewBag.ExamCount</h3>
+                                <h3>@Model.TeacherStats.TotalExams</h3>
                                 <p>Sınav Sayısı</p>
                             </div>
                         </div>
@@ -169,7 +170,7 @@
                                 <i class="bi bi-backpack-fill"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>@ViewBag.ActiveHomeworks</h3>
+                                <h3>@Model.TeacherStats.ActiveHomeworks</h3>
                                 <p>Aktif Ödev</p>
                             </div>
                         </div>
@@ -178,7 +179,7 @@
                                 <i class="bi bi-calendar-week-fill"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>@ViewBag.WeeklyClasses</h3>
+                                <h3>@Model.TeacherStats.WeeklyLessons</h3>
                                 <p>Haftalık Ders</p>
                             </div>
                         </div>
@@ -189,7 +190,7 @@
                                 <i class="bi bi-people-fill"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>@ViewBag.TotalUsers</h3>
+                                <h3>@Model.PrincipalStats.TotalUsers</h3>
                                 <p>Toplam Kullanıcı</p>
                             </div>
                         </div>
@@ -198,7 +199,7 @@
                                 <i class="bi bi-diagram-3-fill"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>@ViewBag.ActiveClasses</h3>
+                                <h3>@Model.PrincipalStats.TotalClasses</h3>
                                 <p>Aktif Sınıf</p>
                             </div>
                         </div>
@@ -207,7 +208,7 @@
                                 <i class="bi bi-person-workspace"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>@ViewBag.TeacherCount</h3>
+                                <h3>@Model.PrincipalStats.TotalTeachers</h3>
                                 <p>Öğretmen</p>
                             </div>
                         </div>
@@ -216,7 +217,7 @@
                                 <i class="bi bi-calendar-event-fill"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>@ViewBag.TotalScheduleItems</h3>
+                                <h3>@Model.PrincipalStats.TotalSchedules</h3>
                                 <p>Toplam Program</p>
                             </div>
                         </div>
@@ -233,33 +234,19 @@
                     </div>
                     <div class="panel-body">
                         <div class="activity-list">
-                            <div class="activity-item">
-                                <div class="activity-icon bg-primary">
-                                    <i class="bi bi-journal-plus"></i>
+                            @foreach (var activity in Model.RecentActivities)
+                            {
+                                <div class="activity-item">
+                                    <div class="activity-icon @activity.ColorClass">
+                                        <i class="bi @activity.IconClass"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <p class="mb-1">@activity.Title</p>
+                                        <p class="mb-1">@activity.Description</p>
+                                        <small class="text-muted">@activity.TimeAgo</small>
+                                    </div>
                                 </div>
-                                <div class="activity-content">
-                                    <p class="mb-1">Yeni ödev eklendi</p>
-                                    <small class="text-muted">2 saat önce</small>
-                                </div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon bg-success">
-                                    <i class="bi bi-check-circle"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <p class="mb-1">Sınav sonuçları girildi</p>
-                                    <small class="text-muted">5 saat önce</small>
-                                </div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon bg-warning">
-                                    <i class="bi bi-exclamation-triangle"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <p class="mb-1">Yoklama uyarısı</p>
-                                    <small class="text-muted">1 gün önce</small>
-                                </div>
-                            </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -274,77 +261,44 @@
                         {
                             case "STUDENT":
                                 <div class="schedule-list">
-                                    <div class="schedule-item">
-                                        <div class="schedule-time">09:00</div>
-                                        <div class="schedule-content">
-                                            <h6>Matematik</h6>
-                                            <small>Sınıf A-101</small>
+                                    @foreach (var scheduleItem in Model.DailySchedule)
+                                    {
+                                        <div class="schedule-item">
+                                            <div class="schedule-time">@scheduleItem.TimeDisplay</div>
+                                            <div class="schedule-content">
+                                                <h6>@scheduleItem.Title</h6>
+                                                <small>@scheduleItem.Location</small>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="schedule-item">
-                                        <div class="schedule-time">10:00</div>
-                                        <div class="schedule-content">
-                                            <h6>Fizik</h6>
-                                            <small>Sınıf B-205</small>
-                                        </div>
-                                    </div>
-                                    <div class="schedule-item">
-                                        <div class="schedule-time">11:00</div>
-                                        <div class="schedule-content">
-                                            <h6>Kimya</h6>
-                                            <small>Lab-301</small>
-                                        </div>
-                                    </div>
+                                    }
                                 </div>
                                 break;
                             case "TEACHER":
                                 <div class="schedule-list">
-                                    <div class="schedule-item">
-                                        <div class="schedule-time">09:00</div>
-                                        <div class="schedule-content">
-                                            <h6>9-A Sınıfı</h6>
-                                            <small>Matematik Dersi</small>
+                                    @foreach (var scheduleItem in Model.DailySchedule)
+                                    {
+                                        <div class="schedule-item">
+                                            <div class="schedule-time">@scheduleItem.TimeDisplay</div>
+                                            <div class="schedule-content">
+                                                <h6>@scheduleItem.Title</h6>
+                                                <small>@scheduleItem.Location</small>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="schedule-item">
-                                        <div class="schedule-time">10:00</div>
-                                        <div class="schedule-content">
-                                            <h6>10-B Sınıfı</h6>
-                                            <small>Matematik Dersi</small>
-                                        </div>
-                                    </div>
-                                    <div class="schedule-item">
-                                        <div class="schedule-time">14:00</div>
-                                        <div class="schedule-content">
-                                            <h6>Öğretmen Toplantısı</h6>
-                                            <small>Toplantı Odası</small>
-                                        </div>
-                                    </div>
+                                    }
                                 </div>
                                 break;
                             case "PRİNCİPAL":
                                 <div class="schedule-list">
-                                    <div class="schedule-item">
-                                        <div class="schedule-time">10:00</div>
-                                        <div class="schedule-content">
-                                            <h6>Velilik Röportajı</h6>
-                                            <small>Yönetici Odası</small>
+                                    @foreach (var scheduleItem in Model.DailySchedule)
+                                    {
+                                        <div class="schedule-item">
+                                            <div class="schedule-time">@scheduleItem.TimeDisplay</div>
+                                            <div class="schedule-content">
+                                                <h6>@scheduleItem.Title</h6>
+                                                <small>@scheduleItem.Location</small>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="schedule-item">
-                                        <div class="schedule-time">14:00</div>
-                                        <div class="schedule-content">
-                                            <h6>Öğretmen Toplantısı</h6>
-                                            <small>Toplantı Odası</small>
-                                        </div>
-                                    </div>
-                                    <div class="schedule-item">
-                                        <div class="schedule-time">16:00</div>
-                                        <div class="schedule-content">
-                                            <h6>Bütçe Gözden Geçirme</h6>
-                                            <small>Yönetici Odası</small>
-                                        </div>
-                                    </div>
+                                    }
                                 </div>
                                 break;
                         }

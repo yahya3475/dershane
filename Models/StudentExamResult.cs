@@ -13,10 +13,10 @@ namespace dershane.Models
         public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public int TotalScore { get; set; }
-        public int Score { get; set; } // Bu eksikti lan!
+        public int Score { get; set; }
         public int MaxScore { get; set; }
         public bool IsCompleted { get; set; }
-        public string Answers { get; set; } = string.Empty; // JSON format - bu da eksikti!
+        public string Answers { get; set; } = string.Empty; // JSON format
 
         // Navigation properties
         public virtual ExamSystem Exam { get; set; }

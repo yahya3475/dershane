@@ -4,162 +4,1064 @@
     ViewData["Title"] = "My Homeworks";
 }
 
-<div class="container-fluid mt-4">
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h2 class="card-title mb-4">
-                <i class="bi bi-journal-text me-2"></i>My Assignments
-            </h2>
-            
-            <div class="row mb-4">
+
+
+<style>
+    .homework-page {
+        background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .page-header {
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .page-title {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .page-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .filters-container {
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .filter-group {
+        margin-bottom: 1rem;
+    }
+
+    .filter-label {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-select-modern {
+        background: rgba(31, 41, 55, 0.7);
+        border: 1px solid rgba(75, 85, 99, 0.5);
+        border-radius: 10px;
+        color: white;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-select-modern:focus {
+        background: rgba(55, 65, 81, 0.8);
+        border-color: rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        color: white;
+    }
+
+    .form-select-modern option {
+        background: #2d3748;
+        color: white;
+    }
+
+    .homework-card-modern {
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 20px;
+        padding: 0;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .homework-card-modern:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .homework-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+        position: relative;
+    }
+
+    .homework-header.submitted {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .homework-header.pending {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .homework-header.overdue {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .lesson-badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .homework-title {
+        color: white;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .homework-body {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .homework-description {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .homework-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+    }
+
+    .meta-item i {
+        margin-right: 0.5rem;
+        width: 16px;
+    }
+
+    .status-alert {
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+    }
+
+    .status-alert.success {
+        background: rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #10b981;
+    }
+
+    .status-alert.warning {
+        background: rgba(245, 158, 11, 0.2);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        color: #f59e0b;
+    }
+
+    .status-alert.danger {
+        background: rgba(239, 68, 68, 0.2);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #ef4444;
+    }
+
+    .status-alert.info {
+        background: rgba(59, 130, 246, 0.2);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        color: #3b82f6;
+    }
+
+    .grade-display {
+        background: rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #10b981;
+        padding: 0.75rem;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .teacher-comment {
+        background: rgba(31, 41, 55, 0.7);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .teacher-comment-title {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .teacher-comment-text {
+        color: rgba(255, 255, 255, 0.9);
+        font-style: italic;
+        line-height: 1.5;
+    }
+    
+    .waiting-evaluation {
+        background: rgba(245, 158, 11, 0.15);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        color: #f59e0b;
+        border-radius: 12px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        animation: pulse-orange 2s infinite;
+    }
+    
+    .waiting-evaluation i {
+        margin-right: 0.5rem;
+    }
+    
+    @@keyframes pulse-orange {
+        0% {
+            box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+        }
+    }
+
+    .homework-footer {
+        padding: 1.5rem;
+        border-top: 1px solid rgba(55, 65, 81, 0.5);
+        margin-top: auto;
+        background: rgba(17, 24, 39, 0.7);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+    }
+
+    .btn-modern {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        color: white;
+    }
+
+    .btn-modern.btn-outline {
+        background: transparent;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+
+    .btn-modern.btn-outline:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-modern.btn-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .btn-modern.btn-success:hover {
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 20px;
+        margin: 2rem 0;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-title {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state-text {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: white;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .search-container {
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .search-input {
+        background: rgba(31, 41, 55, 0.7);
+        border: 1px solid rgba(75, 85, 99, 0.5);
+        border-radius: 10px;
+        color: white;
+        padding: 0.75rem 1rem;
+        width: 100%;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+        background: rgba(55, 65, 81, 0.8);
+        border-color: rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        color: white;
+        outline: none;
+    }
+
+    .search-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .homework-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .due-date-indicator {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .priority-indicator {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+
+    .priority-high {
+        background: #ef4444;
+    }
+
+    .priority-medium {
+        background: #f59e0b;
+    }
+
+    .priority-low {
+        background: #10b981;
+    }
+
+    @@keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(1.2);
+            opacity: 0.7;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .submission-timeline {
+        background: rgba(31, 41, 55, 0.7);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .timeline-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.85rem;
+    }
+
+    .timeline-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .timeline-icon {
+        width: 20px;
+        margin-right: 0.5rem;
+        color: #10b981;
+    }
+
+    .progress-bar-container {
+        background: rgba(31, 41, 55, 0.7);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .progress-label {
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .progress-bar-modern {
+        background: rgba(55, 65, 81, 0.5);
+        border-radius: 10px;
+        height: 8px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #059669);
+        border-radius: 10px;
+        transition: width 0.3s ease;
+    }
+
+    @@media (max-width: 768px) {
+        .homework-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .filters-container {
+            padding: 1rem;
+        }
+        
+        .homework-card-modern {
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .homework-page {
+            padding: 1rem 0;
+        }
+        
+        .page-header {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="homework-page">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-journal-text me-3"></i>Ödevlerim
+            </h1>
+            <p class="page-subtitle">Tüm ödevlerinizi takip edin ve zamanında teslim edin</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-list-check"></i>
+                </div>
+                <div class="stat-number" id="totalHomeworks">@(Model?.Count ?? 0)</div>
+                <div class="stat-label">Toplam Ödev</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="stat-number" id="submittedHomeworks">@(Model?.Count(h => h.IsSubmitted) ?? 0)</div>
+                <div class="stat-label">Teslim Edilen</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-clock"></i>
+                </div>
+                <div class="stat-number" id="pendingHomeworks">@(Model?.Count(h => !h.IsSubmitted && h.DueDate >= DateTime.Now) ?? 0)</div>
+                <div class="stat-label">Bekleyen</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <div class="stat-number" id="overdueHomeworks">@(Model?.Count(h => !h.IsSubmitted && h.DueDate < DateTime.Now) ?? 0)</div>
+                <div class="stat-label">Geciken</div>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Ödev ara..." onkeyup="searchHomeworks()">
+        </div>
+
+        <div class="filters-container">
+            <div class="row">
                 <div class="col-md-4">
-                    <label for="lessonFilter" class="form-label">Subject Filter</label>
-                    <select class="form-select" id="lessonFilter" onchange="filterHomeworks()">
-                        <option value="">All Subjects</option>
-                        @if (ViewBag.Lessons != null)
-                        {
-                            @foreach (var lesson in (List<SelectListItem>)ViewBag.Lessons)
+                    <div class="filter-group">
+                        <label class="filter-label">Ders Filtresi</label>
+                        <select class="form-select-modern" id="lessonFilter" onchange="filterHomeworks()">
+                            <option value="">Tüm Dersler</option>
+                            @if (ViewBag.Lessons != null)
                             {
-                                <option value="@lesson.Value">@lesson.Text</option>
+                                @foreach (var lesson in (List<SelectListItem>)ViewBag.Lessons)
+                                {
+                                    <option value="@lesson.Value">@lesson.Text</option>
+                                }
                             }
-                        }
-                    </select>
+                        </select>
+                    </div>
                 </div>
                 <div class="col-md-4">
-                    <label for="statusFilter" class="form-label">Status Filter</label>
-                    <select class="form-select" id="statusFilter" onchange="filterHomeworks()">
-                        <option value="">All</option>
-                        <option value="submitted">Submitted</option>
-                        <option value="pending">Pending</option>
-                        <option value="overdue">Overdue</option>
-                    </select>
+                    <div class="filter-group">
+                        <label class="filter-label">Durum Filtresi</label>
+                        <select class="form-select-modern" id="statusFilter" onchange="filterHomeworks()">
+                            <option value="">Tümü</option>
+                            <option value="submitted">Teslim Edilen</option>
+                            <option value="pending">Bekleyen</option>
+                            <option value="overdue">Geciken</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="filter-group">
+                        <label class="filter-label">Sıralama</label>
+                        <select class="form-select-modern" id="sortFilter" onchange="sortHomeworks()">
+                            <option value="dueDate">Son Teslim Tarihi</option>
+                            <option value="title">Ödev Adı</option>
+                            <option value="lesson">Ders Adı</option>
+                            <option value="status">Durum</option>
+                        </select>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="row" id="homeworksContainer">
-                @if (Model != null && Model.Any())
+        <!-- Homeworks Grid -->
+        <div class="homework-grid" id="homeworksContainer">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var homework in Model)
                 {
-                    @foreach (var homework in Model)
-                    {
-                        <div class="col-md-6 col-lg-4 mb-4 homework-card" data-lesson="@homework.Lesson" data-status="@(homework.IsSubmitted ? "submitted" : (homework.DueDate < DateTime.Now ? "overdue" : "pending"))">
-                            <div class="card h-100 @(homework.IsSubmitted ? "border-success" : (homework.DueDate < DateTime.Now ? "border-danger" : "border-warning"))">
-                                <div class="card-header @(homework.IsSubmitted ? "bg-success" : (homework.DueDate < DateTime.Now ? "bg-danger" : "bg-warning")) text-white">
-                                    <h6 class="card-title mb-0">
-                                        <i class="bi bi-book me-2"></i>@homework.Lesson
-                                    </h6>
+                    var status = homework.IsSubmitted ? "submitted" : (homework.DueDate < DateTime.Now ? "overdue" : "pending");
+                    var priority = GetPriority(homework.DueDate, homework.IsSubmitted);
+                    
+                    <div class="homework-card-modern homework-item" 
+                         data-lesson="@homework.Lesson" 
+                         data-status="@status"
+                         data-title="@homework.Title.ToLower()"
+                         data-due-date="@homework.DueDate.ToString("yyyy-MM-dd")">
+                        
+                        <div class="homework-header @status">
+                            @if (!homework.IsSubmitted)
+                            {
+                                <div class="priority-indicator priority-@priority"></div>
+                            }
+                            
+                            <div class="due-date-indicator">
+                                @if (homework.DueDate < DateTime.Now && !homework.IsSubmitted)
+                                {
+                                    <i class="bi bi-exclamation-triangle me-1"></i>@("Gecikti")
+                                }
+                                else if (homework.DueDate.Date == DateTime.Today)
+                                {
+                                    <i class="bi bi-clock me-1"></i>@("Bugün")
+                                }
+                                else
+                                {
+                                    @homework.DueDate.ToString("dd/MM")
+                                }
+                            </div>
+                            
+                            <div class="lesson-badge">
+                                <i class="bi bi-book me-2"></i>@homework.Lesson
+                            </div>
+                            <h3 class="homework-title">@homework.Title</h3>
+                        </div>
+
+                        <div class="homework-body">
+                            @if (!string.IsNullOrEmpty(homework.Description))
+                            {
+                                <div class="homework-description">
+                                    @homework.Description
                                 </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">@homework.Title</h5>
-                                    
-                                    @if (!string.IsNullOrEmpty(homework.Description))
-                                    {
-                                        <p class="card-text text-muted">@homework.Description</p>
-                                    }
-                                    
-                                    <div class="mb-3">
-                                        <small class="text-muted">
-                                            <i class="bi bi-calendar me-1"></i>
-                                            Due Date: @homework.DueDate.ToString("dd/MM/yyyy HH:mm")
-                                        </small>
+                            }
+
+                              <div class="homework-meta">
+                                <div class="meta-item">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <span>Son Teslim: @homework.DueDate.ToString("dd MMMM yyyy, HH:mm")</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="bi bi-book"></i>
+                                    <span>Ders: @homework.Lesson</span>
+                                </div>
+                            </div>
+
+                            <!-- Status Alert -->
+                            @if (homework.IsSubmitted)
+                            {
+                                <div class="status-alert success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    Teslim edildi
+                                </div>
+                                
+                                @if (homework.IsGraded)
+                                {
+                                    <div class="grade-display">
+                                        <i class="bi bi-trophy me-2"></i>
+                                        Değerlendirildi
                                     </div>
-
-                                    @if (homework.IsSubmitted)
+                                }
+                            }
+                            else if (homework.DueDate < DateTime.Now)
+                            {
+                                <div class="status-alert danger">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    Bu ödev gecikmiş! (@((DateTime.Now - homework.DueDate).Days) gün geçti)
+                                </div>
+                            }
+                            else
+                            {
+                                var remainingTime = homework.DueDate - DateTime.Now;
+                                var alertClass = remainingTime.TotalDays <= 1 ? "warning" : "info";
+                                
+                                <div class="status-alert @alertClass">
+                                    <i class="bi bi-clock me-2"></i>
+                                    @if (remainingTime.TotalDays < 1)
                                     {
-                                        <div class="alert alert-success py-2">
-                                            <i class="bi bi-check-circle me-2"></i>
-                                            Submitted
-                                            @if (homework.SubmissionDate.HasValue)
-                                            {
-                                                <br>
-                                                <small>@homework.SubmissionDate.Value.ToString("dd/MM/yyyy HH:mm")</small>
-                                            }
-                                        </div>
-                                        
-                                        @if (homework.Grade.HasValue)
-                                        {
-                                            <div class="alert alert-info py-2">
-                                                <i class="bi bi-star me-2"></i>
-                                                Grade: @homework.Grade/100
-                                            </div>
-                                        }
-
-                                        @if (!string.IsNullOrEmpty(homework.TeacherComment))
-                                        {
-                                            <div class="alert alert-secondary py-2">
-                                                <i class="bi bi-chat-text me-2"></i>
-                                                <strong>Teacher's Comment:</strong><br>
-                                                @homework.TeacherComment
-                                            </div>
-                                        }
-                                    }
-                                    else if (homework.DueDate < DateTime.Now)
-                                    {
-                                        <div class="alert alert-danger py-2">
-                                            <i class="bi bi-exclamation-triangle me-2"></i>
-                                            Overdue
-                                        </div>
+                                        <span>@remainingTime.Hours saat @remainingTime.Minutes dakika kaldı</span>
                                     }
                                     else
                                     {
-                                        <div class="alert alert-warning py-2">
-                                            <i class="bi bi-clock me-2"></i>
-                                            Pending Submission
+                                        <span>@((int)remainingTime.TotalDays) gün kaldı</span>
+                                    }
+                                </div>
+                            }
+
+                            <!-- Submission Timeline - Sadece teslim edilenler için -->
+                            @if (homework.IsSubmitted)
+                            {
+                                <div class="submission-timeline">
+                                    <div class="timeline-item">
+                                        <i class="bi bi-check-circle timeline-icon"></i>
+                                        <span>Ödev teslim edildi</span>
+                                    </div>
+                                    @if (homework.IsGraded)
+                                    {
+                                        <div class="timeline-item">
+                                            <i class="bi bi-star timeline-icon"></i>
+                                            <span>Ödev değerlendirildi</span>
                                         </div>
                                     }
                                 </div>
-                                <div class="card-footer">
-                                    @if (!homework.IsSubmitted && homework.DueDate >= DateTime.Now)
-                                    {
-                                        <a asp-action="SubmitHomework" asp-route-id="@homework.Id" class="btn btn-primary btn-sm">
-                                            <i class="bi bi-upload me-2"></i>Submit Assignment
-                                        </a>
-                                    }
-                                    else if (homework.IsSubmitted)
-                                    {
-                                        <a asp-action="ViewSubmission" asp-route-id="@homework.Id" class="btn btn-outline-primary btn-sm">
-                                            <i class="bi bi-eye me-2"></i>View Submission
-                                        </a>
-                                    }
-                                </div>
-                            </div>
+                            }
                         </div>
-                    }
-                }
-                else
-                {
-                    <div class="col-12">
-                        <div class="alert alert-info text-center">
-                            <i class="bi bi-info-circle me-2"></i>
-                            No assignments found yet.
+
+                        <div class="homework-footer">
+                            @if (homework.IsSubmitted)
+                            {
+                                <a href="@Url.Action("ViewSubmission", "Student", new { id = homework.Id })" 
+                                   class="btn-modern btn-outline">
+                                    <i class="bi bi-eye me-2"></i>Teslimi Görüntüle
+                                </a>
+                                
+                                @if (!homework.IsGraded)
+                                {
+                                    <span class="waiting-evaluation">
+                                        <i class="bi bi-hourglass-split"></i>Değerlendirme bekleniyor
+                                    </span>
+                                }
+                            }
+                            else if (homework.DueDate > DateTime.Now)
+                            {
+                                <a href="@Url.Action("SubmitHomework", "Student", new { id = homework.Id })" 
+                                   class="btn-modern btn-success">
+                                    <i class="bi bi-upload me-2"></i>Ödev Teslim Et
+                                </a>
+                            }
+                            else
+                            {
+                                <button class="btn-modern" disabled style="opacity: 0.5;">
+                                    <i class="bi bi-x-circle me-2"></i>Teslim Süresi Geçti
+                                </button>
+                            }
                         </div>
                     </div>
                 }
-            </div>
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-journal-x"></i>
+                        </div>
+                        <h3 class="empty-state-title">Henüz ödev bulunmuyor</h3>
+                        <p class="empty-state-text">Öğretmenleriniz size ödev verdiğinde burada görünecektir.</p>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>
 
-<script>
-function filterHomeworks() {
-    const lessonFilter = document.getElementById('lessonFilter').value;
-    const statusFilter = document.getElementById('statusFilter').value;
-    const cards = document.querySelectorAll('.homework-card');
-    
-    cards.forEach(card => {
-        const cardLesson = card.getAttribute('data-lesson');
-        const cardStatus = card.getAttribute('data-status');
+@functions {
+    private string GetPriority(DateTime dueDate, bool isSubmitted)
+    {
+        if (isSubmitted) return "low";
         
-        let showCard = true;
+        var timeRemaining = dueDate - DateTime.Now;
         
-        if (lessonFilter && cardLesson !== lessonFilter) {
-            showCard = false;
-        }
-        
-        if (statusFilter && cardStatus !== statusFilter) {
-            showCard = false;
-        }
-        
-        card.style.display = showCard ? 'block' : 'none';
-    });
+        if (timeRemaining.TotalDays <= 1)
+            return "high";
+        else if (timeRemaining.TotalDays <= 3)
+            return "medium";
+        else
+            return "low";
+    }
 }
+
+<script>
+    // Search functionality
+    function searchHomeworks() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const homeworkItems = document.querySelectorAll('.homework-item');
+        
+        homeworkItems.forEach(item => {
+            const title = item.getAttribute('data-title');
+            const lesson = item.getAttribute('data-lesson').toLowerCase();
+            
+            if (title.includes(searchTerm) || lesson.includes(searchTerm)) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        updateVisibleCount();
+    }
+
+    // Filter functionality
+    function filterHomeworks() {
+        const lessonFilter = document.getElementById('lessonFilter').value;
+        const statusFilter = document.getElementById('statusFilter').value;
+        const homeworkItems = document.querySelectorAll('.homework-item');
+        
+        homeworkItems.forEach(item => {
+            const lesson = item.getAttribute('data-lesson');
+            const status = item.getAttribute('data-status');
+            
+            let showItem = true;
+            
+            if (lessonFilter && lesson !== lessonFilter) {
+                showItem = false;
+            }
+            
+            if (statusFilter && status !== statusFilter) {
+                showItem = false;
+            }
+            
+            item.style.display = showItem ? '' : 'none';
+        });
+        
+        updateVisibleCount();
+    }
+
+    // Sort functionality
+    function sortHomeworks() {
+        const sortBy = document.getElementById('sortFilter').value;
+        const container = document.getElementById('homeworksContainer');
+        const items = Array.from(container.querySelectorAll('.homework-item'));
+        
+        items.sort((a, b) => {
+            switch (sortBy) {
+                case 'dueDate':
+                    return new Date(a.getAttribute('data-due-date')) - new Date(b.getAttribute('data-due-date'));
+                case 'title':
+                    return a.getAttribute('data-title').localeCompare(b.getAttribute('data-title'));
+                case 'lesson':
+                    return a.getAttribute('data-lesson').localeCompare(b.getAttribute('data-lesson'));
+                case 'status':
+                    const statusOrder = { 'overdue': 0, 'pending': 1, 'submitted': 2 };
+                    return statusOrder[a.getAttribute('data-status')] - statusOrder[b.getAttribute('data-status')];
+                default:
+                    return 0;
+            }
+        });
+        
+        items.forEach(item => container.appendChild(item));
+    }
+
+    // Update visible count
+    function updateVisibleCount() {
+        const visibleItems = document.querySelectorAll('.homework-item:not([style*="display: none"])');
+        const totalItems = document.querySelectorAll('.homework-item');
+        
+        // Update stats if needed
+        console.log(`Showing ${visibleItems.length} of ${totalItems.length} homeworks`);
+    }
+
+    // Auto-refresh progress bars
+    function updateProgressBars() {
+        const progressBars = document.querySelectorAll('.progress-fill');
+        progressBars.forEach(bar => {
+            // Recalculate progress based on current time
+            // This would need homework data to be more dynamic
+        });
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set default sort
+        sortHomeworks();
+        
+        // Update progress bars every minute
+        setInterval(updateProgressBars, 60000);
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+        });
+        
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Add loading states for buttons
+        document.querySelectorAll('.btn-modern').forEach(btn => {
+             btn.addEventListener('click', function() {
+                if (!this.disabled) {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Yükleniyor...';
+                    this.disabled = true;
+                    
+                    // Re-enable after 3 seconds (fallback)
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    }, 3000);
+                }
+            });
+        });
+        
+        // Add notification for upcoming deadlines
+        checkUpcomingDeadlines();
+        
+        // Auto-save search preferences
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', function() {
+            localStorage.setItem('homeworkSearch', this.value);
+        });
+        
+        // Restore search preferences
+        const savedSearch = localStorage.getItem('homeworkSearch');
+        if (savedSearch) {
+            searchInput.value = savedSearch;
+            searchHomeworks();
+        }
+    });
+
+    // Check for upcoming deadlines and show notifications
+    function checkUpcomingDeadlines() {
+        const urgentHomeworks = document.querySelectorAll('.homework-item[data-status="pending"]');
+        let urgentCount = 0;
+        
+        urgentHomeworks.forEach(item => {
+            const dueDate = new Date(item.getAttribute('data-due-date'));
+            const now = new Date();
+            const hoursRemaining = (dueDate - now) / (1000 * 60 * 60);
+            
+            if (hoursRemaining <= 24 && hoursRemaining > 0) {
+                urgentCount++;
+            }
+        });
+        
+        if (urgentCount > 0) {
+            showNotification(`${urgentCount} ödevinizin teslim süresi 24 saat içinde doluyor!`, 'warning');
+        }
+    }
+
+    // Show notification
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = `
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            animation: slideInRight 0.3s ease-out;
+        `;
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+
+    // Export functionality
+    function exportHomeworks() {
+        const homeworks = [];
+        document.querySelectorAll('.homework-item:not([style*="display: none"])').forEach(item => {
+            homeworks.push({
+                title: item.querySelector('.homework-title').textContent,
+                lesson: item.getAttribute('data-lesson'),
+                status: item.getAttribute('data-status'),
+                dueDate: item.getAttribute('data-due-date')
+            });
+        });
+        
+        const csv = 'Ödev Adı,Ders,Durum,Son Teslim\n' + 
+                   homeworks.map(h => `"${h.title}","${h.lesson}","${h.status}","${h.dueDate}"`).join('\n');
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'odevlerim.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
 </script>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+}

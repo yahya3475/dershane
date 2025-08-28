@@ -1,0 +1,474 @@
+@model dershane.ViewModels.EditUserInfoVM
+
+@{
+    ViewData["Title"] = "Profil Bilgilerim";
+}
+
+<style>
+    .profile-page {
+        background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .profile-card {
+        background: rgba(15, 15, 35, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+    }
+
+    .card-header-custom {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+        padding: 2rem;
+        border: none;
+        position: relative;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+        text-shadow: none;
+    }
+
+    .page-subtitle {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 0;
+    }
+
+    .form-section {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+
+    .form-section:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .section-title {
+        color: #a5b4fc;
+        font-weight: 600;
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        color: #ffffff;
+        backdrop-filter: blur(10px);
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: #6366f1;
+        box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        color: #ffffff;
+    }
+
+    .form-control:disabled {
+        background: rgba(255, 255, 255, 0.02);
+        color: rgba(255, 255, 255, 0.5);
+        cursor: not-allowed;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        background: linear-gradient(135deg, #5b5ff1 0%, #8049f6 100%);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        color: #ffffff;
+    }
+
+    .alert {
+        border: none;
+        border-radius: 15px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .alert-success {
+        background: rgba(34, 197, 94, 0.2);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        color: #86efac;
+    }
+
+    .alert-danger {
+        background: rgba(239, 68, 68, 0.2);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #fca5a5;
+    }
+
+    .text-danger {
+        color: #fca5a5 !important;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+
+    .form-text {
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-top: 0.25rem;
+    }
+
+    .user-info-card {
+        background: rgba(20, 184, 166, 0.1);
+        border: 1px solid rgba(20, 184, 166, 0.2);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .user-id-display {
+        background: rgba(99, 102, 241, 0.2);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        color: #a5b4fc;
+        display: inline-block;
+    }
+
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        margin-left: 1rem;
+    }
+
+    .role-student {
+        background: rgba(59, 130, 246, 0.2);
+        color: #93c5fd;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .role-teacher {
+        background: rgba(16, 185, 129, 0.2);
+        color: #6ee7b7;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .role-principal {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fcd34d;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    /* Animation for form sections */
+    .form-section {
+        animation: fadeInUp 0.3s ease-out;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive design */
+    @@media (max-width: 768px) {
+        .profile-page {
+            padding: 1rem 0;
+        }
+
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .form-section {
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-card {
+            margin: 0 1rem;
+        }
+
+        .card-header-custom {
+            padding: 1.5rem;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+
+<div class="profile-page">
+    <div class="container">
+        <div class="profile-card">
+            <div class="card-header-custom">
+                <h1 class="page-title">
+                    <i class="bi bi-person-circle me-2"></i>Profil Bilgilerim
+                </h1>
+                <p class="page-subtitle">Kişisel bilgilerinizi görüntüleyin ve düzenleyin</p>
+            </div>
+
+            <div class="card-body p-4">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <div class="user-info-card">
+                    <div class="d-flex align-items-center flex-wrap gap-2">
+                        <div class="user-id-display">
+                            <i class="bi bi-hash"></i> ID: @Model.DershaneId
+                        </div>
+                        
+                        @{
+                            var roleBadgeClass = Model.Role switch
+                            {
+                                "student" => "role-student",
+                                "teacher" => "role-teacher",
+                                "principal" => "role-principal",
+                                _ => "role-student"
+                            };
+                            
+                            var roleIcon = Model.Role switch
+                            {
+                                "student" => "bi-mortarboard",
+                                "teacher" => "bi-briefcase",
+                                "principal" => "bi-building",
+                                _ => "bi-person"
+                            };
+                            
+                            var roleText = Model.Role switch
+                            {
+                                "student" => "Öğrenci",
+                                "teacher" => "Öğretmen",
+                                "principal" => "Müdür",
+                                _ => Model.Role
+                            };
+                        }
+                        
+                        <div class="role-badge @roleBadgeClass">
+                            <i class="bi @roleIcon me-1"></i>
+                            @roleText
+                        </div>
+                        
+                        @if (!string.IsNullOrEmpty(Model.Class))
+                        {
+                            <div class="ms-auto">
+                                <span class="badge bg-info">
+                                    <i class="bi bi-building me-1"></i>
+                                    Sınıf: @Model.Class
+                                </span>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <form asp-action="Profile" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="DershaneId" />
+                    <input type="hidden" asp-for="Role" />
+                    <input type="hidden" asp-for="Class" />
+
+                    <div class="form-section">
+                        <h5 class="section-title">
+                            <i class="bi bi-person-circle"></i>
+                            Kişisel Bilgiler
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FirstName" class="form-label">
+                                    <i class="bi bi-person"></i>
+                                    Ad
+                                </label>
+                                <input asp-for="FirstName" class="form-control" placeholder="Adınızı girin..." disabled />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LastName" class="form-label">
+                                    <i class="bi bi-person"></i>
+                                    Soyad
+                                </label>
+                                <input asp-for="LastName" class="form-control" placeholder="Soyadınızı girin..." disabled />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h5 class="section-title">
+                            <i class="bi bi-envelope"></i>
+                            İletişim Bilgileri
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="form-label">
+                                    <i class="bi bi-envelope"></i>
+                                    E-posta
+                                </label>
+                                <input asp-for="Email" class="form-control" placeholder="E-posta adresinizi girin..." type="email" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PhoneNumber" class="form-label">
+                                    <i class="bi bi-telephone"></i>
+                                    Telefon Numarası
+                                </label>
+                                <input asp-for="PhoneNumber" class="form-control" placeholder="Telefon numaranızı girin..." />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">
+                                <i class="bi bi-geo-alt"></i>
+                                Adres
+                            </label>
+                            <textarea asp-for="Address" class="form-control" placeholder="Adresinizi girin..." rows="3"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    @if (Model.Role == "student")
+                    {
+                        <div class="form-section">
+                            <h5 class="section-title">
+                                <i class="bi bi-people"></i>
+                                Veli Bilgileri
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Parent" class="form-label">
+                                        <i class="bi bi-person"></i>
+                                        Veli Adı
+                                    </label>
+                                    <input asp-for="Parent" class="form-control" placeholder="Veli adını girin..." />
+                                    <span asp-validation-for="Parent" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="ParentPhoneNumber" class="form-label">
+                                        <i class="bi bi-telephone"></i>
+                                        Veli Telefon Numarası
+                                    </label>
+                                    <input asp-for="ParentPhoneNumber" class="form-control" placeholder="Veli telefon numarasını girin..." />
+                                    <span asp-validation-for="ParentPhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-2"></i>
+                            Değişiklikleri Kaydet
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>
+                            Anasayfaya Dön
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        $(document).ready(function() {
+            // Animasyon efektleri
+            $('.form-section').each(function(index) {
+                $(this).css('animation-delay', (index * 0.1) + 's');
+            });
+        });
+    </script>
+}

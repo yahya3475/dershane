@@ -101,8 +101,23 @@ namespace dershane.Controllers
                         .Select(s => s.Answer)
                         .FirstOrDefault(),
                     SubmissionFilePath = null,
+                    IsGraded = _context
+                        .HomeworkSubmissions.Where(s =>
+                            s.HomeworkId == h.Id && s.StudentId == schoolNumber
+                        )
+                        .Select(s => s.IsGraded)
+                        .FirstOrDefault(),
                 })
                 .ToList();
+                
+            // Ensure IsGraded is true for all submissions that have a grade
+            foreach (var homework in homeworks)
+            {
+                if (homework.IsSubmitted && homework.Grade.HasValue && !homework.IsGraded)
+                {
+                    homework.IsGraded = true;
+                }
+            }
 
             var lessons = homeworks.Select(h => h.Lesson).Distinct().ToList();
             ViewBag.Lessons = lessons
@@ -224,6 +239,7 @@ namespace dershane.Controllers
                 SubmissionDate = submission.SubmissionDate,
                 Grade = submission.Grade,
                 TeacherComment = submission.TeacherComment ?? string.Empty,
+                IsGraded = submission.IsGraded
             };
 
             return View(model);

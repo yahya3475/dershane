@@ -1,13 +1,31 @@
-
-@model StudentExamResult
+@model dershane.Models.StudentExamResult
 
 @{
     ViewData["Title"] = "Sınav Sonucu";
-    var totalPoints = Model.Exam.Questions.Sum(q => q.Points);
+    var exam = Model.Exam;
+    var totalPoints = exam.Questions.Sum(q => q.Points);
     var percentage = totalPoints > 0 ? (Model.Score * 100.0 / totalPoints) : 0;
     var gradeClass = percentage >= 85 ? "excellent" : percentage >= 70 ? "good" : percentage >= 50 ? "average" : "poor";
     var gradeEmoji = percentage >= 85 ? "🏆" : percentage >= 70 ? "👍" : percentage >= 50 ? "📚" : "💪";
     var gradeText = percentage >= 85 ? "Mükemmel!" : percentage >= 70 ? "İyi!" : percentage >= 50 ? "Orta" : "Geliştirilmeli";
+    
+    // Parse student answers
+    var studentAnswers = new Dictionary<int, string>();
+    if (!string.IsNullOrEmpty(Model.Answers))
+    {
+        try
+        {
+            studentAnswers = System.Text.Json.JsonSerializer.Deserialize<Dictionary<int, string>>(Model.Answers);
+        }
+        catch
+        {
+            studentAnswers = new Dictionary<int, string>();
+        }
+    }
+    
+    var correctCount = exam.Questions.Count(q => studentAnswers.ContainsKey(q.Id) && studentAnswers[q.Id] == q.CorrectAnswer);
+    var incorrectCount = exam.Questions.Count - correctCount;
+    var duration = Model.EndTime.HasValue ? (Model.EndTime.Value - Model.StartTime).TotalMinutes : 0;
 }
 
 @section Styles {
@@ -44,14 +62,11 @@
             margin: 0;
         }
 
-        .page-actions .btn {
+        .btn-modern {
             border-radius: 12px;
             padding: 0.75rem 1.5rem;
             font-weight: 600;
             transition: all 0.3s ease;
-        }
-
-        .btn-modern {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #ffffff;
@@ -272,6 +287,7 @@
 
         .card-header-modern h5 {
             margin: 0;
+                        margin: 0;
             font-size: 1.25rem;
             font-weight: 600;
             color: #ffffff;
@@ -316,262 +332,493 @@
             font-size: 0.9rem;
         }
 
-        /* Questions Review */
-        .questions-review-card {
+        /* Question Analysis */
+        .question-analysis {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .review-stats {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .review-stats .badge {
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-weight: 600;
-        }
-
-        .question-card-modern {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
             padding: 1.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             transition: all 0.3s ease;
         }
 
-        .question-card-modern:hover {
+        .question-analysis:hover {
             background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-2px);
+        }
+
+        .question-analysis.correct {
+            border-color: rgba(16, 185, 129, 0.3);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .question-analysis.incorrect {
+            border-color: rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .question-analysis.unanswered {
+            border-color: rgba(245, 158, 11, 0.3);
+            background: rgba(245, 158, 11, 0.05);
         }
 
         .question-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: between;
             align-items: center;
             margin-bottom: 1rem;
         }
 
-        .question-title {
+        .question-number {
+            font-weight: 700;
+            color: #6366f1;
             font-size: 1.1rem;
-            font-weight: 600;
-            color: #ffffff;
         }
 
-        .question-points {
+        .answer-status {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-badge.correct {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-badge.incorrect {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .status-badge.unanswered {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .question-text {
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .option-item {
+            padding: 0.75rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .option-item.correct {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .option-item.student-answer {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: #6366f1;
+        }
+
+        .option-item.student-wrong {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .option-label {
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        .option-badges {
+            margin-top: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .option-badge {
+            padding: 0.125rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .option-badge.student {
             background: rgba(99, 102, 241, 0.2);
             color: #6366f1;
-            padding: 0.25rem 0.75rem;
-            border-radius: 50px;
-            font-size: 0.875rem;
-            font-weight: 600;
         }
 
-        .question-content {
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 1rem;
-            line-height: 1.5;
-        }
-
-        .question-answer {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .answer-label {
-            font-weight: 600;
-            color: #ffffff;
-            margin-bottom: 0.5rem;
-        }
-
-        .answer-text {
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.5;
-        }
-
-        .correct-answer {
+        .option-badge.correct-answer {
+            background: rgba(16, 185, 129, 0.2);
             color: #10b981;
         }
 
-        .incorrect-answer {
-            color: #ef4444;
-        }
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .result-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
 
-        .question-feedback {
-            font-size: 0.875rem;
-            padding: 0.75rem;
-            border-radius: 12px;
-            margin-top: 0.5rem;
-        }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
 
-        .feedback-success {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
 
-        .feedback-error {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .score-title {
+                font-size: 2rem;
+            }
         }
     </style>
 }
 
-<div class="container py-5">
-    <div class="page-header text-center mb-5">
-        <h1 class="page-title">Sınav Sonuçlarınız</h1>
-        <p class="page-subtitle">Sınavınızın detaylı analizini aşağıda bulabilirsiniz</p>
-    </div>
-
+<div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <div class="result-card-modern">
+            <!-- Header Section -->
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="page-title">
+                            <i class="bi bi-clipboard-check me-2"></i>
+                            Sınav Sonucu
+                        </h1>
+                        <p class="page-subtitle">@exam.Title - @exam.Lesson</p>
+                    </div>
+                    <div>
+                        <a asp-action="ViewExamSystem" class="btn btn-modern btn-secondary me-2">
+                            <i class="bi bi-arrow-left"></i>
+                            Sınavlara Dön
+                        </a>
+                        <button onclick="window.print()" class="btn btn-modern btn-outline-primary">
+                            <i class="bi bi-printer"></i>
+                            Yazdır
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Result Card -->
+            <div class="result-card-modern mb-4">
                 <div class="result-header @gradeClass">
                     <div class="score-circle-large">
-                        <div class="score-percentage">@percentage.ToString("F1")%</div>
+                        <div class="score-percentage">@percentage.ToString("F0")%</div>
                         <div class="score-emoji">@gradeEmoji</div>
                     </div>
                     <div class="score-details">
-                        <h2 class="score-title">@gradeText</h2>
-                        <p class="score-points">@Model.Score.ToString("F1") / @totalPoints Puan</p>
+                        <h1 class="score-title">@gradeText</h1>
+                        <div class="score-points">@Model.Score / @totalPoints Puan</div>
                         <span class="grade-badge @gradeClass">@gradeText</span>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="stats-grid">
+            <!-- Statistics Grid -->
+            <div class="stats-grid mb-4">
                 <div class="stat-card-modern">
                     <div class="stat-icon">
-                        <i class="fas fa-clock"></i>
+                        <i class="bi bi-check-circle"></i>
                     </div>
                     <div class="stat-content">
-                        <h4>@Model.Exam.DurationMinutes dk</h4>
-                        <p>Sınav Süresi</p>
+                        <h4>@correctCount</h4>
+                        <p>Doğru Cevap</p>
                     </div>
                 </div>
+
                 <div class="stat-card-modern">
                     <div class="stat-icon">
-                        <i class="fas fa-question-circle"></i>
+                        <i class="bi bi-x-circle"></i>
                     </div>
                     <div class="stat-content">
-                        <h4>@Model.Exam.Questions.Count</h4>
-                        <p>Soru Sayısı</p>
+                        <h4>@incorrectCount</h4>
+                        <p>Yanlış Cevap</p>
                     </div>
                 </div>
+
                 <div class="stat-card-modern">
                     <div class="stat-icon">
-                        <i class="fas fa-trophy"></i>
+                        <i class="bi bi-stopwatch"></i>
                     </div>
                     <div class="stat-content">
-                        <h4>@Model.Score.ToString("F1")</h4>
-                        <p>Puan</p>
+                        <h4>@duration.ToString("F0")</h4>
+                        <p>Dakika Süre</p>
+                    </div>
+                </div>
+
+                <div class="stat-card-modern">
+                    <div class="stat-icon">
+                        <i class="bi bi-question-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h4>@exam.Questions.Count</h4>
+                        <p>Toplam Soru</p>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="exam-details-card">
-                <div class="card-header-modern">
-                    <h5>Sınav Detayları</h5>
-                </div>
-                <div class="card-body-modern">
-                    <div class="detail-item">
-                        <i class="fas fa-book"></i>
-                        <div>
-                            <strong>Sınav Adı</strong>
-                            <span>@Model.Exam.Name</span>
-                        </div>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-calendar"></i>
-                        <div>
-                            <strong>Tarih</strong>
-                            <span>@Model.Exam.Date.ToString("dd.MM.yyyy")</span>
-                        </div>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-user"></i>
-                        <div>
-                            <strong>Öğrenci</strong>
-                            <span>@Model.Student.FullName</span>
-                        </div>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-tag"></i>
-                        <div>
-                            <strong>Sınıf</strong>
-                            <span>@Model.Student.Class.Name</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="questions-review-card">
-                <div class="card-header-modern">
-                    <h5>Soru İncelemesi</h5>
-                    <div class="review-stats">
-                        <span class="badge bg-success">Doğru: @Model.Exam.Questions.Count(q => q.IsCorrect)</span>
-                        <span class="badge bg-danger">Yanlış: @Model.Exam.Questions.Count(q => !q.IsCorrect)</span>
-                    </div>
-                </div>
-                <div class="card-body-modern">
-                    @foreach (var question in Model.Exam.Questions)
-                    {
-                        <div class="question-card-modern">
-                            <div class="question-header">
-                                <div class="question-title">@question.Text</div>
-                                <div class="question-points">@question.Points Puan</div>
-                            </div>
-                            <div class="question-content">
-                                <div class="answer-label">Sizin Cevabınız:</div>
-                                <div class="answer-text @(question.IsCorrect ? "correct-answer" : "incorrect-answer")">
-                                    @question.UserAnswer
+            <div class="row">
+                <!-- Exam Details -->
+                <div class="col-lg-4 mb-4">
+                    <div class="exam-details-card">
+                        <div class="card-header-modern">
+                            <h5><i class="bi bi-info-circle me-2"></i>Sınav Detayları</h5>
+                        </div>
+                        <div class="card-body-modern">
+                            <div class="detail-item">
+                                <i class="bi bi-book"></i>
+                                <div>
+                                    <strong>Sınav Adı</strong>
+                                    <span>@exam.Title</span>
                                 </div>
-                                @if (!question.IsCorrect)
-                                {
-                                    <div class="answer-label">Doğru Cevap:</div>
-                                    <div class="answer-text correct-answer">
-                                        @question.CorrectAnswer
-                                    </div>
-                                }
                             </div>
-                            @if (!string.IsNullOrEmpty(question.Feedback))
+
+                            <div class="detail-item">
+                                <i class="bi bi-journal-bookmark"></i>
+                                <div>
+                                    <strong>Ders</strong>
+                                    <span>@exam.Lesson</span>
+                                </div>
+                            </div>
+
+                            <div class="detail-item">
+                                <i class="bi bi-calendar"></i>
+                                <div>
+                                    <strong>Sınav Tarihi</strong>
+                                    <span>@exam.ExamDate.ToString("dd/MM/yyyy HH:mm")</span>
+                                </div>
+                            </div>
+
+                            <div class="detail-item">
+                                <i class="bi bi-play-circle"></i>
+                                <div>
+                                    <strong>Başlama Saati</strong>
+                                    <span>@Model.StartTime.ToString("dd/MM/yyyy HH:mm")</span>
+                                </div>
+                            </div>
+
+                            <div class="detail-item">
+                                <i class="bi bi-stop-circle"></i>
+                                <div>
+                                    <strong>Bitiş Saati</strong>
+                                    <span>@(Model.EndTime?.ToString("dd/MM/yyyy HH:mm") ?? "Devam ediyor")</span>
+                                </div>
+                            </div>
+
+                            <div class="detail-item">
+                                <i class="bi bi-clock"></i>
+                                <div>
+                                    <strong>Süre (Dakika)</strong>
+                                    <span>@exam.Duration </span>
+                                    <span class="text-muted">(Dakika)</span>
+                                      </div>
+                            </div>
+
+                            <div class="detail-item">
+                                <i class="bi bi-trophy"></i>
+                                <div>
+                                    <strong>Toplam Puan</strong>
+                                    <span>@totalPoints Puan</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question Analysis -->
+                <div class="col-lg-8">
+                    <div class="exam-details-card">
+                        <div class="card-header-modern">
+                            <h5><i class="bi bi-list-check me-2"></i>Soru Analizi</h5>
+                        </div>
+                        <div class="card-body-modern">
+                            @for (int i = 0; i < exam.Questions.Count; i++)
                             {
-                                <div class="question-feedback @(question.IsCorrect ? "feedback-success" : "feedback-error")">
-                                    @question.Feedback
+                                var question = exam.Questions.OrderBy(q => q.QuestionOrder).ElementAt(i);
+                                var studentAnswer = studentAnswers.ContainsKey(question.Id) ? studentAnswers[question.Id] : "";
+                                var isCorrect = studentAnswer == question.CorrectAnswer;
+                                var wasAnswered = !string.IsNullOrEmpty(studentAnswer);
+                                var analysisClass = isCorrect ? "correct" : wasAnswered ? "incorrect" : "unanswered";
+                                
+                                <div class="question-analysis @analysisClass">
+                                    <div class="question-header">
+                                        <div class="question-number">Soru @(i + 1)</div>
+                                        <div class="answer-status">
+                                            @if (isCorrect)
+                                            {
+                                                <span class="status-badge correct">
+                                                    <i class="bi bi-check-circle"></i> Doğru (+@question.Points puan)
+                                                </span>
+                                            }
+                                            else if (wasAnswered)
+                                            {
+                                                <span class="status-badge incorrect">
+                                                    <i class="bi bi-x-circle"></i> Yanlış (0 puan)
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="status-badge unanswered">
+                                                    <i class="bi bi-dash-circle"></i> Cevaplanmadı (0 puan)
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="question-text">@question.QuestionText</div>
+                                    
+                                    <div class="options-grid">
+                                        <div class="option-item @(question.CorrectAnswer == "A" ? "correct" : "") @(studentAnswer == "A" && !isCorrect ? "student-wrong" : "") @(studentAnswer == "A" && isCorrect ? "student-answer" : "")">
+                                            <span class="option-label">A)</span> @question.OptionA
+                                            <div class="option-badges">
+                                                @if (studentAnswer == "A")
+                                                {
+                                                    <span class="option-badge student">Cevabınız</span>
+                                                }
+                                                @if (question.CorrectAnswer == "A")
+                                                {
+                                                    <span class="option-badge correct-answer">Doğru Cevap</span>
+                                                }
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="option-item @(question.CorrectAnswer == "B" ? "correct" : "") @(studentAnswer == "B" && !isCorrect ? "student-wrong" : "") @(studentAnswer == "B" && isCorrect ? "student-answer" : "")">
+                                            <span class="option-label">B)</span> @question.OptionB
+                                            <div class="option-badges">
+                                                @if (studentAnswer == "B")
+                                                {
+                                                    <span class="option-badge student">Cevabınız</span>
+                                                }
+                                                @if (question.CorrectAnswer == "B")
+                                                {
+                                                    <span class="option-badge correct-answer">Doğru Cevap</span>
+                                                }
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="option-item @(question.CorrectAnswer == "C" ? "correct" : "") @(studentAnswer == "C" && !isCorrect ? "student-wrong" : "") @(studentAnswer == "C" && isCorrect ? "student-answer" : "")">
+                                            <span class="option-label">C)</span> @question.OptionC
+                                            <div class="option-badges">
+                                                @if (studentAnswer == "C")
+                                                {
+                                                    <span class="option-badge student">Cevabınız</span>
+                                                }
+                                                @if (question.CorrectAnswer == "C")
+                                                {
+                                                    <span class="option-badge correct-answer">Doğru Cevap</span>
+                                                }
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="option-item @(question.CorrectAnswer == "D" ? "correct" : "") @(studentAnswer == "D" && !isCorrect ? "student-wrong" : "") @(studentAnswer == "D" && isCorrect ? "student-answer" : "")">
+                                            <span class="option-label">D)</span> @question.OptionD
+                                            <div class="option-badges">
+                                                @if (studentAnswer == "D")
+                                                {
+                                                    <span class="option-badge student">Cevabınız</span>
+                                                }
+                                                @if (question.CorrectAnswer == "D")
+                                                {
+                                                    <span class="option-badge correct-answer">Doğru Cevap</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             }
                         </div>
-                    }
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="row mt-4">
-        <div class="col-12 text-center">
-            <a href="@Url.Action("Index", "Student")" class="btn btn-modern btn-outline-primary">
-                <i class="fas fa-home"></i> Ana Sayfaya Dön
-            </a>
-            <a href="@Url.Action("Index", "Exam")" class="btn btn-modern btn-secondary">
-                <i class="fas fa-redo"></i> Başka Sınav Al
-            </a>
-        </div>
-    </div>
 </div>
+
+<script>
+    // Print functionality
+    window.addEventListener('beforeprint', function() {
+        document.body.classList.add('printing');
+    });
+    
+    window.addEventListener('afterprint', function() {
+        document.body.classList.remove('printing');
+    });
+    
+    // Add print styles
+    const printStyles = `
+        @@media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            
+            .page-header,
+            .result-card-modern,
+            .stat-card-modern,
+            .exam-details-card,
+            .question-analysis {
+                background: white !important;
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+            }
+            
+            .btn {
+                display: none !important;
+            }
+            
+            .page-title,
+            .score-title,
+            .question-text {
+                color: black !important;
+            }
+            
+            .detail-item strong,
+            .stat-content h4 {
+                color: black !important;
+            }
+            
+            .option-item {
+                border: 1px solid #ddd !important;
+                background: white !important;
+            }
+            
+            .option-item.correct {
+                background: #f0f9ff !important;
+                border-color: #10b981 !important;
+            }
+            
+            .option-item.student-wrong {
+                background: #fef2f2 !important;
+                border-color: #ef4444 !important;
+            }
+        }
+    `;
+    
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = printStyles;
+    document.head.appendChild(styleSheet);
+</script>

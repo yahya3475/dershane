@@ -2,52 +2,624 @@
 @using System.Linq
 
 @{
-    ViewData["Title"] = "My Attendance";
+    ViewData["Title"] = "Devam Durumum";
+    
+    // Calculate attendance statistics
+    var totalAttendance = Model?.Count ?? 0;
+    var presentCount = Model?.Count(a => a.IsPresent) ?? 0;
+    var absentCount = totalAttendance - presentCount;
+    var attendanceRate = totalAttendance > 0 ? (double)presentCount / totalAttendance * 100 : 0;
+    
+    // Get distinct lessons
+    var lessons = Model?.Select(a => a.Lesson).Distinct().ToList() ?? new List<string>();
 }
-<div class="container-fluid mt-4">
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h2 class="card-title mb-4">
-                <i class="bi bi-calendar-check me-2"></i>Attendance Records
-            </h2>
-            
+
+<style>
+    .attendance-page {
+        background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .page-header {
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .page-title {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .page-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: white;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .filters-container {
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .filter-group {
+        margin-bottom: 1rem;
+    }
+
+    .filter-label {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-select-modern {
+        background: rgba(31, 41, 55, 0.7);
+        border: 1px solid rgba(75, 85, 99, 0.5);
+        border-radius: 10px;
+        color: white;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-select-modern:focus {
+        background: rgba(55, 65, 81, 0.8);
+        border-color: rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        color: white;
+    }
+
+    .form-select-modern option {
+        background: #2d3748;
+        color: white;
+    }
+
+    .search-container {
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .search-input {
+        background: rgba(31, 41, 55, 0.7);
+        border: 1px solid rgba(75, 85, 99, 0.5);
+        border-radius: 10px;
+        color: white;
+        padding: 0.75rem 1rem;
+        width: 100%;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+        background: rgba(55, 65, 81, 0.8);
+        border-color: rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        color: white;
+        outline: none;
+    }
+
+    .search-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .attendance-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .attendance-card {
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .attendance-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .attendance-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+    }
+
+    .attendance-header.present {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .attendance-header.absent {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .attendance-date {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .lesson-badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .attendance-status {
+        color: white;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .attendance-body {
+        padding: 1.5rem;
+    }
+
+    .attendance-note {
+        background: rgba(31, 41, 55, 0.7);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 10px;
+        padding: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+        font-style: italic;
+    }
+
+    .attendance-note-label {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .attendance-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+    }
+
+    .meta-item i {
+        margin-right: 0.5rem;
+        width: 16px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 20px;
+        margin: 2rem 0;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-title {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state-text {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1rem;
+    }
+
+    .progress-container {
+        background: rgba(31, 41, 55, 0.7);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .progress-label {
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .progress-bar-modern {
+        background: rgba(55, 65, 81, 0.5);
+        border-radius: 10px;
+        height: 8px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #059669);
+        border-radius: 10px;
+        transition: width 0.3s ease;
+    }
+
+    @@media (max-width: 768px) {
+        .attendance-list {
+            grid-template-columns: 1fr;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .filters-container {
+            padding: 1rem;
+        }
+        
+        .attendance-card {
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .attendance-page {
+            padding: 1rem 0;
+        }
+        
+        .page-header {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="attendance-page">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-calendar-check me-3"></i>Devam Durumum
+            </h1>
+            <p class="page-subtitle">Derslerinize katılım durumunuzu takip edin</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-calendar2-week"></i>
+                </div>
+                <div class="stat-number">@totalAttendance</div>
+                <div class="stat-label">Toplam Ders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="stat-number">@presentCount</div>
+                <div class="stat-label">Katıldığım</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-x-circle"></i>
+                </div>
+                <div class="stat-number">@absentCount</div>
+                <div class="stat-label">Katılmadığım</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-percent"></i>
+                </div>
+                <div class="stat-number">@Math.Round(attendanceRate)</div>
+                <div class="stat-label">Katılım Oranı</div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>Katılım Oranı</span>
+                <span>@Math.Round(attendanceRate)%</span>
+            </div>
+            <div class="progress-bar-modern">
+                <div class="progress-fill" style="width: @attendanceRate%;"></div>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Ders adı ara..." onkeyup="searchAttendance()">
+        </div>
+
+        <div class="filters-container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="filter-group">
+                        <label class="filter-label">Ders Filtresi</label>
+                        <select class="form-select-modern" id="lessonFilter" onchange="filterAttendance()">
+                            <option value="">Tüm Dersler</option>
+                            @foreach (var lesson in lessons)
+                            {
+                                <option value="@lesson">@lesson</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="filter-group">
+                        <label class="filter-label">Durum Filtresi</label>
+                        <select class="form-select-modern" id="statusFilter" onchange="filterAttendance()">
+                            <option value="">Tümü</option>
+                            <option value="present">Katıldı</option>
+                            <option value="absent">Katılmadı</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="filter-group">
+                        <label class="filter-label">Sıralama</label>
+                        <select class="form-select-modern" id="sortFilter" onchange="sortAttendance()">
+                            <option value="date-desc">Tarih (Yeniden Eskiye)</option>
+                            <option value="date-asc">Tarih (Eskiden Yeniye)</option>
+                            <option value="lesson">Ders Adı</option>
+                            <option value="status">Durum</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance List -->
+        <div class="attendance-list" id="attendanceContainer">
             @if (Model != null && Model.Any())
             {
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Date</th>
-                                <th>Lesson</th>
-                                <th>Status</th>
-                                <th>Note</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var attendance in Model)
+                @foreach (var attendance in Model)
+                {
+                    var statusClass = attendance.IsPresent ? "present" : "absent";
+                    var statusText = attendance.IsPresent ? "Katıldı" : "Katılmadı";
+                    var statusIcon = attendance.IsPresent ? "check-circle" : "x-circle";
+                    
+                    <div class="attendance-card attendance-item" 
+                         data-lesson="@attendance.Lesson" 
+                         data-status="@(attendance.IsPresent ? "present" : "absent")"
+                         data-date="@attendance.Date.ToString("yyyy-MM-dd")">
+                        
+                        <div class="attendance-header @statusClass">
+                            <div class="attendance-date">
+                                <i class="bi bi-calendar-date me-1"></i>@attendance.Date.ToString("dd.MM.yyyy")
+                            </div>
+                            
+                            <div class="lesson-badge">
+                                <i class="bi bi-book me-2"></i>@attendance.Lesson
+                            </div>
+                            
+                            <h3 class="attendance-status">
+                                <i class="bi bi-@statusIcon me-2"></i>@statusText
+                            </h3>
+                        </div>
+
+                        <div class="attendance-body">
+                            <div class="attendance-meta">
+                                <div class="meta-item">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <span>Tarih: @attendance.Date.ToString("dd MMMM yyyy, dddd")</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="bi bi-person-badge"></i>
+                                    <span>Öğretmen: @attendance.TeacherName</span>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(attendance.Note))
                             {
-                                <tr>
-                                    <td>@attendance.Date.ToString("dd.MM.yyyy")</td>
-                                    <td><span class="badge bg-primary">@attendance.Lesson</span></td>
-                                    <td>
-                                        <span class="badge bg-@attendance.StatusClass">
-                                            <i class="bi bi-@(attendance.IsPresent ? "check-circle" : "x-circle") me-1"></i>
-                                            @attendance.Status
-                                        </span>
-                                    </td>
-                                    <td>@(attendance.Note ?? "-")</td>
-                                </tr>
+                                <div class="attendance-note">
+                                    <div class="attendance-note-label">
+                                        <i class="bi bi-chat-left-text"></i>
+                                        Not:
+                                    </div>
+                                    @attendance.Note
+                                </div>
                             }
-                        </tbody>
-                    </table>
-                </div>
+                        </div>
+                    </div>
+                }
             }
             else
             {
-                <div class="alert alert-info" role="alert">
-                    <i class="bi bi-info-circle me-2"></i> Attendance records not found for this student.
+                <div class="col-12">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-calendar-x"></i>
+                        </div>
+                        <h3 class="empty-state-title">Henüz devam kaydı bulunmuyor</h3>
+                        <p class="empty-state-text">Öğretmenleriniz yoklama aldığında burada görünecektir.</p>
+                    </div>
                 </div>
             }
         </div>
     </div>
 </div>
+
+<script>
+    // Search functionality
+    function searchAttendance() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const attendanceItems = document.querySelectorAll('.attendance-item');
+        
+        attendanceItems.forEach(item => {
+            const lesson = item.getAttribute('data-lesson').toLowerCase();
+            
+            if (lesson.includes(searchTerm)) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        updateVisibleCount();
+    }
+
+    // Filter functionality
+    function filterAttendance() {
+        const lessonFilter = document.getElementById('lessonFilter').value;
+        const statusFilter = document.getElementById('statusFilter').value;
+        const attendanceItems = document.querySelectorAll('.attendance-item');
+        
+        attendanceItems.forEach(item => {
+            const lesson = item.getAttribute('data-lesson');
+            const status = item.getAttribute('data-status');
+            
+            let showItem = true;
+            
+            if (lessonFilter && lesson !== lessonFilter) {
+                showItem = false;
+            }
+            
+            if (statusFilter && status !== statusFilter) {
+                showItem = false;
+            }
+            
+            item.style.display = showItem ? '' : 'none';
+        });
+        
+        updateVisibleCount();
+    }
+
+    // Sort functionality
+    function sortAttendance() {
+        const sortBy = document.getElementById('sortFilter').value;
+        const container = document.getElementById('attendanceContainer');
+        const items = Array.from(container.querySelectorAll('.attendance-item'));
+        
+        items.sort((a, b) => {
+            switch (sortBy) {
+                case 'date-desc':
+                    return new Date(b.getAttribute('data-date')) - new Date(a.getAttribute('data-date'));
+                case 'date-asc':
+                    return new Date(a.getAttribute('data-date')) - new Date(b.getAttribute('data-date'));
+                case 'lesson':
+                    return a.getAttribute('data-lesson').localeCompare(b.getAttribute('data-lesson'));
+                case 'status':
+                    const statusOrder = { 'absent': 0, 'present': 1 };
+                    return statusOrder[a.getAttribute('data-status')] - statusOrder[b.getAttribute('data-status')];
+                default:
+                    return 0;
+            }
+        });
+        
+        items.forEach(item => container.appendChild(item));
+    }
+
+    // Update visible count
+    function updateVisibleCount() {
+        const visibleItems = document.querySelectorAll('.attendance-item:not([style*="display: none"])');
+        const totalItems = document.querySelectorAll('.attendance-item');
+        
+        // Update stats if needed
+        console.log(`Showing ${visibleItems.length} of ${totalItems.length} attendance records`);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set default sort
+        sortAttendance();
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+        });
+    });
+</script>

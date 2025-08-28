@@ -14,5 +14,6 @@ public class ViewSubmissionVM
     public DateTime SubmissionDate { get; set; }
     public int? Grade { get; set; } // Nullable
     public string? TeacherComment { get; set; } // Nullable yap
+    public bool IsGraded { get; set; } = false; // Ödevin değerlendirilip değerlendirilmediğini belirtir
 }
 }

@@ -2,51 +2,319 @@
 @model List<dershane.Models.ScheduleViewModel>
 
 @{
-    ViewData["Title"] = "View Schedule";
+    ViewData["Title"] = "Ders Programı";
 
-    string[] days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+    string[] days = { "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar" };
+    string[] daysEn = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
 
     var schedulesByDay = Model.GroupBy(s => s.Day).ToDictionary(g => g.Key, g => g.ToList());
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4"><i class="bi bi-calendar-week me-2"></i>Weekly Schedule</h2>
+<style>
+    .schedule-page {
+        background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    .page-header {
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .page-title {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .page-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+        margin: 0;
+    }
+    
+    .schedule-container {
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        overflow-x: auto;
+    }
+    
+    .schedule-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        color: white;
+    }
+    
+    .schedule-table th {
+        background: rgba(17, 24, 39, 0.7);
+        padding: 1rem;
+        text-align: center;
+        font-weight: 600;
+        border: none;
+    }
+    
+    .schedule-table th:first-child {
+        border-top-left-radius: 15px;
+    }
+    
+    .schedule-table th:last-child {
+        border-top-right-radius: 15px;
+    }
+    
+    .schedule-table td {
+        padding: 0.75rem;
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        vertical-align: top;
+        height: 100px;
+    }
+    
+    .schedule-table tr:nth-child(odd) td {
+        background: rgba(31, 41, 55, 0.4);
+    }
+    
+    .schedule-table tr:nth-child(even) td {
+        background: rgba(31, 41, 55, 0.7);
+    }
+    
+    .time-cell {
+        background: rgba(17, 24, 39, 0.7) !important;
+        color: white;
+        font-weight: 600;
+        text-align: center;
+        width: 120px;
+        border-right: 2px solid rgba(55, 65, 81, 0.8) !important;
+    }
+    
+    .schedule-item {
+        padding: 0.75rem;
+        border-radius: 12px;
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .schedule-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .schedule-item.math {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+    
+    .schedule-item.science {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+    
+    .schedule-item.literature {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    
+    .schedule-item.history {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+    
+    .schedule-item.language {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+    
+    .schedule-item.art {
+        background: linear-gradient(135deg, #ec4899, #db2777);
+    }
+    
+    .schedule-item.default {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+    }
+    
+    .lesson-name {
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+        color: white;
+    }
+    
+    .lesson-details {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 0.25rem;
+    }
+    
+    .teacher-name {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.8);
+        display: flex;
+        align-items: center;
+    }
+    
+    .teacher-name i {
+        margin-right: 0.25rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: rgba(31, 41, 55, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 20px;
+        margin: 2rem 0;
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 1rem;
+    }
+    
+    .empty-title {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-text {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1rem;
+    }
+    
+    .day-indicator {
+        position: relative;
+    }
+    
+    .day-indicator.today::after {
+        content: "Bugün";
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: #ef4444;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        transform: rotate(15deg);
+    }
+    
+    @@media (max-width: 992px) {
+        .schedule-table {
+            min-width: 900px;
+        }
+    }
+    
+    @@media (max-width: 768px) {
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .schedule-container {
+            padding: 1rem;
+        }
+    }
+</style>
 
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Time</th>
-                    @foreach (var day in days)
-                    {
-                        <th>@day</th>
-                    }
-                </tr>
-            </thead>
-            <tbody>
-                @for (var hour = 8; hour < 18; hour++)
-                {
-                    <tr>
-                        <td>@($"{hour:D2}:00 - {hour + 1:D2}:00")</td>
-                        @for (var day = 0; day < 7; day++)
+<div class="schedule-page">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-calendar-week me-3"></i>Ders Programı
+            </h1>
+            <p class="page-subtitle">Haftalık ders programınızı görüntüleyin</p>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="schedule-container">
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>Saat</th>
+                            @for (var i = 0; i < days.Length; i++)
+                            {
+                                var isToday = daysEn[i] == DateTime.Now.ToString("dddd");
+                                <th class="day-indicator @(isToday ? "today" : "")">@days[i]</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var hour = 8; hour < 18; hour++)
                         {
-                            <td>
-                                @if (schedulesByDay.TryGetValue(day, out var daySchedules))
+                            <tr>
+                                <td class="time-cell">@($"{hour:D2}:00 - {hour + 1:D2}:00")</td>
+                                @for (var day = 0; day < 7; day++)
                                 {
-                                    foreach (var schedule in daySchedules.Where(s => s.StartTime.StartsWith($"{hour:D2}:")))
-                                    {
-                                        <div class="bg-primary text-white p-1 mb-1 rounded">
-                                            <small>@schedule.Lesson (@schedule.UClass)</small><br />
-                                            <small>@schedule.StartTime - @schedule.EndTime</small><br />
-                                            <small>Teacher: @schedule.TeacherName</small>
-                                        </div>
-                                    }
+                                    <td>
+                                        @if (schedulesByDay.TryGetValue(day, out var daySchedules))
+                                        {
+                                            foreach (var schedule in daySchedules.Where(s => s.StartTime.StartsWith($"{hour:D2}:")))
+                                            {
+                                                var lessonClass = GetLessonClass(schedule.Lesson);
+                                                
+                                                <div class="schedule-item @lessonClass">
+                                                    <div class="lesson-name">@schedule.Lesson</div>
+                                                    <div class="lesson-details">@schedule.UClass</div>
+                                                    <div class="lesson-details">@schedule.StartTime - @schedule.EndTime</div>
+                                                    <div class="teacher-name">
+                                                        <i class="bi bi-person"></i>
+                                                        @schedule.TeacherName
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </td>
                                 }
-                            </td>
+                            </tr>
                         }
-                    </tr>
-                }
-            </tbody>
-        </table>
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-calendar-x"></i>
+                </div>
+                <h3 class="empty-title">Henüz ders programı bulunmuyor</h3>
+                <p class="empty-text">Ders programınız oluşturulduğunda burada görünecektir.</p>
+            </div>
+        }
     </div>
 </div>
+
+@functions {
+    private string GetLessonClass(string lesson)
+    {
+        lesson = lesson.ToLower();
+        
+        if (lesson.Contains("matematik") || lesson.Contains("math"))
+            return "math";
+        else if (lesson.Contains("fen") || lesson.Contains("fizik") || lesson.Contains("kimya") || lesson.Contains("biyoloji") || lesson.Contains("science"))
+            return "science";
+        else if (lesson.Contains("türkçe") || lesson.Contains("edebiyat") || lesson.Contains("literature"))
+            return "literature";
+        else if (lesson.Contains("tarih") || lesson.Contains("sosyal") || lesson.Contains("history"))
+            return "history";
+        else if (lesson.Contains("ingilizce") || lesson.Contains("almanca") || lesson.Contains("fransızca") || lesson.Contains("language"))
+            return "language";
+        else if (lesson.Contains("sanat") || lesson.Contains("müzik") || lesson.Contains("resim") || lesson.Contains("art"))
+            return "art";
+        else
+            return "default";
+    }
+}

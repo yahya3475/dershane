@@ -535,7 +535,7 @@ Apply
     </div>
 </div>
 
-@section Scripts {
+@section Scripts{
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('editClassForm');
@@ -657,8 +657,44 @@ Apply
                     item.style.transform = 'translateX(0)';
                 }, index * 100);
             });
+
             // Load draft on page load
             loadDraft();
-        });
-        </script>
 
+            // Utility function for showing alerts
+            function showAlert(message, type) {
+                const alertContainer = document.createElement('div');
+                alertContainer.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+                alertContainer.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 9999;
+                    min-width: 300px;
+                    background: rgba(15, 15, 35, 0.95);
+                    backdrop-filter: blur(20px);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 12px;
+                    color: white;
+                `;
+                
+                alertContainer.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-${type === 'error' ? 'exclamation-triangle' : type === 'info' ? 'info-circle' : 'check-circle'} me-2"></i>
+                        <span>${message}</span>
+                        <button type="button" class="btn-close btn-close-white ms-auto" onclick="this.parentElement.parentElement.remove()"></button>
+                    </div>
+                `;
+                
+                document.body.appendChild(alertContainer);
+                
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    if (alertContainer.parentNode) {
+                        alertContainer.remove();
+                    }
+                }, 5000);
+            }
+        });
+    </script>
+}

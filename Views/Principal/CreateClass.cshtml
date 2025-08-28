@@ -1,0 +1,208 @@
+
+@model dershane.ViewModels.CreateClassViewModel
+
+@{
+    ViewData["Title"] = "Create Class";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <!-- Header Section -->
+            <div class="page-header mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="page-title">
+                            <i class="bi bi-plus-circle-fill me-2"></i>
+                            Create New Class
+                        </h2>
+                        <p class="page-subtitle">Set up a new class with teacher and students</p>
+                    </div>
+                    <div class="page-actions">
+                        <a asp-action="Classes" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Back to Classes
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Class Form -->
+            <div class="card modern-card">
+                <div class="card-header">
+                    <h5><i class="bi bi-gear-fill me-2"></i>Class Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateClass" method="post" id="createClassForm">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="All" class="alert alert-danger" style="display: none;"></div>
+
+                        <!-- Class Name -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label asp-for="ClassName" class="form-label required">
+                                        <i class="bi bi-bookmark-fill me-2"></i>Class Name
+                                    </label>
+                                    <input asp-for="ClassName" class="form-control form-control-lg" 
+                                           placeholder="Enter class name (e.g., 9-A, 10-B)" required />
+                                    <span asp-validation-for="ClassName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Teacher Selection -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label asp-for="TeacherId" class="form-label">
+                                        <i class="bi bi-person-badge-fill me-2"></i>Assign Teacher
+                                    </label>
+                                    <select asp-for="TeacherId" class="form-select form-select-lg">
+                                        <option value="">-- Select Teacher (Optional) --</option>
+                                        @foreach (var teacher in Model.AvailableTeachers)
+                                        {
+                                            <option value="@teacher.dershaneid">
+                                                @teacher.firstname @teacher.lastname (@teacher.dershaneid)
+                                            </option>
+                                        }
+                                    </select>
+                                    @if (!Model.AvailableTeachers.Any())
+                                    {
+                                        <div class="alert alert-warning mt-2">
+                                            <i class="bi bi-exclamation-triangle me-2"></i>
+                                            No available teachers found. All teachers are already assigned to classes.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Student Selection -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="bi bi-people-fill me-2"></i>Select Students
+                                    </label>
+                                    
+                                    @if (Model.AvailableStudents.Any())
+                                    {
+                                        <!-- Search and Filter -->
+                                        <div class="student-selection-header mb-3">
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <input type="text" id="studentSearch" class="form-control" 
+                                                           placeholder="Search students by name or ID...">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <button type="button" class="btn btn-outline-primary w-100" onclick="selectAllStudents()">
+                                                        <i class="bi bi-check-all me-2"></i>Select All
+                                                    </button>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <button type="button" class="btn btn-outline-secondary w-100" onclick="clearAllStudents()">
+                                                        <i class="bi bi-x-circle me-2"></i>Clear All
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Students List -->
+                                        <div class="students-container">
+                                            <div class="row" id="studentsGrid">
+                                                @foreach (var student in Model.AvailableStudents)
+                                                {
+                                                    <div class="col-lg-6 col-xl-4 mb-3 student-item" 
+                                                         data-name="@student.firstname @student.lastname" 
+                                                         data-id="@student.dershaneid">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input student-checkbox" 
+                                                                   type="checkbox" 
+                                                                   name="SelectedStudentIds" 
+                                                                   value="@student.dershaneid" 
+                                                                   id="student_@student.dershaneid">
+                                                            <label class="form-check-label" for="student_@student.dershaneid">
+                                                                @student.firstname @student.lastname (@student.dershaneid)
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-info-circle me-2"></i>
+                                            No students available to assign to this class.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="row">
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="bi bi-check-circle-fill me-2"></i>Create Class
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Student search functionality
+        document.getElementById('studentSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const studentItems = document.querySelectorAll('.student-item');
+            
+            studentItems.forEach(item => {
+                const studentName = item.getAttribute('data-name').toLowerCase();
+                const studentId = item.getAttribute('data-id').toLowerCase();
+                
+                if (studentName.includes(searchTerm) || studentId.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        // Select all students
+        function selectAllStudents() {
+            const checkboxes = document.querySelectorAll('.student-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        }
+
+        // Clear all students
+        function clearAllStudents() {
+            const checkboxes = document.querySelectorAll('.student-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+
+        // Form submission handling
+        document.getElementById('createClassForm').addEventListener('submit', function(e) {
+            const selectedStudents = document.querySelectorAll('.student-checkbox:checked');
+            
+            if (selectedStudents.length === 0 && !document.querySelector('[name="TeacherId"]').value) {
+                e.preventDefault();
+                alert('Please select at least one student or assign a teacher to create a class.');
+                return false;
+            }
+        });
+    </script>
+}
