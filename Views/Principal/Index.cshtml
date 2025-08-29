@@ -1,112 +1,115 @@
 @model PrincipalDashboardVM
 @{
-    ViewData["Title"] = "Principal Dashboard";
+    ViewData["Title"] = "Müdür Paneli";
 }
 
-<div class="container-fluid mt-4">
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <h2 class="text-primary">
-                    <i class="bi bi-speedometer2"></i> Principal Dashboard
-                </h2>
-                <div class="text-muted">
-                    <i class="bi bi-calendar3"></i> @DateTime.Now.ToString("dd MMMM yyyy")
+<div class="principal-dashboard container-xxl py-4">
+    <!-- Hero Başlık -->
+    <div class="card hero-card shadow-lg border-0 mb-4">
+        <div class="card-body d-flex flex-column flex-lg-row align-items-center justify-content-between gap-3 p-4 p-lg-5">
+            <div class="d-flex align-items-center gap-3">
+                <div class="hero-icon">🏫</div>
+                <div>
+                    <h1 class="hero-title mb-1">Müdür Paneli</h1>
+                    <p class="hero-subtitle mb-0">Okul yönetimi, istatistikler ve genel durum takibi.</p>
+                </div>
+            </div>
+            <div class="text-center text-lg-end">
+                <div class="badge bg-primary-subtle text-primary-emphasis rounded-pill px-3 py-2 fw-semibold">
+                    <i class="bi bi-calendar3 me-2"></i>@DateTime.Now.ToString("dd MMMM yyyy")
                 </div>
             </div>
         </div>
     </div>
 
     <!-- İstatistik Kartları -->
-    <div class="row mb-4">
-        <div class="col-md-2">
-            <div class="card bg-primary text-white shadow-sm">
-                <div class="card-body text-center">
-                    <i class="bi bi-people-fill fs-1"></i>
-                    <h3 class="mt-2">@Model.TotalStudents</h3>
-                    <p class="mb-0">Students</p>
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card card h-100 bg-gradient-primary">
+                <div class="card-body text-center text-white">
+                    <div class="stat-icon mb-2"><i class="bi bi-people-fill"></i></div>
+                    <div class="stat-value">@Model.TotalStudents</div>
+                    <div class="stat-label">Öğrenci</div>
                 </div>
             </div>
         </div>
-        <div class="col-md-2">
-            <div class="card bg-success text-white shadow-sm">
-                <div class="card-body text-center">
-                    <i class="bi bi-person-workspace fs-1"></i>
-                    <h3 class="mt-2">@Model.TotalTeachers</h3>
-                    <p class="mb-0">Teachers</p>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card card h-100 bg-gradient-success">
+                <div class="card-body text-center text-white">
+                    <div class="stat-icon mb-2"><i class="bi bi-mortarboard-fill"></i></div>
+                    <div class="stat-value">@Model.TotalTeachers</div>
+                    <div class="stat-label">Öğretmen</div>
                 </div>
             </div>
         </div>
-        <div class="col-md-2">
-            <div class="card bg-info text-white shadow-sm">
-                <div class="card-body text-center">
-                    <i class="bi bi-building fs-1"></i>
-                    <h3 class="mt-2">@Model.TotalClasses</h3>
-                    <p class="mb-0">Classes</p>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card card h-100 bg-gradient-info">
+                <div class="card-body text-center text-white">
+                    <div class="stat-icon mb-2"><i class="bi bi-diagram-3-fill"></i></div>
+                    <div class="stat-value">@Model.TotalClasses</div>
+                    <div class="stat-label">Sınıf</div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-warning text-white shadow-sm">
-                <div class="card-body text-center">
-                    <i class="bi bi-file-earmark-text fs-1"></i>
-                    <h3 class="mt-2">@Model.TotalExams</h3>
-                    <p class="mb-0">Total Exams</p>
+        <div class="col-6 col-md-6 col-lg-3">
+            <div class="stat-card card h-100 bg-gradient-warning">
+                <div class="card-body text-center text-white">
+                    <div class="stat-icon mb-2"><i class="bi bi-clipboard-data-fill"></i></div>
+                    <div class="stat-value">@Model.TotalExams</div>
+                    <div class="stat-label">Toplam Sınav</div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-danger text-white shadow-sm">
-                <div class="card-body text-center">
-                    <i class="bi bi-journal-bookmark fs-1"></i>
-                    <h3 class="mt-2">@Model.TotalHomeworks</h3>
-                    <p class="mb-0">Homeworks</p>
+        <div class="col-6 col-md-6 col-lg-3">
+            <div class="stat-card card h-100 bg-gradient-danger">
+                <div class="card-body text-center text-white">
+                    <div class="stat-icon mb-2"><i class="bi bi-journal-bookmark-fill"></i></div>
+                    <div class="stat-value">@Model.TotalHomeworks</div>
+                    <div class="stat-label">Toplam Ödev</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
+    <div class="row g-3 mb-4">
         <!-- Sınıf İstatistikleri -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Class Statistics</h5>
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent d-flex align-items-center">
+                    <i class="bi bi-bar-chart-fill me-2 text-primary"></i>
+                    <h5 class="mb-0">Sınıf İstatistikleri</h5>
                 </div>
                 <div class="card-body">
                     @if (Model.ClassStatistics.Any())
                     {
                         <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
+                            <table class="table table-dark table-hover table-borderless align-middle mb-0">
+                                <thead class="table-gradient">
                                     <tr>
-                                        <th>Class</th>
-                                        <th>Students</th>
-                                        <th>Avg Score</th>
-                                        <th>Attendance</th>
+                                        <th>Sınıf</th>
+                                        <th>Öğrenci</th>
+                                        <th>Ortalama</th>
+                                        <th>Devam</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach (var classStat in Model.ClassStatistics)
                                     {
                                         <tr>
-                                            <td><strong>@classStat.ClassName</strong></td>
+                                            <td><span class="fw-semibold">@classStat.ClassName</span></td>
+                                            <td><span class="badge bg-info rounded-pill">@classStat.StudentCount</span></td>
                                             <td>
-                                                <span class="badge bg-info">@classStat.StudentCount</span>
-                                            </td>
-                                            <td>
-                                                <span class="badge @(classStat.AverageScore >= 70 ? "bg-success" : classStat.AverageScore >= 50 ? "bg-warning" : "bg-danger")">
+                                                <span class="badge @(classStat.AverageScore >= 70 ? "bg-success" : classStat.AverageScore >= 50 ? "bg-warning" : "bg-danger") rounded-pill">
                                                     @classStat.AverageScore.ToString("F1")
                                                 </span>
                                             </td>
                                             <td>
-                                                <div class="progress" style="height: 20px;">
-                                                    <div class="progress-bar @(classStat.AttendanceRate >= 80 ? "bg-success" : classStat.AttendanceRate >= 60 ? "bg-warning" : "bg-danger")" 
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar @(classStat.AttendanceRate >= 80 ? "bg-success" : classStat.AttendanceRate >= 60 ? "bg-warning" : "bg-danger")"
                                                          style="width: @classStat.AttendanceRate%">
-                                                        @classStat.AttendanceRate.ToString("F1")%
                                                     </div>
                                                 </div>
+                                                <small class="text-muted">@classStat.AttendanceRate.ToString("F1")%</small>
                                             </td>
                                         </tr>
                                     }
@@ -117,8 +120,8 @@
                     else
                     {
                         <div class="text-center text-muted py-4">
-                            <i class="bi bi-inbox fs-1"></i>
-                            <p class="mt-2">No class data available</p>
+                            <i class="bi bi-inbox fs-1 opacity-50"></i>
+                            <p class="mt-2 mb-0">Sınıf verisi bulunamadı</p>
                         </div>
                     }
                 </div>
@@ -126,22 +129,23 @@
         </div>
 
         <!-- Öğretmen Performansları -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="bi bi-trophy"></i> Teacher Performance</h5>
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent d-flex align-items-center">
+                    <i class="bi bi-trophy-fill me-2 text-success"></i>
+                    <h5 class="mb-0">Öğretmen Performansı</h5>
                 </div>
                 <div class="card-body">
                     @if (Model.TeacherPerformances.Any())
                     {
                         <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
+                            <table class="table table-dark table-hover table-borderless align-middle mb-0">
+                                <thead class="table-gradient">
                                     <tr>
-                                        <th>Teacher</th>
-                                        <th>Exams</th>
-                                        <th>Homeworks</th>
-                                        <th>Avg Score</th>
+                                        <th>Öğretmen</th>
+                                        <th>Sınav</th>
+                                        <th>Ödev</th>
+                                        <th>Ortalama</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -149,17 +153,13 @@
                                     {
                                         <tr>
                                             <td>
-                                                <strong>@teacher.TeacherName</strong>
-                                                <br><small class="text-muted">@teacher.TeacherId</small>
+                                                <div class="fw-semibold">@teacher.TeacherName</div>
+                                                <small class="text-muted">@teacher.TeacherId</small>
                                             </td>
+                                            <td><span class="badge bg-primary rounded-pill">@teacher.ExamsCreated</span></td>
+                                            <td><span class="badge bg-info rounded-pill">@teacher.HomeworksCreated</span></td>
                                             <td>
-                                                <span class="badge bg-primary">@teacher.ExamsCreated</span>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-info">@teacher.HomeworksCreated</span>
-                                            </td>
-                                            <td>
-                                                <span class="badge @(teacher.AverageStudentScore >= 70 ? "bg-success" : teacher.AverageStudentScore >= 50 ? "bg-warning" : "bg-danger")">
+                                                <span class="badge @(teacher.AverageStudentScore >= 70 ? "bg-success" : teacher.AverageStudentScore >= 50 ? "bg-warning" : "bg-danger") rounded-pill">
                                                     @teacher.AverageStudentScore.ToString("F1")
                                                 </span>
                                             </td>
@@ -172,8 +172,8 @@
                     else
                     {
                         <div class="text-center text-muted py-4">
-                            <i class="bi bi-person-x fs-1"></i>
-                            <p class="mt-2">No teacher data available</p>
+                            <i class="bi bi-person-x fs-1 opacity-50"></i>
+                            <p class="mt-2 mb-0">Öğretmen verisi bulunamadı</p>
                         </div>
                     }
                 </div>
@@ -182,87 +182,147 @@
     </div>
 
     <!-- Son Sınavlar -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Exams</h5>
-                </div>
-                <div class="card-body">
-                    @if (Model.RecentExams.Any())
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-transparent d-flex align-items-center">
+            <i class="bi bi-clock-history me-2 text-warning"></i>
+            <h5 class="mb-0">Son Sınavlar</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.RecentExams.Any())
+            {
+                <div class="row g-3">
+                    @foreach (var exam in Model.RecentExams)
                     {
-                        <div class="row">
-                            @foreach (var exam in Model.RecentExams)
-                            {
-                                <div class="col-md-4 mb-3">
-                                    <div class="card border-left-primary">
-                                        <div class="card-body">
-                                            <h6 class="card-title text-primary">@exam.ExamTitle</h6>
-                                            <p class="card-text">
-                                                <strong>Lesson:</strong> @exam.Lesson<br>
-                                                <strong>Date:</strong> @exam.ExamDate.ToString("dd/MM/yyyy HH:mm")<br>
-                                                <strong>Participants:</strong> @exam.ParticipantCount<br>
-                                                <strong>Average:</strong> 
-                                                <span class="badge @(exam.AverageScore >= 70 ? "bg-success" : exam.AverageScore >= 50 ? "bg-warning" : "bg-danger")">
-                                                    @exam.AverageScore.ToString("F1")
-                                                </span>
-                                            </p>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card exam-card border-0 h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-primary fw-semibold">@exam.ExamTitle</h6>
+                                    <div class="exam-details">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span class="text-muted">Ders:</span>
+                                            <span class="fw-medium">@exam.Lesson</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span class="text-muted">Tarih:</span>
+                                            <span class="fw-medium">@exam.ExamDate.ToString("dd/MM/yyyy HH:mm")</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span class="text-muted">Katılımcı:</span>
+                                            <span class="badge bg-info rounded-pill">@exam.ParticipantCount</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="text-muted">Ortalama:</span>
+                                            <span class="badge @(exam.AverageScore >= 70 ? "bg-success" : exam.AverageScore >= 50 ? "bg-warning" : "bg-danger") rounded-pill">
+                                                @exam.AverageScore.ToString("F1")
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center text-muted py-4">
-                            <i class="bi bi-file-earmark-x fs-1"></i>
-                            <p class="mt-2">No recent exams</p>
+                            </div>
                         </div>
                     }
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-file-earmark-x fs-1 opacity-50"></i>
+                    <p class="mt-2 mb-0">Son sınav bulunamadı</p>
+                </div>
+            }
         </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h5>
+    <!-- Hızlı İşlemler -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-transparent d-flex align-items-center">
+            <i class="bi bi-lightning-charge-fill me-2 text-warning"></i>
+            <h5 class="mb-0">Hızlı İşlemler</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <a asp-action="AddUser" class="quick-action btn-qa bg-gradient-primary">
+                        <i class="bi bi-person-plus"></i>
+                        <span>Kullanıcı Ekle</span>
+                    </a>
                 </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-md-3 mb-2">
-                            <a asp-action="AddUser" class="btn btn-primary btn-lg w-100">
-                                <i class="bi bi-person-plus"></i><br>Add User
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-2">
-                            <a asp-action="List" class="btn btn-success btn-lg w-100">
-                                <i class="bi bi-people"></i><br>Manage Users
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-2">
-                            <a asp-action="Classes" class="btn btn-info btn-lg w-100">
-                                <i class="bi bi-building"></i><br>Manage Classes
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-2">
-                            <a asp-action="Reports" class="btn btn-warning btn-lg w-100">
-                                <i class="bi bi-graph-up"></i><br>View Reports
-                            </a>
-                        </div>
-                    </div>
+                <div class="col-6 col-md-3">
+                    <a asp-action="List" class="quick-action btn-qa bg-gradient-success">
+                        <i class="bi bi-people"></i>
+                        <span>Kullanıcı Yönetimi</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a asp-action="Classes" class="quick-action btn-qa bg-gradient-info">
+                        <i class="bi bi-diagram-3"></i>
+                        <span>Sınıf Yönetimi</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a asp-action="Reports" class="quick-action btn-qa bg-gradient-warning">
+                        <i class="bi bi-graph-up"></i>
+                        <span>Raporlar</span>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-.border-left-primary {
-    border-left: 4px solid #007bff !important;
+@section Styles {
+    <style>
+        .principal-dashboard .card {
+            background: rgba(30, 30, 46, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 16px;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .hero-card { background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(30,30,46,0.9)); }
+        .hero-icon {
+            width: 64px; height: 64px; display: grid; place-items: center; font-size: 2rem;
+            border-radius: 14px; background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.2));
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .hero-title { font-weight: 800; letter-spacing: .3px; }
+        .hero-subtitle { color: rgba(255, 255, 255, 0.75); }
+
+        .stat-card { overflow: hidden; transition: transform .25s ease; }
+        .stat-card:hover { transform: translateY(-4px); }
+        .stat-icon { font-size: 2rem; opacity: .9; }
+        .stat-value { font-size: 1.8rem; font-weight: 800; line-height: 1; }
+        .stat-label { font-size: .9rem; opacity: .9; font-weight: 600; }
+
+        .bg-gradient-primary { background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); }
+        .bg-gradient-success { background: linear-gradient(45deg, #56ab2f 0%, #a8e6cf 100%); }
+        .bg-gradient-warning { background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); }
+        .bg-gradient-info { background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%); }
+        .bg-gradient-danger { background: linear-gradient(45deg, #ff416c 0%, #ff4b2b 100%); }
+
+        .table-gradient th { background: linear-gradient(90deg, rgba(99,102,241,.25), rgba(139,92,246,.2)); border: 0; }
+        .table td, .table th { border-color: rgba(255,255,255,.06) !important; }
+
+        .exam-card { background: rgba(17, 17, 27, 0.6) !important; border: 1px solid rgba(255,255,255,.08) !important; }
+        .exam-details { font-size: .9rem; }
+
+        .quick-action.btn-qa {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: .5rem; width: 100%; min-height: 110px; text-decoration: none; color: #fff;
+            border-radius: 14px; border: 1px solid rgba(255,255,255,.1); transition: all .25s ease;
+        }
+        .quick-action.btn-qa i { font-size: 1.6rem; }
+        .quick-action.btn-qa span { font-weight: 600; }
+        .quick-action.btn-qa:hover {
+            transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,.25); color: #fff;
+        }
+
+        .progress { background: rgba(255,255,255,.06); height: 8px; }
+
+        @@media (max-width: 576px) {
+            .hero-title { font-size: 1.6rem; }
+            .hero-icon { width: 52px; height: 52px; font-size: 1.6rem; }
+            .quick-action.btn-qa { min-height: 90px; }
+        }
+    </style>
 }
-</style>

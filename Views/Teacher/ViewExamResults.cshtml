@@ -1,110 +1,125 @@
 @using dershane.ViewModels
 @model ViewExamResultsVM
+@{
+    ViewData["Title"] = "Sınav Sonuçları";
+}
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="text-primary">📊 Exam Results</h2>
-            <h4 class="text-muted">@Model.ExamTitle - @Model.Lesson</h4>
-        </div>
-        <a asp-action="ViewExamSystem" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Back to Exams
-        </a>
-    </div>
-
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card bg-primary text-white">
-                <div class="card-body text-center">
-                    <h3>@Model.TotalStudents</h3>
-                    <p class="mb-0">Total Students</p>
+<div class="exam-results-wrapper container-xxl py-4">
+    <!-- Hero Başlık -->
+    <div class="card hero-card shadow-lg border-0 mb-4">
+        <div class="card-body d-flex flex-column flex-lg-row align-items-center justify-content-between gap-3 p-4 p-lg-5">
+            <div class="d-flex align-items-center gap-3">
+                <div class="hero-icon">📊</div>
+                <div>
+                    <h1 class="hero-title mb-1">@Model.ExamTitle</h1>
+                    <p class="hero-subtitle mb-0">@Model.Lesson • Sınav Sonuçları ve Analizi</p>
                 </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-success text-white">
-                <div class="card-body text-center">
-                    <h3>@Model.CompletedCount</h3>
-                    <p class="mb-0">Completed</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-warning text-white">
-                <div class="card-body text-center">
-                    <h3>@Model.AverageScore.ToString("F1")</h3>
-                    <p class="mb-0">Average Score</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-info text-white">
-                <div class="card-body text-center">
-                    <h3>@Model.HighestScore</h3>
-                    <p class="mb-0">Highest Score</p>
-                </div>
+            <div class="text-center text-lg-end">
+                <a asp-action="ViewExamSystem" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-arrow-left me-2"></i>Sınavlara Dön
+                </a>
             </div>
         </div>
     </div>
 
-    @if (Model.StudentResults.Any())
+    <!-- İstatistik Kartları -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-card card h-100 bg-gradient-primary">
+                <div class="card-body text-center text-white">
+                    <div class="stat-icon mb-2"><i class="bi bi-people-fill"></i></div>
+                    <div class="stat-value">@Model.TotalStudents</div>
+                    <div class="stat-label">Toplam Öğrenci</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card card h-100 bg-gradient-success">
+                <div class="card-body text-center text-white">
+                    <div class="stat-icon mb-2"><i class="bi bi-check-circle-fill"></i></div>
+                    <div class="stat-value">@Model.CompletedCount</div>
+                    <div class="stat-label">Tamamlanan</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card card h-100 bg-gradient-warning">
+                <div class="card-body text-center text-white">
+                    <div class="stat-icon mb-2"><i class="bi bi-graph-up-arrow"></i></div>
+                    <div class="stat-value">@(Model.CompletedCount > 0 ? Model.AverageScore.ToString("F1") : "-")</div>
+                    <div class="stat-label">Ortalama Puan</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card card h-100 bg-gradient-info">
+                <div class="card-body text-center text-white">
+                    <div class="stat-icon mb-2"><i class="bi bi-trophy-fill"></i></div>
+                    <div class="stat-value">@(Model.CompletedCount > 0 ? Model.HighestScore.ToString() : "-")</div>
+                    <div class="stat-label">En Yüksek Puan</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.StudentResults.Any(r => r.IsCompleted))
     {
-        <div class="card shadow">
-            <div class="card-header bg-light">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Student Results</h5>
-                    <button class="btn btn-outline-success btn-sm" onclick="exportToExcel()">
-                        <i class="bi bi-file-earmark-excel"></i> Export to Excel
-                    </button>
-                </div>
+        <!-- Sonuçlar Tablosu -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-transparent d-flex align-items-center justify-content-between">
+                <h5 class="mb-0"><i class="bi bi-table me-2 text-primary"></i>Öğrenci Sonuçları</h5>
+                <button class="btn btn-outline-primary btn-sm" onclick="exportToExcel()">
+                    <i class="bi bi-file-earmark-excel me-2"></i>Excel'e Aktar
+                </button>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0" id="resultsTable">
-                        <thead class="table-dark">
+                    <table class="table table-dark table-hover table-borderless align-middle mb-0" id="resultsTable">
+                        <thead class="table-gradient">
                             <tr>
-                                <th>Rank</th>
-                                <th>Student</th>
-                                <th>Score</th>
-                                <th>Percentage</th>
-                                <th>Status</th>
-                                <th>Duration</th>
-                                <th>Completed At</th>
-                                <th>Actions</th>
+                                <th>Sıra</th>
+                                <th>Öğrenci</th>
+                                <th>Puan</th>
+                                <th>Yüzde</th>
+                                <th>Durum</th>
+                                <th>Süre</th>
+                                <th>Tamamlanma</th>
+                                <th>İşlemler</th>
                             </tr>
                         </thead>
                         <tbody>
                             @{
                                 var rank = 1;
                             }
-                            @foreach (var result in Model.StudentResults.OrderByDescending(r => r.Score))
+                            @foreach (var result in Model.StudentResults.Where(r => r.IsCompleted).OrderByDescending(r => r.Score))
                             {
                                 var percentage = Model.TotalPoints > 0 ? (result.Score * 100.0 / Model.TotalPoints) : 0;
                                 var statusClass = percentage >= 85 ? "success" : percentage >= 70 ? "warning" : percentage >= 50 ? "info" : "danger";
-                                var statusText = percentage >= 85 ? "Excellent" : percentage >= 70 ? "Good" : percentage >= 50 ? "Average" : "Poor";
+                                var statusText = percentage >= 85 ? "Mükemmel" : percentage >= 70 ? "İyi" : percentage >= 50 ? "Orta" : "Zayıf";
                                 var duration = result.EndTime.HasValue ? (result.EndTime.Value - result.StartTime).TotalMinutes : 0;
 
                                 <tr>
                                     <td>
                                         @if (rank == 1)
                                         {
-                                            <span class="badge bg-warning">🏆 @rank</span>
+                                            <span class="badge bg-warning rounded-pill">🏆 @rank</span>
                                         }
                                         else if (rank == 2)
                                         {
-                                            <span class="badge bg-secondary">🥈 @rank</span>
+                                            <span class="badge bg-secondary rounded-pill">🥈 @rank</span>
                                         }
                                         else if (rank == 3)
                                         {
-                                            <span class="badge bg-warning">🥉 @rank</span>
+                                            <span class="badge bg-warning rounded-pill">🥉 @rank</span>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-light text-dark">@rank</span>
+                                            <span class="badge bg-light text-dark rounded-pill">@rank</span>
                                         }
                                     </td>
                                     <td>
-                                        <strong>@result.StudentName</strong><br>
+                                        <div class="fw-semibold">@result.StudentName</div>
                                         <small class="text-muted">@result.StudentId</small>
                                     </td>
                                     <td>
@@ -112,24 +127,22 @@
                                         <small class="text-muted">/ @Model.TotalPoints</small>
                                     </td>
                                     <td>
-                                        <div class="progress" style="height: 20px;">
-                                            <div class="progress-bar bg-@statusClass" 
-                                                 style="width: @percentage%">
-                                                @percentage.ToString("F1")%
-                                            </div>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-@statusClass" style="width: @percentage%"></div>
                                         </div>
+                                        <small class="text-muted">@percentage.ToString("F1")%</small>
                                     </td>
                                     <td>
-                                        <span class="badge bg-@statusClass">@statusText</span>
+                                        <span class="badge bg-@statusClass rounded-pill">@statusText</span>
                                     </td>
                                     <td>
                                         @if (result.IsCompleted)
                                         {
-                                            <span>@duration.ToString("F0") min</span>
+                                            <span>@duration.ToString("F0") dk</span>
                                         }
                                         else
                                         {
-                                            <span class="text-muted">In Progress</span>
+                                            <span class="text-muted">Devam Ediyor</span>
                                         }
                                     </td>
                                     <td>
@@ -145,10 +158,8 @@
                                     <td>
                                         @if (result.IsCompleted)
                                         {
-                                            <a asp-action="ViewStudentExamDetail" 
-                                               asp-route-resultId="@result.Id" 
-                                               class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-eye"></i> View Details
+                                            <a asp-action="ViewStudentExamDetail" asp-route-resultId="@result.Id" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> Detay
                                             </a>
                                         }
                                         else
@@ -164,186 +175,74 @@
                 </div>
             </div>
         </div>
-
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h6 class="mb-0">📈 Score Distribution</h6>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="scoreChart" width="400" height="200"></canvas>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h6 class="mb-0">🎯 Performance Breakdown</h6>
-                    </div>
-                    <div class="card-body">
-                        @{
-                            var excellentCount = Model.StudentResults.Count(r => r.Score * 100.0 / Model.TotalPoints >= 85);
-                            var goodCount = Model.StudentResults.Count(r => r.Score * 100.0 / Model.TotalPoints >= 70 && r.Score * 100.0 / Model.TotalPoints < 85);
-                            var averageCount = Model.StudentResults.Count(r => r.Score * 100.0 / Model.TotalPoints >= 50 && r.Score * 100.0 / Model.TotalPoints < 70);
-                            var poorCount = Model.StudentResults.Count(r => r.Score * 100.0 / Model.TotalPoints < 50);
-                        }
-                        
-                        <div class="performance-stats">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>🏆 Excellent (85%+)</span>
-                                <span class="badge bg-success">@excellentCount</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>😊 Good (70-84%)</span>
-                                <span class="badge bg-warning">@goodCount</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>😐 Average (50-69%)</span>
-                                <span class="badge bg-info">@averageCount</span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <span>😢 Poor (Less than 50%)</span>
-                                <span class="badge bg-danger">@poorCount</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     }
     else
     {
-        <div class="text-center py-5">
-            <div class="empty-state">
-                <i class="bi bi-clipboard-data display-1 text-muted"></i>
-                <h4 class="text-muted mt-3">No Results Yet</h4>
-                <p class="text-muted">Students haven't taken this exam yet. Be patient! 😎</p>
+        <!-- Boş Durum -->
+        <div class="empty-state-card card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+                <div class="empty-icon mb-3">📊</div>
+                <h4 class="empty-title mb-2">Henüz Sonuç Yok</h4>
+                <p class="empty-subtitle mb-0">Öğrenciler bu sınavı henüz almadı. Sabırlı olun!</p>
             </div>
         </div>
     }
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script>
-@if (Model.StudentResults.Any())
-{
-    <text>
-    const ctx = document.getElementById('scoreChart').getContext('2d');
-    const scoreData = @Html.Raw(Json.Serialize(Model.StudentResults.Select(r => r.Score).ToArray()));
-    const studentNames = @Html.Raw(Json.Serialize(Model.StudentResults.Select(r => r.StudentName.Split(' ')[0]).ToArray()));
-    
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: studentNames,
-            datasets: [{
-                label: 'Score',
-                data: scoreData,
-                backgroundColor: scoreData.map(score => {
-                    const percentage = (score * 100) / @Model.TotalPoints;
-                    if (percentage >= 85) return 'rgba(40, 167, 69, 0.8)';
-                    if (percentage >= 70) return 'rgba(255, 193, 7, 0.8)';
-                    if (percentage >= 50) return 'rgba(23, 162, 184, 0.8)';
-                    return 'rgba(220, 53, 69, 0.8)';
-                }),
-                borderColor: scoreData.map(score => {
-                    const percentage = (score * 100) / @Model.TotalPoints;
-                    if (percentage >= 85) return 'rgba(40, 167, 69, 1)';
-                                        if (percentage >= 70) return 'rgba(255, 193, 7, 1)';
-                    if (percentage >= 50) return 'rgba(23, 162, 184, 1)';
-                    return 'rgba(220, 53, 69, 1)';
-                }),
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                title: {
-                    display: true,
-                    text: 'Student Scores'
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: @Model.TotalPoints,
-                    ticks: {
-                        stepSize: Math.ceil(@Model.TotalPoints / 10)
-                    }
-                }
-            }
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        function exportToExcel() {
+            const table = document.getElementById('resultsTable');
+            const wb = XLSX.utils.table_to_book(table, {sheet: "Sınav Sonuçları"});
+            const examTitle = '@Model.ExamTitle'.replace(/[^a-zA-Z0-9]/g, '_');
+            XLSX.writeFile(wb, `${examTitle}_Sonuclari.xlsx`);
         }
-    });
-    </text>
+    </script>
 }
 
-function exportToExcel() {
-    const table = document.getElementById('resultsTable');
-    const wb = XLSX.utils.table_to_book(table, {sheet: "Exam Results"});
-    const examTitle = '@Model.ExamTitle'.replace(/[^a-zA-Z0-9]/g, '_');
-    XLSX.writeFile(wb, `${examTitle}_Results.xlsx`);
-}
-</script>
+@section Styles {
+    <style>
+        .exam-results-wrapper .card {
+            background: rgba(30, 30, 46, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 16px;
+            color: rgba(255, 255, 255, 0.95);
+        }
 
-<style>
-.performance-stats {
-    font-size: 0.95rem;
-}
+        .hero-card { background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(30,30,46,0.9)); }
+        .hero-icon {
+            width: 64px; height: 64px; display: grid; place-items: center; font-size: 2rem;
+            border-radius: 14px; background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.2));
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .hero-title { font-weight: 800; letter-spacing: .3px; }
+        .hero-subtitle { color: rgba(255, 255, 255, 0.75); }
 
-.empty-state {
-    padding: 3rem 0;
-}
+        .stat-card { overflow: hidden; transition: transform .25s ease; }
+        .stat-card:hover { transform: translateY(-4px); }
+        .stat-icon { font-size: 2rem; opacity: .9; }
+        .stat-value { font-size: 1.8rem; font-weight: 800; line-height: 1; }
+        .stat-label { font-size: .9rem; opacity: .9; font-weight: 600; }
 
-.progress {
-    border-radius: 10px;
-}
+        .bg-gradient-primary { background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); }
+        .bg-gradient-success { background: linear-gradient(45deg, #56ab2f 0%, #a8e6cf 100%); }
+        .bg-gradient-warning { background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); }
+        .bg-gradient-info { background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%); }
 
-.progress-bar {
-    border-radius: 10px;
-}
+        .table-gradient th { background: linear-gradient(90deg, rgba(99,102,241,.25), rgba(139,92,246,.2)); border: 0; }
+        .table td, .table th { border-color: rgba(255,255,255,.06) !important; }
 
-.badge {
-    font-size: 0.8rem;
-}
+        .progress { background: rgba(255,255,255,.06); height: 8px; }
 
-.table th {
-    border-top: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-}
+        .empty-state-card { background: rgba(17, 17, 27, 0.6) !important; }
+        .empty-icon { font-size: 4rem; opacity: .7; }
+        .empty-title { color: rgba(255,255,255,.9); }
+        .empty-subtitle { color: rgba(255,255,255,.6); }
 
-.table td {
-    vertical-align: middle;
+        @@media (max-width: 576px) {
+            .hero-title { font-size: 1.6rem; }
+            .hero-icon { width: 52px; height: 52px; font-size: 1.6rem; }
+        }
+    </style>
 }
-
-.card {
-    border: none;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-}
-
-.card-header {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-    font-weight: 600;
-}
-
-@@media (max-width: 768px) {
-    .d-flex.justify-content-between {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .btn-group {
-        width: 100%;
-    }
-    
-    .table-responsive {
-        font-size: 0.85rem;
-    }
-}
-</style>
